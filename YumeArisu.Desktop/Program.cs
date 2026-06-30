@@ -5,7 +5,7 @@ using Silk.NET.Input;
 using YumeAris.Core.System;
 using YumeAris.Core.Utility;
 
-namespace YumeAris.Core;
+namespace YumeAris.Desktop;
 
 public class Program
 {
@@ -14,10 +14,9 @@ public class Program
 
     public static void Main(string[] args)
     {
-
         var options = WindowOptions.Default;
         options.Size = new Silk.NET.Maths.Vector2D<int>(800, 600);
-        options.Title = "YWMA - Yume Wo Miru Arisu";
+        options.Title = "夢を見るアリス";
 
         window = Window.Create(options);
         window.Update += dt => OnUpdate(dt);

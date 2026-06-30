@@ -1,6 +1,6 @@
 namespace YumeAris.Core.Utility;
 
-internal static class ConsoleColorExtensions
+public static class ConsoleColorExtensions
 {
     public static void WriteLineColored(string message, ConsoleColor color)
     {
