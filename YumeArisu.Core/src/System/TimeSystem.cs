@@ -1,6 +1,6 @@
 namespace YumeAris.Core.System;
 
-public class TimeSystem : SystemBase<TimeSystem, NoConfig >
+public class TimeSystem : SystemBase<TimeSystem, NoConfig>
 {
     public float DeltaTime { get => (float)_deltaTime; }
     public float UnscaledDeltaTime { get => (float)_unscaledDeltaTime; }
