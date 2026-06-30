@@ -2,7 +2,7 @@
 using Silk.NET.Windowing;
 using System;
 
-namespace YWMA.Core;
+namespace YumeAris.Core;
 
 public class Program
 {
