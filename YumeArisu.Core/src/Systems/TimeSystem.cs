@@ -1,4 +1,4 @@
-namespace YumeAris.Core.System;
+namespace YumeArisu.Core.Systems;
 
 public class TimeSystem : SystemBase<TimeSystem, NoConfig>
 {
@@ -33,7 +33,7 @@ public class TimeSystem : SystemBase<TimeSystem, NoConfig>
     private double _accumulator;
     private int _fixedStepsThisFrame;
 
-    public override void StartUpInternal(NoConfig config)
+    public override void StartUpInternal(NoConfig config = default)
     {
         _deltaTime = 0.0;
         _unscaledDeltaTime = 0.0;

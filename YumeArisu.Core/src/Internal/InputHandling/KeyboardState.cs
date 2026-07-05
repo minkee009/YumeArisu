@@ -1,6 +1,6 @@
 using Silk.NET.Input;
 
-namespace YumeAris.Core.System.Internal.Input;
+namespace YumeArisu.Core.Internal.InputHandling;
 
 internal class KeyboardState
 {
@@ -10,7 +10,7 @@ internal class KeyboardState
 
     private const int WordCount = 8;
     private const int KeyCount = WordCount * 64;
-    IKeyboard _keyboard;
+    private IKeyboard _keyboard;
     
     public KeyboardState(IKeyboard keyboard)
     {

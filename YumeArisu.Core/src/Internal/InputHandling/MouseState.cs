@@ -1,8 +1,7 @@
 using Silk.NET.Input;
-using Silk.NET.Maths;
 using System.Numerics;
 
-namespace YumeAris.Core.System.Internal.Input;
+namespace YumeArisu.Core.Internal.InputHandling;
 
 internal class MouseState
 {   
@@ -15,7 +14,7 @@ internal class MouseState
     public int ButtonReleased { get; private set; }
     public int ButtonCurrent { get; private set; }
 
-    IMouse _mouse;
+    private IMouse _mouse;
     
     public MouseState(IMouse mouse)
     {

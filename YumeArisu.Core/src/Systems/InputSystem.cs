@@ -1,13 +1,15 @@
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using Silk.NET.Input;
 using Silk.NET.Windowing;
-using System.Numerics;
-using YumeAris.Core.System.Internal.Input;
-using YumeAris.Core.System;
+using YumeArisu.Core.Internal.InputHandling;
 
-namespace YumeAris.Core.System;
+namespace YumeArisu.Core.Systems;
 
 public class InputSystem : SystemBase<InputSystem, IView>
 {
+    public IInputContext InputContext => _input;
+
     private KeyboardState _keyboardState;
     private MouseState _mouseState;
     private IInputContext _input;
@@ -62,12 +64,20 @@ public class InputSystem : SystemBase<InputSystem, IView>
 // 문법 설탕용 클래스
 public static class Input
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool GetKey(Key key) => InputSystem.Instance.GetKey(key);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool GetKeyDown(Key key) => InputSystem.Instance.GetKeyDown(key);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool GetKeyUp(Key key) => InputSystem.Instance.GetKeyUp(key);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector2 GetMousePosition() => InputSystem.Instance.GetMousePosition();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector2 GetMouseDelta() => InputSystem.Instance.GetMouseDelta();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool GetMouseButton(MouseButton button) => InputSystem.Instance.GetMouseButton(button);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool GetMouseButtonDown(MouseButton button) => InputSystem.Instance.GetMouseButtonDown(button);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool GetMouseButtonUp(MouseButton button) => InputSystem.Instance.GetMouseButtonUp(button);
 }

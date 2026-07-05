@@ -1,11 +1,12 @@
-using System;
-using YumeAris.Core.Utility;
+using YumeArisu.Core.Utility;
 
-namespace YumeAris.Core.System;
+namespace YumeArisu.Core.Systems;
 
 public readonly struct NoConfig { }
+
 /// <summary>
-/// OS와 면밀한 연관이 있는 전역 객체를 위한 베이스입니다.
+/// Silk.NET 기반 게임 프레임워크에서 공통으로 사용하는 전역 시스템 베이스입니다.
+/// CRTP(Curiously Recurring Template Pattern)를 사용하여 싱글톤 패턴을 구현합니다.
 /// 
 /// SystemBase에서 사용되는 주된 스텝용 함수의 이름은 다음과 같이 작성해야 합니다.
 /// 
@@ -18,11 +19,11 @@ public readonly struct NoConfig { }
 /// <typeparam name="TConfig">초기화 함수 StartUp에 전달할 인자의 형식입니다.</typeparam>
 public abstract class SystemBase<T, TConfig> where T : SystemBase<T, TConfig>, new()
 {
-    private static T _instance;
-
     public static T Instance => _instance ??= new T();
 
     public bool IsStarted { get; private set; }
+    
+    private static T _instance;
 
     public abstract void StartUpInternal(TConfig config); 
     public abstract void ShutDownInternal(); 

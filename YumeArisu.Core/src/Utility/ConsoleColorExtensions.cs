@@ -1,7 +1,10 @@
-namespace YumeAris.Core.Utility;
+using System.Diagnostics;
+
+namespace YumeArisu.Core.Utility;
 
 public static class ConsoleColorExtensions
 {
+    [Conditional("DEBUG")]
     public static void WriteLineColored(string message, ConsoleColor color)
     {
         string code = color switch
