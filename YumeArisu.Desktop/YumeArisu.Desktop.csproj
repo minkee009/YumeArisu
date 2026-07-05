@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\YumeArisu.Core\YumeArisu.Core.csproj" />
+    <ProjectReference Include="..\YumeArisu.Game\YumeArisu.Game.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
