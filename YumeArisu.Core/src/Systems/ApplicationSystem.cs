@@ -7,7 +7,7 @@ public class ApplicationSystem : SystemBase<ApplicationSystem, IApplication>
 {
     private IApplication _application;
 
-    public override void StartUpInternal(IApplication application)
+    public override void StartUpInternal(IApplication application) 
     {
         _application = application;
     }

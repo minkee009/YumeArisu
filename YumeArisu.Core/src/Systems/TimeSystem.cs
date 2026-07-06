@@ -50,10 +50,7 @@ public class TimeSystem : SystemBase<TimeSystem, NoConfig>
         _fixedStepsThisFrame = 0;
     }
 
-    public override void ShutDownInternal()
-    {
-        
-    }
+    public override void ShutDownInternal() { }
 
     /// <summary>
     /// TimeSystem 내부의 변수값을 갱신합니다.

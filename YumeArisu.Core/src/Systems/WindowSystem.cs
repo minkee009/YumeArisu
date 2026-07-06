@@ -7,7 +7,7 @@ public class WindowSystem : SystemBase<WindowSystem, IWindowControl>
 {
     private IWindowControl _control;
 
-    public override void StartUpInternal(IWindowControl control)
+    public override void StartUpInternal(IWindowControl control) 
     {
         _control = control;
     }

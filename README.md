@@ -1,3 +1,7 @@
+![Status](https://img.shields.io/badge/status-early%20development-red)
+![Version](https://img.shields.io/badge/version-0.0.1--alpha-orange)
+![Silk.NET](https://img.shields.io/badge/framework-Silk.NET-9B4F96)
+![License](https://img.shields.io/badge/license-MIT-yellow)
 ## 개요
 - NEXON GAMES의 게임, 블루 아카이브의 2차 창작 팬 게임입니다.
 
