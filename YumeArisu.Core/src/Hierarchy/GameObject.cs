@@ -57,7 +57,7 @@ public sealed class GameObject
     public T GetComponent<T>() where T : Component
     {
         if(typeof(T) == typeof(Component))
-            throw new InvalidOperationException("선샌니 찾으시는 게 있으시면 타입을 정확히 입력해주세요.");
+            throw new InvalidOperationException("선샌니 컴포넌트 타입을 정확히 입력해주세요.");
 
         foreach(var comp in _components)
         {

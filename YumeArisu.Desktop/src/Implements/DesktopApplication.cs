@@ -2,6 +2,8 @@ using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using YumeArisu.Core.Systems;
 using YumeArisu.Core.Abstractions;
+using YumeArisu.Core.Hierarchy;
+using YumeArisu.Game.Scenes;
 
 namespace YumeArisu.Desktop.Implements;
 
@@ -33,7 +35,7 @@ public class DesktopApplication : IApplication
         WindowSystem.Instance.StartUp(_window);
         TimeSystem.Instance.StartUp(default);
         InputSystem.Instance.StartUp(_window.View);
-        SceneSystem.Instance.StartUp(default);
+        SceneSystem.Instance.StartUp([new TestScene1(), new TestScene2()]);
     }
 
     public void OnClosing()
@@ -52,6 +54,7 @@ public class DesktopApplication : IApplication
 
     public void OnUpdate(double deltaTime)
     {
+        SceneSystem.Instance.Update();
         TimeSystem.Instance.BeginFrame(deltaTime);
         TimeSystem.Instance.ConsumeFixedSteps(
             _ => 
