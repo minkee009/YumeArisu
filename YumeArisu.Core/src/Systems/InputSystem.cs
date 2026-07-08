@@ -8,8 +8,6 @@ namespace YumeArisu.Core.Systems;
 
 public class InputSystem : SystemBase<InputSystem, IView>
 {
-    public IInputContext InputContext => _input;
-
     private KeyboardState _keyboardState;
     private MouseState _mouseState;
     private IInputContext _input;

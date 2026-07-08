@@ -1,9 +1,11 @@
 namespace YumeArisu.Core.Hierarchy;
 
-public sealed class GameObject : IDisposable
+public sealed class GameObject
 {
-    public Scene Owner => _owner;
-    public uint ID => _id;
+    public Scene Scene { get; private set; }
+    public uint ID { get; private set; }
+    public uint Layer { get; set; }
+    public string Tag { get; set; }
     public string Name { get; set; }
     public bool ActiveSelf
     { 
@@ -18,40 +20,35 @@ public sealed class GameObject : IDisposable
         } 
     }
     public IReadOnlyList<Component> Components => _components;
-
+    public bool IsDestroyed { get; private set; }
     public event Action<bool> OnActiveSelfChanged;
-    
-    private Scene _owner;
-    private uint _id;
+
     private bool _active;
     private List<Component> _components;
     private static uint _nextID = 0;
 
     public GameObject(Scene owner, string name = "")
     {
-        _owner = owner;
-        _id = _nextID++;
+        Layer = uint.MaxValue;
+        Tag = "";
+        Scene = owner;
+        ID = _nextID++;
 
         if (string.IsNullOrEmpty(name))
-            name = $"GameObject[{_id}]";
+            name = $"GameObject[{ID}]";
             
         Name = name;
-        ActiveSelf = true;
+        ActiveSelf = false;
         _components = new();
     }
 
     public T AddComponent<T>() where T : Component, new()
     {
-        if(typeof(T) == typeof(Component))
-            throw new InvalidOperationException("아리스는 이해할 수 없었습니다... 선샌니가 무엇을 집어넣으려고 했던걸까요?");
+        if(GetComponent<T>() != null)
+            throw new InvalidOperationException("같은 타입의 컴포넌트가 이미 존재합니다.");
 
-        foreach(var comp in _components)
-        {
-            if (comp is T)
-                throw new InvalidOperationException("같은 타입의 컴포넌트가 이미 존재합니다.");
-        }
-
-        T instance = new() { Owner = this };
+        T instance = new() { GameObject = this };
+        instance.OnAttached();
 
         _components.Add(instance);
         return instance;
@@ -91,23 +88,11 @@ public sealed class GameObject : IDisposable
         if(typeof(T) == typeof(Component))
             throw new InvalidOperationException("끄앙 이해할 수 없습니다! 무엇을 제거하려는 겁니까? 선샌니!");
 
-        Component findComp = null;
-        foreach(var comp in _components)
-        {
-            if (comp is T)
-            {
-                findComp = comp;
-                break;
-            }
-        }
-
-        if(findComp != null)
-        {
-            _components.Remove(findComp);
-            findComp.Dispose();
-        }
-        else
+        var found = GetComponent<T>();
+        if (found is null)
             throw new InvalidOperationException("제거할 컴포넌트가 존재하지 않습니다.");
+
+        RemoveComponent(found);
     }
 
     public void RemoveComponent(Component component)
@@ -115,23 +100,29 @@ public sealed class GameObject : IDisposable
         if (!_components.Remove(component))
             throw new InvalidOperationException("제거할 컴포넌트가 존재하지 않습니다.");
 
-        component.Dispose();
+        component.OnDetached();
     }
 
-    public void Dispose()
+    internal void Destroy()
     {
+        if(IsDestroyed)
+            return;
+
+        IsDestroyed = true;
+
         foreach(var comp in _components)
-            comp.Dispose();
+            comp.OnDetached();
+
         _components.Clear();
     }
 
     public override int GetHashCode()
     {
-        return _id.GetHashCode();
+        return ID.GetHashCode();
     }
 
     public override bool Equals(object obj)
     {
-        return obj is GameObject other && _id == other._id;
+        return obj is GameObject other && ID == other.ID;
     }
 }

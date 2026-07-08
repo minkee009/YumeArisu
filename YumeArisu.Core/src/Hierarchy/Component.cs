@@ -1,8 +1,8 @@
 namespace YumeArisu.Core.Hierarchy;
 
-public abstract class Component : IDisposable
+public abstract class Component
 {
-    public required GameObject Owner { get; init; }
-
-    public virtual void Dispose() { }
+    public required GameObject GameObject { get; init; }
+    protected internal virtual void OnAttached() { }
+    protected internal virtual void OnDetached() { }
 }
