@@ -14,7 +14,7 @@ public class DesktopApplication : IApplication
 
     public DesktopApplication(string title, int width, int height)
     {
-        _window = new(title,width,height);
+        _window = new(title, width, height);
         _window.View.Load += OnLoad;
         _window.View.Resize += OnResized;
         _window.View.Update += OnUpdate;
