@@ -35,7 +35,7 @@ public class DesktopApplication : IApplication
         WindowSystem.Instance.StartUp(_window);
         TimeSystem.Instance.StartUp(default);
         InputSystem.Instance.StartUp(_window.View);
-        SceneSystem.Instance.StartUp([new TestScene1(), new TestScene2()]);
+        SceneSystem.Instance.StartUp([new TestScene1(), new TestScene2(), new StaticScene()]); // 구현이 지저분한데 좀 더 이쁘고 관리하기 편하게 만들 순 없을까 고민해보기
     }
 
     public void OnClosing()

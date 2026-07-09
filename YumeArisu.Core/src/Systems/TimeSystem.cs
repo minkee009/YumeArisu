@@ -2,20 +2,20 @@ namespace YumeArisu.Core.Systems;
 
 public class TimeSystem : SystemBase<TimeSystem, NoConfig>
 {
-    public float DeltaTime { get => (float)_deltaTime; }
-    public float UnscaledDeltaTime { get => (float)_unscaledDeltaTime; }
-    public float TotalTime { get => (float)_totalTime; }
-    public float UnscaledTotalTime { get => (float)_unscaledTotalTime; }
-    public float FixedDeltaTime { get => (float)_fixedDeltaTime; }
-    public float FixedTime { get => (float)_fixedTime; }
-    public float TimeScale { get => (float)_timeScale; }
-    public float MaximumAllowedTimestep { get => (float)_maximumAllowedTimestep; }
-    public float InterpolationAlpha { get => (float)_interpolationAlpha; }
+    public float DeltaTime => (float)_deltaTime; 
+    public float UnscaledDeltaTime => (float)_unscaledDeltaTime;
+    public float TotalTime => (float)_totalTime; 
+    public float UnscaledTotalTime => (float)_unscaledTotalTime; 
+    public float FixedDeltaTime { get => (float)_fixedDeltaTime; set => _fixedDeltaTime = Math.Max(0.0001, value);}
+    public float FixedTime => (float)_fixedTime; 
+    public float TimeScale { get => (float)_timeScale; set => _timeScale = Math.Max(0.0, value); }
+    public float MaximumAllowedTimestep { get => (float)_maximumAllowedTimestep; set => _maximumAllowedTimestep = Math.Max(0.0001, value); }
+    public float InterpolationAlpha => (float)_interpolationAlpha; 
     public uint FrameCount { get; private set; }
 
-    public double HighResDeltaTime { get => _deltaTime; }
-    public double HighResTotalTime { get => _totalTime; }
-    public double HighResUnscaledDeltaTime { get=> _unscaledDeltaTime; }
+    public double HighResDeltaTime => _deltaTime;
+    public double HighResTotalTime => _totalTime;
+    public double HighResUnscaledDeltaTime { get => _unscaledDeltaTime; }
     public double HighResUnscaledTotalTime { get => _unscaledTotalTime; }
     public double HighResFixedDeltaTime { get => _fixedDeltaTime; }
     public double HighResFixedTime { get => _fixedTime; }
@@ -33,7 +33,7 @@ public class TimeSystem : SystemBase<TimeSystem, NoConfig>
     private double _accumulator;
     private int _fixedStepsThisFrame;
 
-    public override void StartUpInternal(NoConfig config = default)
+    internal override void StartUpInternal(NoConfig config = default)
     {
         _deltaTime = 0.0;
         _unscaledDeltaTime = 0.0;
@@ -50,7 +50,7 @@ public class TimeSystem : SystemBase<TimeSystem, NoConfig>
         _fixedStepsThisFrame = 0;
     }
 
-    public override void ShutDownInternal() { }
+    internal override void ShutDownInternal() { }
 
     /// <summary>
     /// TimeSystem 내부의 변수값을 갱신합니다.
@@ -97,9 +97,6 @@ public class TimeSystem : SystemBase<TimeSystem, NoConfig>
         }
     }
 
-    public void SetTimeScale(float timeScale) => _timeScale = Math.Max(0.0, timeScale);
-    public void SetFixedDeltaTime(float fixedDelta) => _fixedDeltaTime = Math.Max(0.0001, fixedDelta);
-    public void SetMaximumAllowedTimestep(float allowedTimestep) => _maximumAllowedTimestep = Math.Max(0.0001, allowedTimestep);
     public void ResetFrameCount() => FrameCount = 0;
 }
 

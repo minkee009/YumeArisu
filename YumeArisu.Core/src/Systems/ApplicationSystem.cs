@@ -7,12 +7,12 @@ public class ApplicationSystem : SystemBase<ApplicationSystem, IApplication>
 {
     private IApplication _application;
 
-    public override void StartUpInternal(IApplication application) 
+    internal override void StartUpInternal(IApplication application) 
     {
         _application = application;
     }
 
-    public override void ShutDownInternal() => _application = null;
+    internal override void ShutDownInternal() => _application = null;
 
     public bool IsRunning() => _application.IsRunning();
 

@@ -6,35 +6,58 @@ namespace YumeArisu.Core.Systems;
 
 public class SceneSystem : SystemBase<SceneSystem, Scene[]>
 {
-    private Dictionary<string,Scene> _scenes;
+    public Scene CurrentScene => _currentScene;
+    private Dictionary<string,Scene> _liveScenes;
+    private List<Scene> _staticScenes;
     private Scene _currentScene;
     private Scene _nextScene;
-    public override void StartUpInternal(Scene[] playlist)
+    internal override void StartUpInternal(Scene[] playlist)
     {
         _nextScene = playlist.FirstOrDefault();
+
         if (_nextScene == null)
         {
             throw new InvalidOperationException("Scene 플레이 리스트가 존재하지 않습니다!");
         }
+        
+        if(_nextScene.IsStatic)
+        {
+            throw new InvalidOperationException("진입용 Scene은 정적일 수 없습니다!");
+        }
 
-        _scenes = new();
+        _liveScenes = new();
+        _staticScenes = new();
+
         foreach(var scene in playlist)
         {
-            string name = scene.GetType().Name;
-            _scenes.Add(name,scene);
+            if(!scene.IsStatic)
+            {
+                string name = scene.GetType().Name;
+                _liveScenes.Add(name,scene);
+            }
+            else
+            {
+                _staticScenes.Add(scene);
+                scene.Load(); // 검증 필요 -> 불안정 시 플래그를 만들고 Update()의 맨상단에서 최초 1회 load 순회를 돌아야 함
+            }
         }
     }
 
-    public override void ShutDownInternal()
+    internal override void ShutDownInternal()
     {
-        _scenes = null;
+        _currentScene.Unload();
+        foreach(var scene in _staticScenes) 
+            scene.Unload();
+
+        _liveScenes = null;
+        _staticScenes = null;
         _currentScene = null;
         _nextScene = null;
     }
 
     public void ChangeScene(string sceneName)
     {
-        if(_scenes.TryGetValue(sceneName,out Scene foundScene))
+        if(_liveScenes.TryGetValue(sceneName,out Scene foundScene))
         {
             _nextScene = foundScene;
             return;
@@ -53,13 +76,12 @@ public class SceneSystem : SystemBase<SceneSystem, Scene[]>
         if(_nextScene == null)
             return;
 
-        if(_currentScene != null)
-            _currentScene.Unload();
+        _currentScene?.Unload();
         
         _currentScene = _nextScene;
         _nextScene = null;
 
-        _currentScene.Load();
+        _currentScene?.Load();
     }
 }
 

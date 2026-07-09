@@ -7,12 +7,12 @@ public class WindowSystem : SystemBase<WindowSystem, IWindowControl>
 {
     private IWindowControl _control;
 
-    public override void StartUpInternal(IWindowControl control) 
+    internal override void StartUpInternal(IWindowControl control) 
     {
         _control = control;
     }
 
-    public override void ShutDownInternal() => _control = null;
+    internal override void ShutDownInternal() => _control = null;
 
     public void SetScreenMode(ScreenMode screenMode) => _control.SetScreenMode(screenMode);
     public void SetTitle(string title) => _control.SetTitle(title);

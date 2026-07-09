@@ -1,5 +1,3 @@
-using Silk.NET.Windowing;
-
 namespace YumeArisu.Core.Abstractions;
 
 /// <summary>

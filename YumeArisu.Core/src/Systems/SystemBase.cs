@@ -25,8 +25,8 @@ public abstract class SystemBase<T, TConfig> where T : SystemBase<T, TConfig>, n
     
     private static T _instance;
 
-    public abstract void StartUpInternal(TConfig config); 
-    public abstract void ShutDownInternal(); 
+    internal abstract void StartUpInternal(TConfig config); 
+    internal abstract void ShutDownInternal(); 
 
     public void StartUp(TConfig config)
     {
