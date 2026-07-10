@@ -1,39 +1,36 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using YumeArisu.Core.Abstractions;
 using YumeArisu.Core.Hierarchy;
 
 namespace YumeArisu.Core.Systems;
 
-public class SceneSystem : SystemBase<SceneSystem, Scene[]>
+public class SceneSystem : SystemBase<SceneSystem, ISceneBootstrap>
 {
     public Scene CurrentScene => _currentScene;
-    private Dictionary<string,Scene> _liveScenes;
+    private Dictionary<string,Scene> _dynamicScenes;
     private List<Scene> _staticScenes;
     private Scene _currentScene;
     private Scene _nextScene;
-    internal override void StartUpInternal(Scene[] playlist)
+    internal override void StartUpInternal(ISceneBootstrap bootstrap)
     {
-        _nextScene = playlist.FirstOrDefault();
+        _nextScene = bootstrap.Entry;
 
         if (_nextScene == null)
-        {
-            throw new InvalidOperationException("Scene 플레이 리스트가 존재하지 않습니다!");
-        }
-        
+            throw new InvalidOperationException("진입용 Scene이 존재하지 않습니다!");        
+            
         if(_nextScene.IsStatic)
-        {
             throw new InvalidOperationException("진입용 Scene은 정적일 수 없습니다!");
-        }
 
-        _liveScenes = new();
+        _dynamicScenes = new();
         _staticScenes = new();
 
-        foreach(var scene in playlist)
+        foreach(var scene in bootstrap.CompiledScenes)
         {
             if(!scene.IsStatic)
             {
                 string name = scene.GetType().Name;
-                _liveScenes.Add(name,scene);
+                _dynamicScenes.Add(name,scene);
             }
             else
             {
@@ -49,7 +46,7 @@ public class SceneSystem : SystemBase<SceneSystem, Scene[]>
         foreach(var scene in _staticScenes) 
             scene.Unload();
 
-        _liveScenes = null;
+        _dynamicScenes = null;
         _staticScenes = null;
         _currentScene = null;
         _nextScene = null;
@@ -57,7 +54,7 @@ public class SceneSystem : SystemBase<SceneSystem, Scene[]>
 
     public void ChangeScene(string sceneName)
     {
-        if(_liveScenes.TryGetValue(sceneName,out Scene foundScene))
+        if(_dynamicScenes.TryGetValue(sceneName,out Scene foundScene))
         {
             _nextScene = foundScene;
             return;
