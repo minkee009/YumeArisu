@@ -5,7 +5,7 @@ using YumeArisu.Core.Hierarchy;
 
 namespace YumeArisu.Core.Systems;
 
-public class SceneSystem : SystemBase<SceneSystem, ISceneBootstrap>
+public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
 {
     public Scene CurrentScene => _currentScene;
 
@@ -14,9 +14,9 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneBootstrap>
     private Scene _currentScene;
     private Scene _nextScene;
 
-    internal override void StartUpInternal(ISceneBootstrap bootstrap)
+    internal override void StartUpInternal(ISceneManifest bootstrap)
     {
-        _nextScene = bootstrap.Entry;
+        _nextScene = bootstrap.DynamicScenes.FirstOrDefault();
 
         if (_nextScene == null)
             throw new InvalidOperationException("진입용 Scene이 존재하지 않습니다!");        
