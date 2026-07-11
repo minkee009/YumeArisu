@@ -7,5 +7,6 @@ namespace YumeArisu.Game;
 public class GameSceneBootstrap : ISceneBootstrap
 {
     public Scene Entry => new TestScene1();
-    public Scene[] CompiledScenes => [new TestScene2(), new StaticScene()];
+    public Scene[] DynamicScenes =>  [new TestScene2(), new TestScene3()];
+    public Scene[] StaticScenes => [new StaticScene()];
 }

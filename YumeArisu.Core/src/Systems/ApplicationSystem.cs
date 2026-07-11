@@ -11,13 +11,10 @@ public class ApplicationSystem : SystemBase<ApplicationSystem, IApplication>
     {
         _application = application;
     }
-
     internal override void ShutDownInternal() => _application = null;
 
     public bool IsRunning() => _application.IsRunning();
-
     public void RequestClose() => _application.RequestClose();
-
     public void SetTargetFrameRate(int fps) => _application.SetTargetFrameRate(fps);
 }
 

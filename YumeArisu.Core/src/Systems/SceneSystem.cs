@@ -8,35 +8,32 @@ namespace YumeArisu.Core.Systems;
 public class SceneSystem : SystemBase<SceneSystem, ISceneBootstrap>
 {
     public Scene CurrentScene => _currentScene;
+
     private Dictionary<string,Scene> _dynamicScenes;
     private List<Scene> _staticScenes;
     private Scene _currentScene;
     private Scene _nextScene;
+
     internal override void StartUpInternal(ISceneBootstrap bootstrap)
     {
         _nextScene = bootstrap.Entry;
 
         if (_nextScene == null)
             throw new InvalidOperationException("진입용 Scene이 존재하지 않습니다!");        
-            
-        if(_nextScene.IsStatic)
-            throw new InvalidOperationException("진입용 Scene은 정적일 수 없습니다!");
 
         _dynamicScenes = new();
         _staticScenes = new();
 
-        foreach(var scene in bootstrap.CompiledScenes)
+        foreach(var scene in bootstrap.DynamicScenes)
         {
-            if(!scene.IsStatic)
-            {
-                string name = scene.GetType().Name;
-                _dynamicScenes.Add(name,scene);
-            }
-            else
-            {
-                _staticScenes.Add(scene);
-                scene.Load(); // 검증 필요 -> 불안정 시 플래그를 만들고 Update()의 맨상단에서 최초 1회 load 순회를 돌아야 함
-            }
+            string name = scene.GetType().Name;
+            _dynamicScenes.Add(name,scene);
+        }
+
+        foreach(var scene in bootstrap.StaticScenes)
+        {
+            _staticScenes.Add(scene);
+            scene.Load(); // 검증 필요 -> 불안정 시 플래그를 만들고 Update()의 맨상단에서 최초 1회 load 순회를 돌아야 함
         }
     }
 
@@ -87,6 +84,7 @@ public static class SceneControl
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void ChangeScene(string sceneName) => SceneSystem.Instance.ChangeScene(sceneName);
+    
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void ChangeScene<T>() where T : Scene => SceneSystem.Instance.ChangeScene<T>();
 }

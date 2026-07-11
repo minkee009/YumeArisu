@@ -2,10 +2,10 @@ using YumeArisu.Core.Hierarchy;
 
 namespace YumeArisu.Game.Scenes;
 
-public class TestScene2 : Scene
+public class TestScene3 : Scene
 {
     public override void Load()
     {
-        Console.WriteLine("ㅎㅎ ㅋㅋ ㅈㅅ");
+        Console.WriteLine("컴파일 됨");
     }
 }

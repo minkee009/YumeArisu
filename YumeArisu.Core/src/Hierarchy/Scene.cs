@@ -2,10 +2,11 @@ namespace YumeArisu.Core.Hierarchy;
 
 public abstract class Scene
 {
-    public abstract bool IsStatic { get; }
     public IReadOnlyList<GameObject> GameObjects => _gameObjects;
     private List<GameObject> _gameObjects = new();
+
     public abstract void Load();
+
     public virtual void Unload()
     {
         foreach (var go in _gameObjects)

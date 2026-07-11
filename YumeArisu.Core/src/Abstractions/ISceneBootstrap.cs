@@ -8,5 +8,6 @@ namespace YumeArisu.Core.Abstractions;
 public interface ISceneBootstrap
 {
     Scene Entry { get; }
-    Scene[] CompiledScenes { get; }
+    Scene[] DynamicScenes { get; }
+    Scene[] StaticScenes { get; }
 }

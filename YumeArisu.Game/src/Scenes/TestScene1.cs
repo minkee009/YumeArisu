@@ -5,7 +5,6 @@ namespace YumeArisu.Game.Scenes;
 
 public class TestScene1 : Scene
 {
-    public override bool IsStatic => false;
     private GameObject _player;
     public override void Load()
     {

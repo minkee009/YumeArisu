@@ -25,10 +25,13 @@ public static class WindowControl
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void SetScreenMode(ScreenMode screenMode) => WindowSystem.Instance.SetScreenMode(screenMode);
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void SetTitle(string title) => WindowSystem.Instance.SetTitle(title);
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void SetSize(int width, int height)  => WindowSystem.Instance.SetSize(width, height);
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void SetPosition(int x, int y) => WindowSystem.Instance.SetPosition(x, y);
 }
