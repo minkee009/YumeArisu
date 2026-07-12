@@ -19,6 +19,8 @@ public sealed class GameObject
             OnActiveSelfChanged?.Invoke(_active);
         } 
     }
+    public bool ActiveInHierarchy => ActiveSelf && (Transform.Parent?.GameObject.ActiveInHierarchy ?? true);
+    public Transform Transform { get; internal set; }
     public IReadOnlyList<Component> Components => _components;
     public bool IsDestroyed { get; private set; }
     public event Action<bool> OnActiveSelfChanged;
@@ -27,7 +29,7 @@ public sealed class GameObject
     private List<Component> _components;
     private static uint _nextID = 0;
 
-    public GameObject(Scene owner, string name = "")
+    internal GameObject(Scene owner, string name = "")
     {
         Layer = uint.MaxValue;
         Tag = "";
@@ -97,6 +99,9 @@ public sealed class GameObject
 
     public void RemoveComponent(Component component)
     {
+        if (component is Transform)
+            throw new InvalidOperationException("Transform은 제거할 수 없습니다.");
+
         if (!_components.Remove(component))
             throw new InvalidOperationException("제거할 컴포넌트가 존재하지 않습니다.");
 
@@ -109,6 +114,13 @@ public sealed class GameObject
             return;
 
         IsDestroyed = true;
+
+        // 자식들도 재귀적으로 먼저 파괴 (자식 목록을 복사해서 순회)
+        foreach (var child in Transform.Children.ToList())
+            child.GameObject.Destroy();
+
+        // 부모의 자식 목록에서 자기 자신을 제거
+        Transform.SetParent(null);
 
         foreach(var comp in _components)
             comp.OnDetached();

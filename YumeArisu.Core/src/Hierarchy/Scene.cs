@@ -19,6 +19,7 @@ public abstract class Scene
     public GameObject CreateGameObject(string name = "",bool active = true)
     {
         GameObject go = new(this, name);
+        go.Transform = go.AddComponent<Transform>();
         _gameObjects.Add(go);
         go.ActiveSelf = active;
         return go;
