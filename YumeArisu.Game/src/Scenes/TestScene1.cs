@@ -19,6 +19,13 @@ public class TestScene1 : Scene
 
         System.Console.WriteLine("용사는 '무기'를 획득했다!");
 
+        var testManager = SceneQuery.Find("테스트 매니저");
+
+        if(testManager != null)
+        {
+            System.Console.WriteLine($"{testManager.Name} : 전역 쿼리에서 찾은 결과입니다.");
+        }
+
         foreach(var tr in _player.Transform.Children)
             System.Console.WriteLine($"{tr.GameObject.Name} -> 플레이어 하위 객체");
 
