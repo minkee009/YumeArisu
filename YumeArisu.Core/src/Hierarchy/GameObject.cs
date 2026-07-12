@@ -44,11 +44,13 @@ public sealed class GameObject
         _components = new();
     }
 
+    /// <summary>
+    /// 게임오브젝트에 컴포넌트를 추가합니다.
+    /// </summary>
+    /// <typeparam name="T">추가할 컴포넌트의 타입</typeparam>
+    /// <returns>추가한 컴포넌트</returns>
     public T AddComponent<T>() where T : Component, new()
     {
-        if(GetComponent<T>() != null)
-            throw new InvalidOperationException("같은 타입의 컴포넌트가 이미 존재합니다.");
-
         T instance = new() { GameObject = this };
         instance.OnAttached();
 
@@ -56,6 +58,13 @@ public sealed class GameObject
         return instance;
     }
 
+    /// <summary>
+    /// 타입으로 컴포넌트를 찾습니다.
+    /// 반환된 컴포넌트는 가장 먼저 찾은 컴포넌트입니다. 
+    /// </summary>
+    /// <typeparam name="T">찾을 컴포넌트의 타입</typeparam>
+    /// <returns>가장 먼저 찾은 컴포넌트</returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public T GetComponent<T>() where T : Component
     {
         if(typeof(T) == typeof(Component))
@@ -70,10 +79,16 @@ public sealed class GameObject
         return null;
     }
 
+    /// <summary>
+    /// 같은 타입의 여러 컴포넌트들을 찾습니다.
+    /// </summary>
+    /// <typeparam name="T">찾을 컴포넌트들의 타입</typeparam>
+    /// <returns>해당 타입의 컴포넌트 리스트</returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public List<T> GetComponents<T>() where T : Component
     {
         if(typeof(T) == typeof(Component))
-            throw new InvalidOperationException("아리스는 이해할 수 없습니다! 어째서 Copmonents 프로퍼티를 사용하지 않는건가요? 선샌니.");
+            throw new InvalidOperationException("아리스는 이해할 수 없습니다! 어째서 Components 프로퍼티를 사용하지 않는건가요? 선샌니.");
 
         List<T> matches = new();
         foreach(var comp in _components)
@@ -85,18 +100,11 @@ public sealed class GameObject
         return matches;
     }
 
-    public void RemoveComponent<T>() where T : Component
-    {
-        if(typeof(T) == typeof(Component))
-            throw new InvalidOperationException("끄앙 이해할 수 없습니다! 무엇을 제거하려는 겁니까? 선샌니!");
-
-        var found = GetComponent<T>();
-        if (found is null)
-            throw new InvalidOperationException("제거할 컴포넌트가 존재하지 않습니다.");
-
-        RemoveComponent(found);
-    }
-
+    /// <summary>
+    /// 게임오브젝트에 컴포넌트를 제거합니다.
+    /// </summary>
+    /// <param name="component">제거할 컴포넌트</param>
+    /// <exception cref="InvalidOperationException">제거할 수 없는 컴포넌트 혹은 존재하지 않는 컴포넌트</exception>
     public void RemoveComponent(Component component)
     {
         if (component is Transform)

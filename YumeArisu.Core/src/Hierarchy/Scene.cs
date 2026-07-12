@@ -31,4 +31,69 @@ public abstract class Scene
         _gameObjects.Remove(go);
         go.Destroy();
     }
+
+    public GameObject Find(string name)
+    {
+        foreach (var go in _gameObjects)
+        {
+            if (!go.ActiveInHierarchy || go.IsDestroyed)
+                continue;
+            if (go.Name == name)
+                return go;
+        }
+        return null;
+    }
+
+    public GameObject FindWithTag(string tag) 
+    { 
+        foreach (var go in _gameObjects)
+        {
+            if (!go.ActiveInHierarchy || go.IsDestroyed)
+                continue;
+            if (go.Tag == tag)
+                return go;
+        }
+        return null;
+    }
+
+    public List<GameObject> FindGameObjectsWithTag(string tag) 
+    { 
+        List<GameObject> matches = new();
+        foreach (var go in _gameObjects)
+        {
+            if (!go.ActiveInHierarchy || go.IsDestroyed)
+                continue;
+            if (go.Tag == tag)
+                matches.Add(go);
+        }
+        return matches;
+    }
+
+    public T FindObjectOfType<T>() where T : Component 
+    { 
+        foreach (var go in _gameObjects)
+        {
+            if (!go.ActiveInHierarchy || go.IsDestroyed)
+                continue;
+
+            var comp = go.GetComponent<T>();
+            if(comp != null)
+                return comp;
+        }
+
+        return null;
+    }
+
+    public List<T> FindObjectsOfType<T>() where T : Component
+    {
+        List<T> matches = new();
+        foreach (var go in _gameObjects)
+        {
+            if (!go.ActiveInHierarchy || go.IsDestroyed)
+                continue;
+
+            matches.AddRange(go.GetComponents<T>());
+        }
+        return matches;
+    }
 }
