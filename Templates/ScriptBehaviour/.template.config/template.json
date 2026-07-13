@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/template.json",
+  "author": "YumeArisu",
+  "classifications": ["Common", "Behaviour"],
+  "identity": "YumeArisu.ScriptBehaviour",
+  "name": "YumeArisu ScriptBehaviour",
+  "shortName": "yabehaviour",
+  "sourceName": "NewBehaviour",
+  "preferNameDirectory": false,
+  "tags": {
+    "language": "C#",
+    "type": "item"
+  }
+}

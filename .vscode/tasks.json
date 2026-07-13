@@ -1,0 +1,31 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Setup: Install Templates",
+      "type": "shell",
+      "command": "dotnet new install ./Templates/ScriptBehaviour --force",
+      "problemMatcher": []
+    },
+    {
+      "label": "New ScriptBehaviour",
+      "type": "shell",
+      "command": "dotnet new yabehaviour -n ${input:behaviourName} -o ${input:outputDir}",
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "behaviourName",
+      "type": "promptString",
+      "description": "생성할 Behaviour 클래스 이름",
+      "default": "NewBehaviour"
+    },
+    {
+      "id": "outputDir",
+      "type": "promptString",
+      "description": "출력 폴더 경로",
+      "default": "YumeArisu.Game/src/Scripts"
+    }
+  ]
+}

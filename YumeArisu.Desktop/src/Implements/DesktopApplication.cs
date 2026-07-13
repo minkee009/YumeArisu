@@ -34,12 +34,14 @@ public class DesktopApplication : IApplication
         WindowSystem.Instance.StartUp(_window);
         TimeSystem.Instance.StartUp(default);
         InputSystem.Instance.StartUp(_window.View);
+        BehaviourSystem.Instance.StartUp(default);
         SceneSystem.Instance.StartUp(new TestSceneManifest());
     }
 
     public void OnClosing()
     {
         SceneSystem.Instance.ShutDown();
+        BehaviourSystem.Instance.ShutDown();
         TimeSystem.Instance.ShutDown();
         InputSystem.Instance.ShutDown();
         WindowSystem.Instance.ShutDown();
@@ -54,14 +56,17 @@ public class DesktopApplication : IApplication
     public void OnUpdate(double deltaTime)
     {
         SceneSystem.Instance.Update();
+        BehaviourSystem.Instance.BeginFrame();
         TimeSystem.Instance.BeginFrame(deltaTime);
         TimeSystem.Instance.ConsumeFixedSteps(
-            _ => 
+            (_) => 
             {
-                // BehaviourSystem.Instance.FixedUpdate(_);
+                BehaviourSystem.Instance.ExecuteFixedUpdate();
                 // CoroutineSystem.Instance.FixedUpdate();
             }
         );
+        BehaviourSystem.Instance.ExecuteUpdate();
+        InputSystem.Instance.EndFrame();
     }
 
     public void OnRender(double deltaTime)
