@@ -94,7 +94,6 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         if(_needSort)
         {
             // execution order대로 behaviours를 조정
-            System.Console.WriteLine("Behaviour System : need sort");
             _behaviours.Sort((a,b) => a.ExecutionOrder.CompareTo(b.ExecutionOrder));
             _needSort = false;
         }
@@ -106,13 +105,13 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
     {
         foreach(var bh in _behaviours)
         {
-            if(bh.IsActiveAndEnabled && bh.Enabled && !_activeBehaviours.Contains(bh))
+            if(bh.IsActiveAndEnabled && !_activeBehaviours.Contains(bh))
             {
                 _activeBehaviours.Add(bh);
                 _enabledBehaviours.Enqueue(bh);
                 continue;
             }
-            if((!bh.IsActiveAndEnabled || !bh.Enabled) && _activeBehaviours.Contains(bh))
+            if(!bh.IsActiveAndEnabled && _activeBehaviours.Contains(bh))
             {
                 _activeBehaviours.Remove(bh);
                 _disabledBehaviours.Enqueue(bh);
