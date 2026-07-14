@@ -8,7 +8,7 @@ public class TestScene2 : Scene
     {
         Console.WriteLine("ㅎㅎ ㅋㅋ ㅈㅅ");
         GameObject go = CreateGameObject("히후미");
-        GameObject go1 = CreateGameObject("센세");
+        GameObject go1 = CreateGameObject("센세",false);
         GameObject go2 = CreateGameObject("히후미2");
         GameObject go3 = CreateGameObject("나기사");
         GameObject go4 = CreateGameObject("화난 히후미");
@@ -21,6 +21,9 @@ public class TestScene2 : Scene
         go5.AddComponent<TestChatter>().Dialogue = 5;
 
         go3.AddComponent<TestDestroyer>();
+        go3.AddComponent<TestAwaker>().Target = go1;
+
+        go1.AddComponent<TestDestroyer>();
 
         GameObject childA = CreateGameObject("죄책감");
         GameObject childB = CreateGameObject("뻔뻔함");
