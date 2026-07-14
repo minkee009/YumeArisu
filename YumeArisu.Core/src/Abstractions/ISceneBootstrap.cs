@@ -9,5 +9,5 @@ namespace YumeArisu.Core.Abstractions;
 public interface ISceneManifest
 {
     Scene[] DynamicScenes { get; }
-    Scene[] StaticScenes { get; }
+    Scene StaticScene { get; }
 }

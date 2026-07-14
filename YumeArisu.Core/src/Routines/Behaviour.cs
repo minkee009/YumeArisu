@@ -1,18 +1,24 @@
 using YumeArisu.Core.Hierarchy;
 using YumeArisu.Core.Systems;
+using YumeArisu.Core.Internal.BehaviourTracking;
 
 namespace YumeArisu.Core.Routines;
 
 public abstract class Behaviour : Component
 {
-    public bool Enabled { get; set; } //set은 Behaviour 매니저 생성 이후
+    public virtual int ExecutionOrder => 0;
+    public bool Enabled { get; set; } = true;
     public bool IsActiveAndEnabled => Enabled && GameObject.ActiveInHierarchy;
+
+    internal BehaviourState State { get; set; } = BehaviourState.Created;
+    internal bool IsPendingDestroy { get; set; } = false;
 
     public virtual void Awake() { }
     public virtual void OnEnable() { }
     public virtual void Start() { }
     public virtual void FixedUpdate() { }
     public virtual void Update() { }
+    public virtual void LateUpdate() { }
     public virtual void OnDisable() { }
     public virtual void OnDestroy() { }
 

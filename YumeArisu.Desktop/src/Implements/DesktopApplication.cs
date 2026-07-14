@@ -55,9 +55,12 @@ public class DesktopApplication : IApplication
 
     public void OnUpdate(double deltaTime)
     {
-        SceneSystem.Instance.Update();
+        SceneSystem.Instance.BeginFrame();
         BehaviourSystem.Instance.BeginFrame();
         TimeSystem.Instance.BeginFrame(deltaTime);
+        BehaviourSystem.Instance.ExecuteAwake();
+        BehaviourSystem.Instance.ExecuteOnEnable();
+        BehaviourSystem.Instance.ExecuteStart();
         TimeSystem.Instance.ConsumeFixedSteps(
             (_) => 
             {
@@ -66,6 +69,9 @@ public class DesktopApplication : IApplication
             }
         );
         BehaviourSystem.Instance.ExecuteUpdate();
+        BehaviourSystem.Instance.ExecuteLateUpdate();
+        BehaviourSystem.Instance.ExecuteOnDisable();
+        BehaviourSystem.Instance.ExecuteOnDestroy();
         InputSystem.Instance.EndFrame();
     }
 

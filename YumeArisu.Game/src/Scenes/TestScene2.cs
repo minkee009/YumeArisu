@@ -4,7 +4,7 @@ namespace YumeArisu.Game.Scenes;
 
 public class TestScene2 : Scene
 {
-    public override void Load()
+    protected override void Load()
     {
         Console.WriteLine("ㅎㅎ ㅋㅋ ㅈㅅ");
         GameObject go = CreateGameObject("히후미");
@@ -19,6 +19,15 @@ public class TestScene2 : Scene
         go3.AddComponent<TestChatter>().Dialogue = 3;
         go4.AddComponent<TestChatter>().Dialogue = 4;
         go5.AddComponent<TestChatter>().Dialogue = 5;
+
         go3.AddComponent<TestDestroyer>();
+
+        GameObject childA = CreateGameObject("죄책감");
+        GameObject childB = CreateGameObject("뻔뻔함");
+        GameObject childC = CreateGameObject("의심");
+
+        childA.Transform.SetParent(go3.Transform);
+        childB.Transform.SetParent(go3.Transform);
+        childC.Transform.SetParent(go3.Transform);
     }
 }

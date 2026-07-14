@@ -4,6 +4,7 @@ using Silk.NET.Input;
 
 public class TestChatter : ScriptBehaviour
 {
+    public override int ExecutionOrder => base.ExecutionOrder;
     public int Dialogue { get; set; } = 0;
     public override void Update()
     {

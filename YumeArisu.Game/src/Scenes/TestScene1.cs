@@ -7,7 +7,7 @@ public class TestScene1 : Scene
 {
     private GameObject _player;
     private GameObject _weapon;
-    public override void Load()
+    protected override void Load()
     {
         _player = CreateGameObject("Player");
         System.Console.WriteLine("크하하 플레이어가 생성됐다고!!"); // 센포티스런 대사
@@ -19,7 +19,7 @@ public class TestScene1 : Scene
 
         System.Console.WriteLine("용사는 '무기'를 획득했다!");
 
-        var testManager = SceneQuery.Find("테스트 매니저");
+        var testManager = SceneQuery.Global.FindGameObject("테스트 매니저");
 
         if(testManager != null)
         {
@@ -33,7 +33,7 @@ public class TestScene1 : Scene
         SceneControl.ChangeScene("TestScene2");
     }
 
-    public override void Unload()
+    protected override void Unload()
     {
         base.Unload();
         System.Console.WriteLine($"{_player == null} -> 플레이어 null 상태");

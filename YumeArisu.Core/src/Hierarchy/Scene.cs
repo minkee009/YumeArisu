@@ -5,13 +5,13 @@ public abstract class Scene
     public IReadOnlyList<GameObject> GameObjects => _gameObjects;
     private List<GameObject> _gameObjects = new();
 
-    public abstract void Load();
+    internal protected abstract void Load();
 
-    public virtual void Unload()
+    internal protected virtual void Unload()
     {
         foreach (var go in _gameObjects)
         {
-            go.Destroy();
+            go.DestroyInternal();
         }
         _gameObjects.Clear();
     }
@@ -28,11 +28,29 @@ public abstract class Scene
     public void DestroyGameObject(GameObject go)
     {
         ArgumentNullException.ThrowIfNull(go);
-        _gameObjects.Remove(go);
-        go.Destroy();
+        
+        DestroyRecursive(go);
     }
 
-    public GameObject Find(string name)
+    private void DestroyRecursive(GameObject go)
+    {
+        if (go.IsDestroyed)
+            return;
+
+        // 먼저 자식들 제거
+        foreach (var child in go.Transform.Children.ToList())
+        {
+            DestroyRecursive(child.GameObject);
+        }
+
+        // Scene 소유 리스트에서 제거
+        _gameObjects.Remove(go);
+
+        // GameObject 내부 정리
+        go.DestroyInternal();
+    }
+
+    public GameObject FindGameObject(string name)
     {
         foreach (var go in _gameObjects)
         {
@@ -44,7 +62,7 @@ public abstract class Scene
         return null;
     }
 
-    public GameObject FindWithTag(string tag) 
+    public GameObject FindGameObjectWithTag(string tag) 
     { 
         foreach (var go in _gameObjects)
         {
@@ -65,34 +83,6 @@ public abstract class Scene
                 continue;
             if (go.Tag == tag)
                 matches.Add(go);
-        }
-        return matches;
-    }
-
-    public T FindObjectOfType<T>() where T : Component 
-    { 
-        foreach (var go in _gameObjects)
-        {
-            if (!go.ActiveInHierarchy || go.IsDestroyed)
-                continue;
-
-            var comp = go.GetComponent<T>();
-            if(comp != null)
-                return comp;
-        }
-
-        return null;
-    }
-
-    public List<T> FindObjectsOfType<T>() where T : Component
-    {
-        List<T> matches = new();
-        foreach (var go in _gameObjects)
-        {
-            if (!go.ActiveInHierarchy || go.IsDestroyed)
-                continue;
-
-            matches.AddRange(go.GetComponents<T>());
         }
         return matches;
     }

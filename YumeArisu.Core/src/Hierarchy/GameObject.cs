@@ -7,26 +7,14 @@ public sealed class GameObject
     public uint Layer { get; set; }
     public string Tag { get; set; }
     public string Name { get; set; }
-    public bool ActiveSelf
-    { 
-        get => _active;
-        set
-        {
-            if(_active == value) 
-                return;
-    
-            _active = value;
-            OnActiveSelfChanged?.Invoke(_active);
-        } 
-    }
-    public bool ActiveInHierarchy => ActiveSelf && (Transform.Parent?.GameObject.ActiveInHierarchy ?? true);
+    public bool ActiveSelf { get; set; }
+    public bool ActiveInHierarchy => ActiveSelf && (Transform.Parent?.GameObject.ActiveInHierarchy ?? true); // TODO : 성능 검증 후 병목일 경우 캐싱 + 이벤트 방식으로 변경
     public Transform Transform { get; internal set; }
     public IReadOnlyList<Component> Components => _components;
     public bool IsDestroyed { get; private set; }
-    public event Action<bool> OnActiveSelfChanged;
 
-    private bool _active;
     private List<Component> _components;
+    
     private static uint _nextID = 0;
 
     internal GameObject(Scene owner, string name = "")
@@ -43,6 +31,12 @@ public sealed class GameObject
         ActiveSelf = false;
         _components = new();
     }
+
+    public void Destroy() => Scene.DestroyGameObject(this);
+
+    public override int GetHashCode() => ID.GetHashCode();
+    
+    public override bool Equals(object obj) => obj is GameObject other && ID == other.ID;
 
     /// <summary>
     /// 게임오브젝트에 컴포넌트를 추가합니다.
@@ -116,16 +110,12 @@ public sealed class GameObject
         component.OnDetached();
     }
 
-    internal void Destroy()
+    internal void DestroyInternal()
     {
         if(IsDestroyed)
             return;
 
         IsDestroyed = true;
-
-        // 자식들도 재귀적으로 먼저 파괴 (자식 목록을 복사해서 순회)
-        foreach (var child in Transform.Children.ToList())
-            child.GameObject.Destroy();
 
         // 부모의 자식 목록에서 자기 자신을 제거
         Transform.SetParent(null);
@@ -134,15 +124,5 @@ public sealed class GameObject
             comp.OnDetached();
 
         _components.Clear();
-    }
-
-    public override int GetHashCode()
-    {
-        return ID.GetHashCode();
-    }
-
-    public override bool Equals(object obj)
-    {
-        return obj is GameObject other && ID == other.ID;
     }
 }
