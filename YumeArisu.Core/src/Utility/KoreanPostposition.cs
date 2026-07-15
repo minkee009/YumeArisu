@@ -1,6 +1,6 @@
 namespace YumeArisu.Core.Utility;
 
-public static class KoreanPostposition
+public static class KoreanJosa
 {
     public static string GetEunNeun(string word)
     {
@@ -15,6 +15,11 @@ public static class KoreanPostposition
     public static string GetEulReul(string word)
     {
         return HasBatchim(word) ? "을" : "를";
+    }
+
+    public static string GetEuroRo(string word)
+    {
+        return HasBatchim(word) ? "으로" : "로";
     }
 
     public static bool HasBatchim(string word)

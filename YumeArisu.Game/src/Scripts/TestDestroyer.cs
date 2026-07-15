@@ -12,9 +12,9 @@ public class TestDestroyer : ScriptBehaviour
     string _을를;
     public override void Awake()
     {
-        _이가 = KoreanPostposition.GetIGa(GameObject.Name);
-        _은는 = KoreanPostposition.GetEunNeun(GameObject.Name);
-        _을를 = KoreanPostposition.GetEulReul(GameObject.Name);
+        _이가 = KoreanJosa.GetIGa(GameObject.Name);
+        _은는 = KoreanJosa.GetEunNeun(GameObject.Name);
+        _을를 = KoreanJosa.GetEulReul(GameObject.Name);
         System.Console.WriteLine($"{GameObject.Name}{_이가} 잠에서 일어남");
     }
 
