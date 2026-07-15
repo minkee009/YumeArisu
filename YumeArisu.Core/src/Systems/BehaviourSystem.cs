@@ -29,7 +29,12 @@ namespace YumeArisu.Core.Systems;
 */
 
 public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
-{    
+{   
+    private struct BehaviourChangeRequest
+    {
+        public Behaviour Behaviour;
+        public bool IsRegister;
+    } 
     private List<Behaviour> _behaviours;
     private HashSet<Behaviour> _behaviourSet;
     private HashSet<Behaviour> _activeBehaviourSet;

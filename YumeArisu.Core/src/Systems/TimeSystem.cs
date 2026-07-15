@@ -85,7 +85,7 @@ public class TimeSystem : SystemBase<TimeSystem, NoConfig>
 
     /// <summary>
     /// BeginFrame 에서 측정된 고정 스텝을 처리합니다.
-    /// 호출 시 누적된 모든 고정 스텝을 소모하여 처리하고, 인자로 받아온 외부 함수를 실행합니다.
+    /// 호출 시 누적된 모든 고정 스텝을 소모하여 처리하고, 인자로 받아온 외부 함수를 스텝마다 실행합니다.
     /// </summary>
     /// <param name="step"></param>
     public void ConsumeFixedSteps(Action<float> step)
