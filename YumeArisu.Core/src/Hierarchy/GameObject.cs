@@ -93,10 +93,10 @@ public sealed class GameObject
     /// <exception cref="InvalidOperationException"></exception>
     public T GetComponent<T>() where T : Component
     {
-        if(typeof(T) == typeof(Component))
+        if (typeof(T) == typeof(Component))
             throw new InvalidOperationException("선샌니 컴포넌트 타입을 정확히 입력해주세요.");
 
-        foreach(var comp in _components)
+        foreach (var comp in _components)
         {
             if (comp is T match)
                 return match;
@@ -113,13 +113,13 @@ public sealed class GameObject
     /// <exception cref="InvalidOperationException"></exception>
     public List<T> GetComponents<T>() where T : Component
     {
-        if(typeof(T) == typeof(Component))
+        if (typeof(T) == typeof(Component))
             throw new InvalidOperationException("아리스는 이해할 수 없습니다! 어째서 Components 프로퍼티를 사용하지 않는건가요? 선샌니.");
 
         List<T> matches = new();
-        foreach(var comp in _components)
+        foreach (var comp in _components)
         {
-            if(comp is T match)
+            if (comp is T match)
                 matches.Add(match);
         }
 
@@ -144,7 +144,7 @@ public sealed class GameObject
 
     internal void DestroyInternal()
     {
-        if(IsDestroyed)
+        if (IsDestroyed)
             return;
 
         IsDestroyed = true;
@@ -152,7 +152,7 @@ public sealed class GameObject
         // 부모의 자식 목록에서 자기 자신을 제거
         Transform.SetParent(null);
 
-        foreach(var comp in _components)
+        foreach (var comp in _components)
             comp.OnDetached();
 
         _components.Clear();

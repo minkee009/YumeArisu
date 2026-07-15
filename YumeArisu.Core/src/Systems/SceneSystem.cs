@@ -23,7 +23,7 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
 
         _dynamicScenes = new();
 
-        foreach(var scene in bootstrap.DynamicScenes)
+        foreach (var scene in bootstrap.DynamicScenes)
         {
             string name = scene.GetType().Name;
             _dynamicScenes.Add(name,scene);
@@ -46,7 +46,7 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
 
     public void ChangeScene(string sceneName)
     {
-        if(_dynamicScenes.TryGetValue(sceneName,out Scene foundScene))
+        if (_dynamicScenes.TryGetValue(sceneName,out Scene foundScene))
         {
             _nextScene = foundScene;
             return;
@@ -62,7 +62,7 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
 
     public void BeginFrame()
     {
-        if(_nextScene == null)
+        if (_nextScene == null)
             return;
 
         _currentScene?.Unload();

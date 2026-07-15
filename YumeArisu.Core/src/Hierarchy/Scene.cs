@@ -10,9 +10,7 @@ public abstract class Scene
     internal protected virtual void Unload()
     {
         foreach (var go in _gameObjects)
-        {
             go.DestroyInternal();
-        }
         _gameObjects.Clear();
     }
 
@@ -39,9 +37,7 @@ public abstract class Scene
 
         // 먼저 자식들 제거
         foreach (var child in go.Transform.Children.ToList())
-        {
             DestroyRecursive(child.GameObject);
-        }
 
         // Scene 소유 리스트에서 제거
         _gameObjects.Remove(go);

@@ -114,10 +114,10 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
 
     public void BeginFrame()
     {
-        while(_registerQueue.Count > 0)
+        while (_registerQueue.Count > 0)
         {
             var request = _registerQueue.Dequeue();
-            if(request.IsRegister)
+            if (request.IsRegister)
             {
                 _behaviourSet.Add(request.Behaviour);
                 _behaviours.Add(request.Behaviour);
@@ -135,7 +135,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
             }
         }
 
-        if(_needSort)
+        if (_needSort)
         {
             SortBehaviours(_behaviours);
             _needSort = false;
@@ -146,26 +146,26 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
 
     private void CheckChangeState()
     {
-        if(_pendingActiveChangeBehaviours.Count <= 0)
+        if (_pendingActiveChangeBehaviours.Count <= 0)
             return;
 
-        foreach(var bh in _pendingActiveChangeBehaviours)
+        foreach (var bh in _pendingActiveChangeBehaviours)
         {
-            if(!_behaviourSet.Contains(bh))
+            if (!_behaviourSet.Contains(bh))
             {
                 _activeBehaviourSet.Remove(bh);
                 _activeBehaviours.Remove(bh);
                 continue;
             }
 
-            if(bh.IsActiveAndEnabled && !_activeBehaviourSet.Contains(bh))
+            if (bh.IsActiveAndEnabled && !_activeBehaviourSet.Contains(bh))
             {
                 _activeBehaviourSet.Add(bh);
                 _activeBehaviours.Add(bh);
                 _enabledBehaviours.Enqueue(bh);
                 continue;
             }
-            if(!bh.IsActiveAndEnabled && _activeBehaviourSet.Contains(bh))
+            if (!bh.IsActiveAndEnabled && _activeBehaviourSet.Contains(bh))
             {
                 _activeBehaviourSet.Remove(bh);
                 _activeBehaviours.Remove(bh);
@@ -179,15 +179,15 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
     public void ExecuteAwake()
     {
         var flushCount = _pendingAwakeBehaviours.Count;
-        for(int i = 0; i < flushCount; i++)
+        for (int i = 0; i < flushCount; i++)
         {
             var bh = _pendingAwakeBehaviours.Dequeue();
-            if(bh.GameObject.ActiveInHierarchy)
+            if (bh.GameObject.ActiveInHierarchy)
             {
                 bh.Awake();
                 bh.State = BehaviourState.Awoken;
             }
-            else if(bh.State != BehaviourState.Awoken && !bh.IsPendingDestroy)
+            else if (bh.State != BehaviourState.Awoken && !bh.IsPendingDestroy)
             {
                 _pendingAwakeBehaviours.Enqueue(bh);
             }
@@ -196,22 +196,22 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
 
     public void ExecuteOnEnable()
     {
-        while(_enabledBehaviours.Count > 0)
+        while (_enabledBehaviours.Count > 0)
             _enabledBehaviours.Dequeue().OnEnable();
     }
 
     public void ExecuteStart()
     {
         var flushCount = _pendingStartBehaviours.Count;
-        for(int i = 0; i < flushCount; i++)
+        for (int i = 0; i < flushCount; i++)
         {
             var bh = _pendingStartBehaviours.Dequeue();
-            if(bh.IsActiveAndEnabled)
+            if (bh.IsActiveAndEnabled)
             {
                 bh.Start();
                 bh.State = BehaviourState.Started;
             }
-            else if(bh.State != BehaviourState.Started && !bh.IsPendingDestroy)
+            else if (bh.State != BehaviourState.Started && !bh.IsPendingDestroy)
             {
                 _pendingStartBehaviours.Enqueue(bh);
             }
@@ -220,46 +220,38 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
 
     public void ExecuteFixedUpdate()
     {
-        foreach(var bh in _activeBehaviours)
-        {
+        foreach (var bh in _activeBehaviours)
             bh.FixedUpdate();
-        }
     }
 
     public void ExecuteUpdate()
     {
-        foreach(var bh in _activeBehaviours)
-        {
+        foreach (var bh in _activeBehaviours)
             bh.Update();
-        }
     }
 
     public void ExecuteLateUpdate()
     {
-        foreach(var bh in _activeBehaviours)
-        {
+        foreach (var bh in _activeBehaviours)
             bh.LateUpdate();
-        }
     }
 
     public void ExecuteOnDisable()
     {
-        while(_disabledBehaviours.Count > 0)
+        while (_disabledBehaviours.Count > 0)
             _disabledBehaviours.Dequeue().OnDisable();
     }
 
     public void ExecuteOnDestroy()
     {
-        while(_pendingDestroyBehaviours.Count > 0)
+        while (_pendingDestroyBehaviours.Count > 0)
         {
             var bh = _pendingDestroyBehaviours.Dequeue();
-            if(bh.IsPendingDestroy)
+            if (bh.IsPendingDestroy)
             {
                 // Awake가 한 번이라도 실행 된 Behaviour들만 허용
-                if(bh.State != BehaviourState.Created)
-                {
+                if (bh.State != BehaviourState.Created)
                     bh.OnDestroy();
-                }
                 _behaviourSet.Remove(bh);
                 _behaviours.Remove(bh);
             }
@@ -268,7 +260,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
 
     private static void SortBehaviours(List<Behaviour> behaviours)
     {
-        if(behaviours.Count > 1)
+        if (behaviours.Count > 1)
             behaviours.Sort((a,b) => a.ExecutionOrder.CompareTo(b.ExecutionOrder));
     }
 }

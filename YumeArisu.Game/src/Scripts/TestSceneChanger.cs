@@ -7,7 +7,7 @@ public class TestSceneChanger : ScriptBehaviour
     public Key DefaultKey = Key.R;
     public override void Update()
     {
-        if(Input.GetKeyUp(DefaultKey))
+        if (Input.GetKeyUp(DefaultKey))
         {
             SceneControl.ChangeScene("EmptyScene");
         }

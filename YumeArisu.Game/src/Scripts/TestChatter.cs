@@ -9,7 +9,7 @@ public class TestChatter : ScriptBehaviour
     public override void Update()
     {
         base.Update();
-        if(Input.GetKeyDown(Key.Space))
+        if (Input.GetKeyDown(Key.Space))
         {
             switch(Dialogue)
             {
