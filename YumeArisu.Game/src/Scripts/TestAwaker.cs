@@ -5,7 +5,7 @@ using YumeArisu.Core.Hierarchy;
 
 public class TestAwaker : ScriptBehaviour
 {
-    public GameObject Target;
+    public GameObject Target { get; set; } = null;
     public override void Update()
     {
         if(Input.GetKeyDown(Key.G) && Target != null)
