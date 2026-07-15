@@ -65,3 +65,96 @@
 5. Destroy 처리 방식 개선
 
 원하시면 다음 단계로, 이 분석을 바탕으로 “실제로 수정할 때 어떤 코드 구조로 바꾸면 좋을지”까지 이어서 정리해드릴 수 있습니다.
+
+
+------
+
+- 아래는 테스트 케이스 관련 문서
+
+
+I’m organizing the validation steps into a concise test plan focused on the two behaviors you care about: hierarchy-state updates and behaviour event hookup/unhooking.
+
+네, 그 두 가지만 확인하면 충분합니다.
+
+## 테스트 목표
+1. `ActiveInHierarchy`가 부모/자식 상태 변화에 따라 올바르게 갱신되는지 확인한다.
+2. `Behaviour`가 하이어라키 변경 이벤트를 제대로 구독하고, 파괴 시점에 해제되는지 확인한다.
+
+---
+
+## 테스트 케이스 1: ActiveInHierarchy 기본 동작
+
+### 1-1. 루트 GameObject가 비활성화되면 자식도 비활성화된다
+- 루트 `GameObject`를 생성한다.
+- 그 아래에 자식 `GameObject`를 하나 생성한다.
+- 자식의 `ActiveInHierarchy` 값을 확인한다.
+- 루트의 `ActiveSelf`를 `false`로 바꾼다.
+- 자식의 `ActiveInHierarchy` 값이 `false`로 바뀌는지 확인한다.
+
+예상 결과:
+- 자식은 루트가 비활성화되면 `ActiveInHierarchy == false`가 되어야 한다.
+
+### 1-2. 루트가 다시 활성화되면 자식도 활성화된다
+- 위 상태에서 루트의 `ActiveSelf`를 `true`로 바꾼다.
+- 자식의 `ActiveInHierarchy` 값이 다시 `true`가 되는지 확인한다.
+
+예상 결과:
+- 자식은 루트가 다시 활성화되면 `ActiveInHierarchy == true`가 되어야 한다.
+
+### 1-3. 자식 자체가 비활성화되면 하위 트리 상태도 반영된다
+- 자식의 `ActiveSelf`를 `false`로 바꾼다.
+- 자식의 `ActiveInHierarchy`가 `false`가 되는지 확인한다.
+
+예상 결과:
+- 자식 자신은 비활성화 상태가 되어야 한다.
+
+### 1-4. 부모-자식 관계 변경 시 상태가 갱신된다
+- 자식이 어떤 부모 아래에 있는 상태에서 다른 부모로 이동한다.
+- 이동 후 `ActiveInHierarchy`가 새 부모의 상태를 따라가는지 확인한다.
+
+예상 결과:
+- 부모가 바뀌면 `ActiveInHierarchy` 계산 결과도 바뀌어야 한다.
+
+---
+
+## 테스트 케이스 2: Behaviour 하이어라키 이벤트 후킹
+
+### 2-1. Behaviour가 등록되면 하이어라키 변경 이벤트를 받는다
+- `Behaviour`를 하나 가진 `GameObject`를 만든다.
+- 그 `Behaviour`가 등록된 이후, 부모 또는 자기 자신의 활성 상태를 바꾼다.
+- `BehaviourSystem`의 상태 변경 처리로 인해 해당 `Behaviour`가 반응하는지 확인한다.
+
+예상 결과:
+- 하이어라키 상태 변화가 발생하면 해당 `Behaviour`가 `CheckChangeState` 처리 대상에 들어가야 한다.
+
+### 2-2. 부모 활성 상태 변화가 반영된다
+- `Behaviour`가 붙은 자식 `GameObject`를 만든다.
+- 부모 `GameObject`를 비활성화한다.
+- 해당 `Behaviour`가 비활성 상태 처리 대상으로 반영되는지 확인한다.
+
+예상 결과:
+- 부모가 비활성화되면 `Behaviour`는 비활성 상태로 바뀌어야 한다.
+
+### 2-3. 자식 자체가 비활성화되면 반영된다
+- 자식 `GameObject`의 `ActiveSelf`를 `false`로 바꾼다.
+- 해당 `Behaviour`의 활성 상태가 반영되는지 확인한다.
+
+예상 결과:
+- 자식이 비활성화되면 해당 `Behaviour`도 비활성 상태로 처리되어야 한다.
+
+### 2-4. 파괴 시 이벤트 해제
+- `Behaviour`가 붙은 `GameObject`를 파괴한다.
+- 파괴 이후 해당 `Behaviour`가 더 이상 하이어라키 변화 이벤트를 받지 않는지 확인한다.
+
+예상 결과:
+- 파괴된 객체의 `Behaviour`는 더 이상 이벤트 구독 대상이 아니어야 한다.
+- 메모리/상태 추적상 문제 없이 정리되어야 한다.
+
+---
+
+## 추가 권장 포인트
+- 위 테스트는 “단일 객체”, “부모-자식 관계”, “파괴” 세 가지 시나리오로 나누면 보기 좋습니다.
+- 특히 `ActiveInHierarchy`는 “부모 상태 변화”와 “자기 상태 변화”가 서로 다른 경로이므로 둘 다 체크하는 것이 좋습니다.
+- `Behaviour` 쪽은 “구독 등록 → 상태 변화 → 파괴 시 해제” 흐름이 핵심입니다.
+
+원하면 다음으로는 이 테스트 케이스를 실제 코드 레벨에서 바로 실행 가능한 형태로 정리해서, 예시 코드 스니펫 형태로 이어서 적어드릴 수 있습니다.
