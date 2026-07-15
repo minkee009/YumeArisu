@@ -187,7 +187,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
                 bh.Awake();
                 bh.State = BehaviourState.Awoken;
             }
-            else if(bh.State == BehaviourState.Created && !bh.IsPendingDestroy)
+            else if(bh.State != BehaviourState.Awoken && !bh.IsPendingDestroy)
             {
                 _pendingAwakeBehaviours.Enqueue(bh);
             }
@@ -211,7 +211,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
                 bh.Start();
                 bh.State = BehaviourState.Started;
             }
-            else if(bh.State == BehaviourState.Awoken && !bh.IsPendingDestroy)
+            else if(bh.State != BehaviourState.Started && !bh.IsPendingDestroy)
             {
                 _pendingStartBehaviours.Enqueue(bh);
             }
