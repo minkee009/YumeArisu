@@ -1,4 +1,3 @@
-using YumeArisu.Core.Abstractions;
 using YumeArisu.Core.Hierarchy;
 
 namespace YumeArisu.Game.Scenes;

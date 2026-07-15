@@ -33,6 +33,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
     private List<Behaviour> _behaviours;
     private HashSet<Behaviour> _activeBehaviourHashes;
     private List<Behaviour> _activeBehaviours;
+    private HashSet<Behaviour> _pendingStateChangeBehaviours;
     private Queue<Behaviour> _pendingAwakeBehaviours;
     private Queue<Behaviour> _pendingStartBehaviours;
     private Queue<Behaviour> _pendingDestroyBehaviours;
@@ -46,6 +47,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         _behaviours = new();
         _activeBehaviourHashes = new();
         _activeBehaviours = new();
+        _pendingStateChangeBehaviours = new();
         _pendingAwakeBehaviours = new();
         _pendingStartBehaviours = new();
         _pendingDestroyBehaviours = new();
@@ -60,6 +62,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         _behaviours.Clear();
         _activeBehaviourHashes.Clear();
         _activeBehaviours.Clear();
+        _pendingStateChangeBehaviours.Clear();
         _pendingAwakeBehaviours.Clear();
         _pendingStartBehaviours.Clear();
         _pendingDestroyBehaviours.Clear();
@@ -68,6 +71,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         _behaviours = null;
         _activeBehaviourHashes = null;
         _activeBehaviours = null;
+        _pendingStateChangeBehaviours = null;
         _pendingAwakeBehaviours = null;
         _pendingStartBehaviours = null;
         _pendingDestroyBehaviours = null;
@@ -94,6 +98,11 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         });
     }
 
+    internal void MarkHierarchyStateChange(Behaviour bh)
+    {
+        _pendingStateChangeBehaviours.Add(bh);
+    }
+
     public void BeginFrame()
     {
         while(_registerQueue.Count > 0)
@@ -104,6 +113,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
                 _behaviours.Add(request.Behaviour);
                 _pendingAwakeBehaviours.Enqueue(request.Behaviour);
                 _pendingStartBehaviours.Enqueue(request.Behaviour);
+                _pendingStateChangeBehaviours.Add(request.Behaviour);
                 _needSort = true;
             }
             else
@@ -111,6 +121,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
                 request.Behaviour.Enabled = false;
                 request.Behaviour.IsPendingDestroy = true;
                 _pendingDestroyBehaviours.Enqueue(request.Behaviour);
+                _pendingStateChangeBehaviours.Add(request.Behaviour);
             }
         }
 
@@ -125,8 +136,18 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
 
     private void CheckChangeState()
     {
-        foreach(var bh in _behaviours)
+        if(_pendingStateChangeBehaviours.Count <= 0)
+            return;
+
+        foreach(var bh in _pendingStateChangeBehaviours)
         {
+            if(!_behaviours.Contains(bh))
+            {
+                _activeBehaviourHashes.Remove(bh);
+                _activeBehaviours.Remove(bh);
+                continue;
+            }
+
             if(bh.IsActiveAndEnabled && !_activeBehaviourHashes.Contains(bh))
             {
                 _activeBehaviourHashes.Add(bh);
@@ -141,6 +162,8 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
                 _disabledBehaviours.Enqueue(bh);
             }
         }
+
+        _pendingStateChangeBehaviours.Clear();
     }
 
     public void ExecuteAwake()

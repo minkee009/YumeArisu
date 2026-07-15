@@ -22,6 +22,7 @@ public class Transform : Component
         Parent?.RemoveChild(this);
         parent?.AddChild(this);
         Parent = parent;
+        GameObject?.RefreshActiveInHierarchyState();
     }
 
     public Transform GetChild(int index) => _children[index];

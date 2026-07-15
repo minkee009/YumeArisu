@@ -2,15 +2,25 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "Setup: Reinit Templates",
+      "type": "shell",
+      "command": "dotnet new --debug:reinit"
+    },
+    {
       "label": "Setup: Install Templates",
       "type": "shell",
-      "command": "dotnet new install ./Templates/ScriptBehaviour --force",
-      "problemMatcher": []
+      "command": "dotnet new install ./Templates --force"
     },
     {
       "label": "New ScriptBehaviour",
       "type": "shell",
-      "command": "dotnet new yabehaviour -n ${input:behaviourName} -o ${input:outputDir}",
+      "command": "dotnet new yabehaviour -n ${input:behaviourName} -o ${input:sciprtOutputDir}",
+      "problemMatcher": []
+    },
+    {
+      "label": "New Scene",
+      "type": "shell",
+      "command": "dotnet new yascene -n ${input:sceneName} -o ${input:sceneOutputDir}",
       "problemMatcher": []
     }
   ],
@@ -22,10 +32,22 @@
       "default": "NewBehaviour"
     },
     {
-      "id": "outputDir",
+      "id": "sceneName",
+      "type": "promptString",
+      "description": "생성할 Scene 클래스 이름",
+      "default": "EmptyScene"
+    },
+    {
+      "id": "sciprtOutputDir",
       "type": "promptString",
       "description": "출력 폴더 경로",
       "default": "YumeArisu.Game/src/Scripts"
+    },
+    {
+      "id": "sceneOutputDir",
+      "type": "promptString",
+      "description": "출력 폴더 경로",
+      "default": "YumeArisu.Game/src/Scenes"
     }
   ]
 }

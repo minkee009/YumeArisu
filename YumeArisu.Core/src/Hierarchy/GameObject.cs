@@ -7,12 +7,27 @@ public sealed class GameObject
     public uint Layer { get; set; }
     public string Tag { get; set; }
     public string Name { get; set; }
-    public bool ActiveSelf { get; set; }
-    public bool ActiveInHierarchy => ActiveSelf && (Transform.Parent?.GameObject.ActiveInHierarchy ?? true); // TODO : 성능 검증 후 병목일 경우 캐싱 + 이벤트 방식으로 변경
+    public bool ActiveSelf
+    {
+        get => _activeSelf;
+        set
+        {
+            if (_activeSelf == value)
+                return;
+
+            _activeSelf = value;
+            RefreshActiveInHierarchyState();
+        }
+    }
+    public bool ActiveInHierarchy => _activeInHierarchy;
     public Transform Transform { get; internal set; }
     public IReadOnlyList<Component> Components => _components;
     public bool IsDestroyed { get; private set; }
 
+    internal event Action<GameObject> OnActiveInHierarchyChange;
+
+    private bool _activeSelf;
+    private bool _activeInHierarchy;
     private List<Component> _components;
     
     private static uint _nextID = 0;
@@ -28,11 +43,28 @@ public sealed class GameObject
             name = $"GameObject[{ID}]";
             
         Name = name;
-        ActiveSelf = false;
+        _activeSelf = false;
+        _activeInHierarchy = false;
         _components = new();
     }
 
     public void Destroy() => Scene.DestroyGameObject(this);
+
+    internal void RefreshActiveInHierarchyState()
+    {
+        bool nextActiveInHierarchy = _activeSelf && (Transform?.Parent?.GameObject.ActiveInHierarchy ?? true);
+        if (_activeInHierarchy == nextActiveInHierarchy)
+            return;
+
+        _activeInHierarchy = nextActiveInHierarchy;
+        OnActiveInHierarchyChange?.Invoke(this);
+
+        if (Transform != null)
+        {
+            foreach (var child in Transform.Children)
+                child.GameObject.RefreshActiveInHierarchyState();
+        }
+    }
 
     public override int GetHashCode() => ID.GetHashCode();
     

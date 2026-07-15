@@ -24,11 +24,20 @@ public abstract class Behaviour : Component
 
     protected internal override void OnAttached()
     {
+        GameObject.OnActiveInHierarchyChange += HandleHierarchyStateChange;
         BehaviourSystem.Instance.RegisterBehaviour(this);
     }
 
     protected internal override void OnDetached()
     {
+        GameObject.OnActiveInHierarchyChange -= HandleHierarchyStateChange;
         BehaviourSystem.Instance.UnregisterBehaviour(this);
     }
+
+    internal void MarkHierarchyStateChange()
+    {
+        BehaviourSystem.Instance.MarkHierarchyStateChange(this);
+    }
+
+    private void HandleHierarchyStateChange(GameObject _) => MarkHierarchyStateChange();
 }
