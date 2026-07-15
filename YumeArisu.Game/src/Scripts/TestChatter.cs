@@ -17,7 +17,7 @@ public class TestChatter : ScriptBehaviour
                     System.Console.WriteLine("히후미 네 이녀석");
                     break;
                 case 2:
-                    System.Console.WriteLine("(대충 다음 부터 그러지마세요 콘)");
+                    System.Console.WriteLine("(대충 다음부터 그러지 마세요 콘)");
                     break;
                 case 3: 
                     System.Console.WriteLine("(친구비 내는 나기사 콘)");
@@ -29,7 +29,7 @@ public class TestChatter : ScriptBehaviour
                     System.Console.WriteLine("냐기 냐기 ~ 🐱");
                     break;
                 default:
-                    System.Console.WriteLine("아하하하하 그동안 즐거웠어요, 나기사님과 함께한 우정놀이");
+                    System.Console.WriteLine("아하하 그동안 즐거웠어요, 나기사 님과 함께한 우정 놀이");
                     break;
             }
             

@@ -255,7 +255,11 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
             var bh = _pendingDestroyBehaviours.Dequeue();
             if(bh.IsPendingDestroy)
             {
-                bh.OnDestroy();
+                // Awake가 한 번이라도 실행 된 Behaviour들만 허용
+                if(bh.State != BehaviourState.Created)
+                {
+                    bh.OnDestroy();
+                }
                 _behaviourSet.Remove(bh);
                 _behaviours.Remove(bh);
             }
