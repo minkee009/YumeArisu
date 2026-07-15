@@ -1,8 +1,5 @@
-using System.Runtime.CompilerServices;
 using YumeArisu.Core.Routines;
 using YumeArisu.Core.Internal.BehaviourTracking;
-using System.Reflection.Metadata;
-using System.Reflection.Metadata.Ecma335;
 
 namespace YumeArisu.Core.Systems;
 
@@ -32,20 +29,22 @@ namespace YumeArisu.Core.Systems;
 */
 
 public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
-{   
+{    
     private List<Behaviour> _behaviours;
-    private HashSet<Behaviour> _activeBehaviours;  // TODO : 1. 해쉬 키로만 사용하고 Iterator로 쓰지 않기
-    private PriorityQueue<Behaviour, int> _pendingAwakeBehaviours;      // TODO : ▼ Priority Queue를 가진 하위 코드들 전부 힙할당이 자주 일어나는 지 파악하기, 일어난다면 Queue가 아닌 자료구조로 쉽게 해결할 수 있는지 파악
-    private PriorityQueue<Behaviour, int> _pendingStartBehaviours;      //  *
-    private PriorityQueue<Behaviour, int> _pendingDestroyBehaviours;    //  *
-    private PriorityQueue<Behaviour, int> _enabledBehaviours;           //  *
-    private PriorityQueue<Behaviour, int> _disabledBehaviours;          //  *
-    private Queue<Action> _registerQueue;   // TODO : 2. Action + 람다로 불필요한 힙 쓰지 않게 Action이 아니거나 람다가 아닌 구조를 생각해보기
+    private HashSet<Behaviour> _activeBehaviourHashes;
+    private List<Behaviour> _activeBehaviours;
+    private Queue<Behaviour> _pendingAwakeBehaviours;
+    private Queue<Behaviour> _pendingStartBehaviours;
+    private Queue<Behaviour> _pendingDestroyBehaviours;
+    private Queue<Behaviour> _enabledBehaviours;
+    private Queue<Behaviour> _disabledBehaviours;
+    private Queue<BehaviourChangeRequest> _registerQueue;
     private bool _needSort = false;
 
     internal override void StartUpInternal(NoConfig control)
     {
         _behaviours = new();
+        _activeBehaviourHashes = new();
         _activeBehaviours = new();
         _pendingAwakeBehaviours = new();
         _pendingStartBehaviours = new();
@@ -59,11 +58,19 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
     {
         _registerQueue.Clear();
         _behaviours.Clear();
+        _activeBehaviourHashes.Clear();
         _activeBehaviours.Clear();
+        _pendingAwakeBehaviours.Clear();
+        _pendingStartBehaviours.Clear();
+        _pendingDestroyBehaviours.Clear();
         _enabledBehaviours.Clear();
         _disabledBehaviours.Clear();
         _behaviours = null;
+        _activeBehaviourHashes = null;
         _activeBehaviours = null;
+        _pendingAwakeBehaviours = null;
+        _pendingStartBehaviours = null;
+        _pendingDestroyBehaviours = null;
         _enabledBehaviours = null;
         _disabledBehaviours = null;
         _registerQueue = null;
@@ -71,40 +78,45 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
 
     internal void RegisterBehaviour(Behaviour bh)
     {
-        _registerQueue.Enqueue(
-            () => 
-            {
-                _behaviours.Add(bh);
-                _pendingAwakeBehaviours.Enqueue(bh, bh.ExecutionOrder);
-                _pendingStartBehaviours.Enqueue(bh, bh.ExecutionOrder);
-                _needSort = true;
-            }
-        );
+        _registerQueue.Enqueue(new BehaviourChangeRequest
+        {
+            Behaviour = bh,
+            IsRegister = true,
+        });
     }
 
     internal void UnregisterBehaviour(Behaviour bh)
     {
-        _registerQueue.Enqueue(
-            () => 
-            {
-                bh.Enabled = false;
-                bh.IsPendingDestroy = true;
-                _pendingDestroyBehaviours.Enqueue(bh, bh.ExecutionOrder);
-            }
-        );
+        _registerQueue.Enqueue(new BehaviourChangeRequest
+        {
+            Behaviour = bh,
+            IsRegister = false,
+        });
     }
 
     public void BeginFrame()
     {
-        // 등록/해지 큐 비우기
         while(_registerQueue.Count > 0)
-            _registerQueue.Dequeue()();
+        {
+            var request = _registerQueue.Dequeue();
+            if(request.IsRegister)
+            {
+                _behaviours.Add(request.Behaviour);
+                _pendingAwakeBehaviours.Enqueue(request.Behaviour);
+                _pendingStartBehaviours.Enqueue(request.Behaviour);
+                _needSort = true;
+            }
+            else
+            {
+                request.Behaviour.Enabled = false;
+                request.Behaviour.IsPendingDestroy = true;
+                _pendingDestroyBehaviours.Enqueue(request.Behaviour);
+            }
+        }
 
-        // 정렬 시작
         if(_needSort)
         {
-            // execution order대로 behaviours를 조정
-            _behaviours.Sort((a,b) => a.ExecutionOrder.CompareTo(b.ExecutionOrder));
+            SortBehaviours(_behaviours);
             _needSort = false;
         }
 
@@ -115,22 +127,27 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
     {
         foreach(var bh in _behaviours)
         {
-            if(bh.IsActiveAndEnabled && !_activeBehaviours.Contains(bh))
+            if(bh.IsActiveAndEnabled && !_activeBehaviourHashes.Contains(bh))
             {
+                _activeBehaviourHashes.Add(bh);
                 _activeBehaviours.Add(bh);
-                _enabledBehaviours.Enqueue(bh, bh.ExecutionOrder);
+                _enabledBehaviours.Enqueue(bh);
                 continue;
             }
-            if(!bh.IsActiveAndEnabled && _activeBehaviours.Contains(bh))
+            if(!bh.IsActiveAndEnabled && _activeBehaviourHashes.Contains(bh))
             {
+                _activeBehaviourHashes.Remove(bh);
                 _activeBehaviours.Remove(bh);
-                _disabledBehaviours.Enqueue(bh, bh.ExecutionOrder);
-            } 
+                _disabledBehaviours.Enqueue(bh);
+            }
         }
     }
 
     public void ExecuteAwake()
     {
+        if(_pendingAwakeBehaviours.Count <= 0)
+            return;
+
         var flushCount = _pendingAwakeBehaviours.Count;
         for(int i = 0; i < flushCount; i++)
         {
@@ -142,7 +159,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
             }
             else if(bh.State == BehaviourState.Created && !bh.IsPendingDestroy)
             {
-                _pendingAwakeBehaviours.Enqueue(bh, bh.ExecutionOrder);
+                _pendingAwakeBehaviours.Enqueue(bh);
             }
         }
     }
@@ -150,13 +167,14 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
     public void ExecuteOnEnable()
     {
         while(_enabledBehaviours.Count > 0)
-        {
             _enabledBehaviours.Dequeue().OnEnable();
-        }
     }
 
     public void ExecuteStart()
     {
+        if(_pendingStartBehaviours.Count <= 0)
+            return;
+
         var flushCount = _pendingStartBehaviours.Count;
         for(int i = 0; i < flushCount; i++)
         {
@@ -168,7 +186,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
             }
             else if(bh.State == BehaviourState.Awoken && !bh.IsPendingDestroy)
             {
-                _pendingStartBehaviours.Enqueue(bh, bh.ExecutionOrder);
+                _pendingStartBehaviours.Enqueue(bh);
             }
         }
     }
@@ -200,9 +218,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
     public void ExecuteOnDisable()
     {
         while(_disabledBehaviours.Count > 0)
-        {
             _disabledBehaviours.Dequeue().OnDisable();
-        }
     }
 
     public void ExecuteOnDestroy()
@@ -216,5 +232,11 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
                 _behaviours.Remove(bh);
             }
         }
+    }
+
+    private static void SortBehaviours(List<Behaviour> behaviours)
+    {
+        if(behaviours.Count > 1)
+            behaviours.Sort((a,b) => a.ExecutionOrder.CompareTo(b.ExecutionOrder));
     }
 }
