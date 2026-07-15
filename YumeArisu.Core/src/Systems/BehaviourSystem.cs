@@ -31,7 +31,7 @@ namespace YumeArisu.Core.Systems;
 public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
 {    
     private List<Behaviour> _behaviours;
-    HashSet<Behaviour> _behaviourSet;
+    private HashSet<Behaviour> _behaviourSet;
     private HashSet<Behaviour> _activeBehaviourSet;
     private List<Behaviour> _activeBehaviours;
     private HashSet<Behaviour> _pendingStateChangeBehaviours;
