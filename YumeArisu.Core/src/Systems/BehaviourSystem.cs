@@ -31,7 +31,8 @@ namespace YumeArisu.Core.Systems;
 public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
 {    
     private List<Behaviour> _behaviours;
-    private HashSet<Behaviour> _activeBehaviourHashes;
+    HashSet<Behaviour> _behaviourSet;
+    private HashSet<Behaviour> _activeBehaviourSet;
     private List<Behaviour> _activeBehaviours;
     private HashSet<Behaviour> _pendingStateChangeBehaviours;
     private Queue<Behaviour> _pendingAwakeBehaviours;
@@ -44,8 +45,9 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
 
     internal override void StartUpInternal(NoConfig control)
     {
+        _behaviourSet = new();
         _behaviours = new();
-        _activeBehaviourHashes = new();
+        _activeBehaviourSet = new();
         _activeBehaviours = new();
         _pendingStateChangeBehaviours = new();
         _pendingAwakeBehaviours = new();
@@ -59,8 +61,9 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
     internal override void ShutDownInternal()
     {
         _registerQueue.Clear();
+        _behaviourSet.Clear();
         _behaviours.Clear();
-        _activeBehaviourHashes.Clear();
+        _activeBehaviourSet.Clear();
         _activeBehaviours.Clear();
         _pendingStateChangeBehaviours.Clear();
         _pendingAwakeBehaviours.Clear();
@@ -68,8 +71,9 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         _pendingDestroyBehaviours.Clear();
         _enabledBehaviours.Clear();
         _disabledBehaviours.Clear();
+        _behaviourSet = null;
         _behaviours = null;
-        _activeBehaviourHashes = null;
+        _activeBehaviourSet = null;
         _activeBehaviours = null;
         _pendingStateChangeBehaviours = null;
         _pendingAwakeBehaviours = null;
@@ -110,6 +114,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
             var request = _registerQueue.Dequeue();
             if(request.IsRegister)
             {
+                _behaviourSet.Add(request.Behaviour);
                 _behaviours.Add(request.Behaviour);
                 _pendingAwakeBehaviours.Enqueue(request.Behaviour);
                 _pendingStartBehaviours.Enqueue(request.Behaviour);
@@ -141,23 +146,23 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
 
         foreach(var bh in _pendingStateChangeBehaviours)
         {
-            if(!_behaviours.Contains(bh))
+            if(!_behaviourSet.Contains(bh))
             {
-                _activeBehaviourHashes.Remove(bh);
+                _activeBehaviourSet.Remove(bh);
                 _activeBehaviours.Remove(bh);
                 continue;
             }
 
-            if(bh.IsActiveAndEnabled && !_activeBehaviourHashes.Contains(bh))
+            if(bh.IsActiveAndEnabled && !_activeBehaviourSet.Contains(bh))
             {
-                _activeBehaviourHashes.Add(bh);
+                _activeBehaviourSet.Add(bh);
                 _activeBehaviours.Add(bh);
                 _enabledBehaviours.Enqueue(bh);
                 continue;
             }
-            if(!bh.IsActiveAndEnabled && _activeBehaviourHashes.Contains(bh))
+            if(!bh.IsActiveAndEnabled && _activeBehaviourSet.Contains(bh))
             {
-                _activeBehaviourHashes.Remove(bh);
+                _activeBehaviourSet.Remove(bh);
                 _activeBehaviours.Remove(bh);
                 _disabledBehaviours.Enqueue(bh);
             }
@@ -168,9 +173,6 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
 
     public void ExecuteAwake()
     {
-        if(_pendingAwakeBehaviours.Count <= 0)
-            return;
-
         var flushCount = _pendingAwakeBehaviours.Count;
         for(int i = 0; i < flushCount; i++)
         {
@@ -195,9 +197,6 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
 
     public void ExecuteStart()
     {
-        if(_pendingStartBehaviours.Count <= 0)
-            return;
-
         var flushCount = _pendingStartBehaviours.Count;
         for(int i = 0; i < flushCount; i++)
         {
@@ -252,6 +251,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
             if(bh.IsPendingDestroy)
             {
                 bh.OnDestroy();
+                _behaviourSet.Remove(bh);
                 _behaviours.Remove(bh);
             }
         }
