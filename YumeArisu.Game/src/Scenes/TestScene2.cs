@@ -20,10 +20,12 @@ public class TestScene2 : Scene
         go4.AddComponent<TestChatter>().Dialogue = 4;
         go5.AddComponent<TestChatter>().Dialogue = 5;
 
-        go3.AddComponent<TestDestroyer>();
+        go3.AddComponent<TestDestroyer>().Enabled = false;
         go3.AddComponent<TestAwaker>().Target = go1;
 
-        go1.AddComponent<TestDestroyer>();
+        go1.AddComponent<TestDestroyer>().OnEnableTarget = go3.GetComponent<TestDestroyer>();
+        
+        go2.AddComponent<TestSceneChanger>();
 
         GameObject childA = CreateGameObject("죄책감");
         GameObject childB = CreateGameObject("뻔뻔함");

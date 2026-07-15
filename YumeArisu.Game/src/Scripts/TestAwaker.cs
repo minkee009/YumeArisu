@@ -12,6 +12,11 @@ public class TestAwaker : ScriptBehaviour
         {
             System.Console.WriteLine($"타겟을 깨웁니다!!! -> {Target.Name}");
             Target.ActiveSelf = true;
+            var destroyer = Target?.GetComponent<TestDestroyer>() ?? null;
+            if(destroyer != null)
+            {
+                destroyer.Enabled = true;
+            }
         }
     }
 }

@@ -7,7 +7,20 @@ namespace YumeArisu.Core.Routines;
 public abstract class Behaviour : Component
 {
     public virtual int ExecutionOrder => 0;
-    public bool Enabled { get; set; } = true;
+    
+    public bool Enabled
+    {
+        get => _enabled;
+        set
+        {
+            if (_enabled == value)
+                return;
+
+            _enabled = value;
+            MarkActiveChange();
+        }
+    }
+
     public bool IsActiveAndEnabled => Enabled && GameObject.ActiveInHierarchy;
 
     internal BehaviourState State { get; set; } = BehaviourState.Created;
@@ -22,22 +35,24 @@ public abstract class Behaviour : Component
     public virtual void OnDisable() { }
     public virtual void OnDestroy() { }
 
+    private bool _enabled = true;
+
     protected internal override void OnAttached()
     {
-        GameObject.OnActiveInHierarchyChange += HandleHierarchyStateChange;
+        GameObject.OnActiveInHierarchyChange += HandleActiveChange;
         BehaviourSystem.Instance.RegisterBehaviour(this);
     }
 
     protected internal override void OnDetached()
     {
-        GameObject.OnActiveInHierarchyChange -= HandleHierarchyStateChange;
+        GameObject.OnActiveInHierarchyChange -= HandleActiveChange;
         BehaviourSystem.Instance.UnregisterBehaviour(this);
     }
 
-    internal void MarkHierarchyStateChange()
+    internal void MarkActiveChange()
     {
-        BehaviourSystem.Instance.MarkHierarchyStateChange(this);
+        BehaviourSystem.Instance.MarkActiveStateChange(this);
     }
 
-    private void HandleHierarchyStateChange(GameObject _) => MarkHierarchyStateChange();
+    private void HandleActiveChange(GameObject _) => MarkActiveChange();
 }
