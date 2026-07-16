@@ -8,10 +8,10 @@ public sealed class Coroutine
     public string Name { get; private set; }
     public object Owner { get; private set; }
     
-    public Coroutine(IEnumerator routine, string name, object owner)
-    {
-        Routine = routine;
-        Name = name;
-        Owner = owner;
-    }
+    // public Coroutine(IEnumerator routine, string name, object owner)
+    // {
+    //     Routine = routine;
+    //     Name = name;
+    //     Owner = owner;
+    // }
 }
