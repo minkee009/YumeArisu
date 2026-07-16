@@ -49,10 +49,7 @@ public abstract class Behaviour : Component
         BehaviourSystem.Instance.UnregisterBehaviour(this);
     }
 
-    internal void MarkActiveChange()
-    {
-        BehaviourSystem.Instance.MarkActiveStateChange(this);
-    }
+    internal void MarkActiveChange() => BehaviourSystem.Instance.MarkActiveChange(this);
 
     private void HandleActiveChange(GameObject _) => MarkActiveChange();
 }

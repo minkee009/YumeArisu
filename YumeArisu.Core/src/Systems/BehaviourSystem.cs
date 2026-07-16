@@ -11,7 +11,7 @@ namespace YumeArisu.Core.Systems;
     Awake <- GameObject의 ActiveInHierarchy에만 의존함
     Start <- ActiveInHierarchy + Behaviour의 Enabled 모두 의존함
 
-    active 상태 -> ActiveInHierarchy + Behaviour의 Enabled가 모두 활성상태임.
+    active 상태 -> ActiveInHierarchy + Enabled가 모두 활성상태임.
     inactive 상태 -> 둘 중 하나라도 거짓임.
 
     [ ! ] - Application을 짤 때 아래 순서가 보장되어야 함.
@@ -35,7 +35,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         public Behaviour Behaviour;
         public bool IsRegister;
     } 
-    
+
     private List<Behaviour> _behaviours;
     private HashSet<Behaviour> _behaviourSet;
     private HashSet<Behaviour> _activeBehaviourSet;
@@ -108,7 +108,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         });
     }
 
-    internal void MarkActiveStateChange(Behaviour bh)
+    internal void MarkActiveChange(Behaviour bh)
     {
         _pendingActiveChangeBehaviours.Add(bh);
     }

@@ -16,7 +16,7 @@ public sealed class GameObject
                 return;
 
             _activeSelf = value;
-            RefreshActiveInHierarchyState();
+            RefreshActiveInHierarchy();
         }
     }
     public bool ActiveInHierarchy => _activeInHierarchy;
@@ -50,7 +50,7 @@ public sealed class GameObject
 
     public void Destroy() => Scene.DestroyGameObject(this);
 
-    internal void RefreshActiveInHierarchyState()
+    internal void RefreshActiveInHierarchy()
     {
         bool nextActiveInHierarchy = _activeSelf && (Transform?.Parent?.GameObject.ActiveInHierarchy ?? true);
         if (_activeInHierarchy == nextActiveInHierarchy)
@@ -62,7 +62,7 @@ public sealed class GameObject
         if (Transform != null)
         {
             foreach (var child in Transform.Children)
-                child.GameObject.RefreshActiveInHierarchyState();
+                child.GameObject.RefreshActiveInHierarchy();
         }
     }
 

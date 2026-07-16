@@ -1,6 +1,6 @@
+using Silk.NET.Input;
 using YumeArisu.Core.Routines;
 using YumeArisu.Core.Systems;
-using Silk.NET.Input;
 
 public class TestChatter : ScriptBehaviour
 {
