@@ -36,41 +36,4 @@ public class Transform : Component
     public Transform GetChild(int index) => _children[index];
     private void AddChild(Transform child) => _children.Add(child);
     private void RemoveChild(Transform child) => _children.Remove(child);
-
-    // Find API, 출시 전 까지 쓸 일 없으면 Deprecate
-    // public Transform FindChild(string path)
-    // {
-    //     if (string.IsNullOrEmpty(path))
-    //         return null;
-
-    //     ReadOnlySpan<char> remaining = path;
-    //     Transform current = this;
-
-    //     while (!remaining.IsEmpty)
-    //     {
-    //         int slash = remaining.IndexOf('/');
-    //         ReadOnlySpan<char> segment = slash >= 0 ? remaining[..slash] : remaining;
-    //         remaining = slash >= 0 ? remaining[(slash + 1)..] : default;
-
-    //         if (segment.IsEmpty)
-    //             continue; // 연속 슬래시("A//B") 방어
-
-    //         current = FindImmediateChild(current, segment);
-    //         if (current == null)
-    //             return null;
-    //     }
-
-    //     return current;
-    // }
-
-    // private static Transform FindImmediateChild(Transform parent, ReadOnlySpan<char> name)
-    // {
-    //     for (int i = 0; i < parent.ChildCount; i++)
-    //     {
-    //         var child = parent.GetChild(i);
-    //         if (name.SequenceEqual(child.GameObject.Name))
-    //             return child;
-    //     }
-    //     return null;
-    // }
 }
