@@ -1,8 +1,8 @@
 namespace YumeArisu.Core.Internal.BehaviourTracking;
 
-internal enum BehaviourState
+internal enum ExecutionPhase
 {
     Created,
     Awoken,
-    Started,
+    Started
 }

@@ -33,7 +33,7 @@ internal class KeyboardState
         Reset();
     }
 
-    void OnKeyDown(IKeyboard keyboard, Key key, int scancode)
+    private void OnKeyDown(IKeyboard keyboard, Key key, int scancode)
     {
         int k = (int)key;
         if ((uint)k >= KeyCount) return;
@@ -41,7 +41,7 @@ internal class KeyboardState
         Current[k >> 6] |= 1UL << (k & 63);
     }
 
-    void OnKeyUp(IKeyboard keyboard, Key key, int scancode)
+    private void OnKeyUp(IKeyboard keyboard, Key key, int scancode)
     {
         int k = (int)key;
         if ((uint)k >= KeyCount) return;

@@ -23,8 +23,10 @@ public abstract class Behaviour : Component
 
     public bool IsActiveAndEnabled => Enabled && GameObject.ActiveInHierarchy;
 
-    internal BehaviourState State { get; set; } = BehaviourState.Created;
+    internal ExecutionPhase ExecutionPhase { get; set; } = ExecutionPhase.Created;
     internal bool IsPendingDestroy { get; set; } = false;
+    internal bool IsRegistered { get; set; } = false;
+    internal bool IsScheduled { get; set; } = false;
 
     public virtual void Awake() { }
     public virtual void OnEnable() { }
@@ -49,7 +51,7 @@ public abstract class Behaviour : Component
         BehaviourSystem.Instance.UnregisterBehaviour(this);
     }
 
-    internal void MarkActiveChange() => BehaviourSystem.Instance.MarkActiveChange(this);
+    internal void MarkActiveChange() => BehaviourSystem.Instance.MarkScheduleChange(this);
 
     private void HandleActiveChange(GameObject _) => MarkActiveChange();
 }

@@ -40,26 +40,26 @@ internal class MouseState
         Reset();
     }
 
-    public void OnButtonDown(IMouse mouse, MouseButton button)
+    private void OnButtonDown(IMouse mouse, MouseButton button)
     {
         int b = (int)button;
         ButtonPressed |= 1 << b;
         ButtonCurrent |= 1 << b;
     }
 
-    public void OnButtonUp(IMouse mouse, MouseButton button)
+    private void OnButtonUp(IMouse mouse, MouseButton button)
     {
         int b = (int)button;
         ButtonReleased |= 1 << b;
         ButtonCurrent &= ~(1 << b);
     }
 
-    public void OnScroll(IMouse mouse, ScrollWheel scroll)
+    private void OnScroll(IMouse mouse, ScrollWheel scroll)
     {
         Scroll += scroll.Y;
     }
 
-    public void OnMove(IMouse mouse, Vector2 position)
+    private void OnMove(IMouse mouse, Vector2 position)
     {
         DeltaAccum += position - Position;
         Position = position;

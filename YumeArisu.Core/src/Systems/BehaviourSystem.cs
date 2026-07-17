@@ -30,230 +30,228 @@ namespace YumeArisu.Core.Systems;
 
 public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
 {   
-    private struct BehaviourChangeRequest
-    {
-        public Behaviour Behaviour;
-        public bool IsRegister;
-    } 
-
     private List<Behaviour> _behaviours;
-    private HashSet<Behaviour> _behaviourSet;
-    private HashSet<Behaviour> _activeBehaviourSet;
-    private List<Behaviour> _activeBehaviours;
-    private HashSet<Behaviour> _pendingActiveChangeBehaviours;
-    private Queue<Behaviour> _pendingAwakeBehaviours;
-    private Queue<Behaviour> _pendingStartBehaviours;
-    private Queue<Behaviour> _pendingDestroyBehaviours;
-    private Queue<Behaviour> _enabledBehaviours;
-    private Queue<Behaviour> _disabledBehaviours;
-    private Queue<BehaviourChangeRequest> _registerQueue;
+    private List<Behaviour> _scheduledBehaviours;
+    private Queue<Behaviour> _pendingAwake;
+    private Queue<Behaviour> _pendingStart;
+    private Queue<Behaviour> _pendingDestroy;
+    private Queue<Behaviour> _pendingOnEnable;
+    private Queue<Behaviour> _pendingOnDisable;
+    private HashSet<Behaviour> _markedForScheduleCheck;  
+    private Queue<Behaviour> _registrationQueue;
+    private Queue<Behaviour> _unregistrationQueue;
     private bool _needSort = false;
+    private bool _needScheduleRebuild = false;
 
     internal override void StartUpInternal(NoConfig control)
     {
-        _behaviourSet = new();
         _behaviours = new();
-        _activeBehaviourSet = new();
-        _activeBehaviours = new();
-        _pendingActiveChangeBehaviours = new();
-        _pendingAwakeBehaviours = new();
-        _pendingStartBehaviours = new();
-        _pendingDestroyBehaviours = new();
-        _enabledBehaviours = new();
-        _disabledBehaviours = new();
-        _registerQueue = new();
+        _scheduledBehaviours = new();
+        _pendingAwake = new();
+        _pendingStart = new();
+        _pendingDestroy = new();
+        _pendingOnEnable = new();
+        _pendingOnDisable = new();
+        _markedForScheduleCheck = new();
+        _registrationQueue = new();
+        _unregistrationQueue = new();
     }
 
     internal override void ShutDownInternal()
     {
-        _registerQueue.Clear();
-        _behaviourSet.Clear();
         _behaviours.Clear();
-        _activeBehaviourSet.Clear();
-        _activeBehaviours.Clear();
-        _pendingActiveChangeBehaviours.Clear();
-        _pendingAwakeBehaviours.Clear();
-        _pendingStartBehaviours.Clear();
-        _pendingDestroyBehaviours.Clear();
-        _enabledBehaviours.Clear();
-        _disabledBehaviours.Clear();
-        _behaviourSet = null;
+        _scheduledBehaviours.Clear();
+        _pendingAwake.Clear();
+        _pendingStart.Clear();
+        _pendingDestroy.Clear();
+        _pendingOnEnable.Clear();
+        _pendingOnDisable.Clear();        
+        _markedForScheduleCheck.Clear();
+        _registrationQueue.Clear();
+        _unregistrationQueue.Clear();
         _behaviours = null;
-        _activeBehaviourSet = null;
-        _activeBehaviours = null;
-        _pendingActiveChangeBehaviours = null;
-        _pendingAwakeBehaviours = null;
-        _pendingStartBehaviours = null;
-        _pendingDestroyBehaviours = null;
-        _enabledBehaviours = null;
-        _disabledBehaviours = null;
-        _registerQueue = null;
+        _scheduledBehaviours = null;
+        _pendingAwake = null;
+        _pendingStart = null;
+        _pendingDestroy = null;
+        _pendingOnEnable = null;
+        _pendingOnDisable = null;
+        _markedForScheduleCheck = null;
+        _registrationQueue = null;
+        _unregistrationQueue = null;
     }
 
     internal void RegisterBehaviour(Behaviour bh)
     {
-        _registerQueue.Enqueue(new BehaviourChangeRequest
-        {
-            Behaviour = bh,
-            IsRegister = true,
-        });
+        _registrationQueue.Enqueue(bh);
     }
 
     internal void UnregisterBehaviour(Behaviour bh)
     {
-        _registerQueue.Enqueue(new BehaviourChangeRequest
-        {
-            Behaviour = bh,
-            IsRegister = false,
-        });
-    }
-
-    internal void MarkActiveChange(Behaviour bh)
-    {
-        _pendingActiveChangeBehaviours.Add(bh);
+        _unregistrationQueue.Enqueue(bh);
     }
 
     public void BeginFrame()
     {
-        while (_registerQueue.Count > 0)
+        while (_registrationQueue.Count > 0)
         {
-            var request = _registerQueue.Dequeue();
-            if (request.IsRegister)
-            {
-                _behaviourSet.Add(request.Behaviour);
-                _behaviours.Add(request.Behaviour);
-                _pendingAwakeBehaviours.Enqueue(request.Behaviour);
-                _pendingStartBehaviours.Enqueue(request.Behaviour);
-                _pendingActiveChangeBehaviours.Add(request.Behaviour);
-                _needSort = true;
-            }
-            else
-            {
-                request.Behaviour.Enabled = false;
-                request.Behaviour.IsPendingDestroy = true;
-                _pendingDestroyBehaviours.Enqueue(request.Behaviour);
-                _pendingActiveChangeBehaviours.Add(request.Behaviour);
-            }
+            var bh = _registrationQueue.Dequeue();
+            _behaviours.Add(bh);
+            _pendingAwake.Enqueue(bh);
+            _pendingStart.Enqueue(bh);
+            _markedForScheduleCheck.Add(bh);
+            bh.IsRegistered = true;
+            _needSort = true;
+        }
+
+        while (_unregistrationQueue.Count > 0)
+        {
+            var bh = _unregistrationQueue.Dequeue();
+            bh.Enabled = false;
+            bh.IsPendingDestroy = true;
+            _pendingDestroy.Enqueue(bh);
+            _markedForScheduleCheck.Add(bh);
         }
 
         if (_needSort)
         {
             SortBehaviours(_behaviours);
             _needSort = false;
+            _needScheduleRebuild = true;
         }
 
         CheckChangeState();
+
+        if (_needScheduleRebuild)
+        {
+            RebuildScheduleList();
+            _needScheduleRebuild = false;
+        }
+    }
+
+    internal void MarkScheduleChange(Behaviour bh)
+    {
+        _markedForScheduleCheck.Add(bh);
     }
 
     private void CheckChangeState()
     {
-        if (_pendingActiveChangeBehaviours.Count <= 0)
+        if (_markedForScheduleCheck.Count <= 0)
             return;
 
-        foreach (var bh in _pendingActiveChangeBehaviours)
+        foreach (var bh in _markedForScheduleCheck)
         {
-            if (!_behaviourSet.Contains(bh))
+            if (!bh.IsRegistered)
             {
-                _activeBehaviourSet.Remove(bh);
-                _activeBehaviours.Remove(bh);
+                _scheduledBehaviours.Remove(bh);
                 continue;
             }
 
-            if (bh.IsActiveAndEnabled && !_activeBehaviourSet.Contains(bh))
+            if (bh.IsActiveAndEnabled && !bh.IsScheduled)
             {
-                _activeBehaviourSet.Add(bh);
-                _activeBehaviours.Add(bh);
-                _enabledBehaviours.Enqueue(bh);
+                bh.IsScheduled = true;
+                _scheduledBehaviours.Add(bh);
+                _pendingOnEnable.Enqueue(bh);
                 continue;
             }
-            if (!bh.IsActiveAndEnabled && _activeBehaviourSet.Contains(bh))
+            if (!bh.IsActiveAndEnabled && bh.IsScheduled)
             {
-                _activeBehaviourSet.Remove(bh);
-                _activeBehaviours.Remove(bh);
-                _disabledBehaviours.Enqueue(bh);
+                bh.IsScheduled = false;
+                _scheduledBehaviours.Remove(bh);
+                _pendingOnDisable.Enqueue(bh);
             }
         }
 
-        _pendingActiveChangeBehaviours.Clear();
+        _markedForScheduleCheck.Clear();
+    }
+
+    private void RebuildScheduleList()
+    {
+        _scheduledBehaviours.Clear();
+        foreach (var bh in _behaviours)          // 이미 ExecutionOrder로 정렬된 소스
+        {
+            if (bh.IsScheduled)
+                _scheduledBehaviours.Add(bh);
+        }
     }
 
     public void ExecuteAwake()
     {
-        var flushCount = _pendingAwakeBehaviours.Count;
+        var flushCount = _pendingAwake.Count;
         for (int i = 0; i < flushCount; i++)
         {
-            var bh = _pendingAwakeBehaviours.Dequeue();
+            var bh = _pendingAwake.Dequeue();
             if (bh.GameObject.ActiveInHierarchy)
             {
                 bh.Awake();
-                bh.State = BehaviourState.Awoken;
+                bh.ExecutionPhase = ExecutionPhase.Awoken;
             }
-            else if (bh.State != BehaviourState.Awoken && !bh.IsPendingDestroy)
+            else if (bh.ExecutionPhase != ExecutionPhase.Awoken && !bh.IsPendingDestroy)
             {
-                _pendingAwakeBehaviours.Enqueue(bh);
+                _pendingAwake.Enqueue(bh);
             }
         }
     }
 
     public void ExecuteOnEnable()
     {
-        while (_enabledBehaviours.Count > 0)
-            _enabledBehaviours.Dequeue().OnEnable();
+        while (_pendingOnEnable.Count > 0)
+            _pendingOnEnable.Dequeue().OnEnable();
     }
 
     public void ExecuteStart()
     {
-        var flushCount = _pendingStartBehaviours.Count;
+        var flushCount = _pendingStart.Count;
         for (int i = 0; i < flushCount; i++)
         {
-            var bh = _pendingStartBehaviours.Dequeue();
+            var bh = _pendingStart.Dequeue();
             if (bh.IsActiveAndEnabled)
             {
                 bh.Start();
-                bh.State = BehaviourState.Started;
+                bh.ExecutionPhase = ExecutionPhase.Started;
             }
-            else if (bh.State != BehaviourState.Started && !bh.IsPendingDestroy)
+            else if (bh.ExecutionPhase != ExecutionPhase.Started && !bh.IsPendingDestroy)
             {
-                _pendingStartBehaviours.Enqueue(bh);
+                _pendingStart.Enqueue(bh);
             }
         }
     }
 
     public void ExecuteFixedUpdate()
     {
-        foreach (var bh in _activeBehaviours)
+        foreach (var bh in _scheduledBehaviours)
             bh.FixedUpdate();
     }
 
     public void ExecuteUpdate()
     {
-        foreach (var bh in _activeBehaviours)
+        foreach (var bh in _scheduledBehaviours)
             bh.Update();
     }
 
     public void ExecuteLateUpdate()
     {
-        foreach (var bh in _activeBehaviours)
+        foreach (var bh in _scheduledBehaviours)
             bh.LateUpdate();
     }
 
     public void ExecuteOnDisable()
     {
-        while (_disabledBehaviours.Count > 0)
-            _disabledBehaviours.Dequeue().OnDisable();
+        while (_pendingOnDisable.Count > 0)
+            _pendingOnDisable.Dequeue().OnDisable();
     }
 
     public void ExecuteOnDestroy()
     {
-        while (_pendingDestroyBehaviours.Count > 0)
+        while (_pendingDestroy.Count > 0)
         {
-            var bh = _pendingDestroyBehaviours.Dequeue();
+            var bh = _pendingDestroy.Dequeue();
             if (bh.IsPendingDestroy)
             {
                 // Awake가 한 번이라도 실행 된 Behaviour들만 허용
-                if (bh.State != BehaviourState.Created)
+                if (bh.ExecutionPhase != ExecutionPhase.Created)
                     bh.OnDestroy();
-                _behaviourSet.Remove(bh);
+                bh.IsRegistered = false;
                 _behaviours.Remove(bh);
             }
         }

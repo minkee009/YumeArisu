@@ -18,9 +18,9 @@ public class DesktopWindow : IWindowControl
         _window = Window.Create(options);
     }
 
-    public void SetScreenMode(ScreenMode mode)
+    public void SetScreenMode(ScreenMode screenMode)
     {
-        switch (mode)
+        switch (screenMode)
         {
             case ScreenMode.Windowed:
                 _window.WindowState = WindowState.Normal;

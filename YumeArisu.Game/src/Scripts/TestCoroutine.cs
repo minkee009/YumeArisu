@@ -13,7 +13,7 @@ public class TestCoroutine : ScriptBehaviour
     
     public override void Update()
     {
-        if(Input.GetKeyDown(Key.E))
+        if (Input.GetKeyDown(Key.E))
         {
             StartCoroutine(RunCode());
         }
