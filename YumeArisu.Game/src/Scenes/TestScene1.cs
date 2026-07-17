@@ -24,8 +24,10 @@ public class TestScene1 : Scene
         if (testManager != null)
             System.Console.WriteLine($"{testManager.Name} : 전역 쿼리에서 찾은 결과입니다.");
 
-        foreach (var tr in _player.Transform.Children)
+        foreach(var tr in _player.Transform.Children)
+        {
             System.Console.WriteLine($"{tr.GameObject.Name} -> 플레이어 하위 객체");
+        }
 
         System.Console.WriteLine("죄송하지만 아가씨 다음 장면으로 넘어가시겠습니다..");
         SceneControl.ChangeScene("TestScene2");

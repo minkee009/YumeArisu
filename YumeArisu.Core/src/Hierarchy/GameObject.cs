@@ -1,3 +1,5 @@
+using YumeArisu.Core.Utility;
+
 namespace YumeArisu.Core.Hierarchy;
 
 public sealed class GameObject
@@ -21,14 +23,14 @@ public sealed class GameObject
     }
     public bool ActiveInHierarchy => _activeInHierarchy;
     public Transform Transform { get; internal set; }
-    public IReadOnlyList<Component> Components => _components;
+    public ReadOnlyListView<Component> Components => _components;
     public bool IsDestroyed { get; private set; }
 
     internal event Action<GameObject> OnActiveInHierarchyChange;
 
     private bool _activeSelf;
     private bool _activeInHierarchy;
-    private List<Component> _components;
+    internal List<Component> _components;
     
     private static uint _nextID = 0;
 
@@ -61,7 +63,7 @@ public sealed class GameObject
 
         if (Transform != null)
         {
-            foreach (var child in Transform.Children)
+            foreach (var child in Transform._children)
                 child.GameObject.RefreshActiveInHierarchy();
         }
     }

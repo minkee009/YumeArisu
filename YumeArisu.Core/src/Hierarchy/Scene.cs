@@ -1,9 +1,12 @@
+using YumeArisu.Core.Utility;
+
 namespace YumeArisu.Core.Hierarchy;
 
 public abstract class Scene
 {
-    public IReadOnlyList<GameObject> GameObjects => _gameObjects;
-    private List<GameObject> _gameObjects = new();
+    public ReadOnlyListView<GameObject> GameObjects => _gameObjects;
+    
+    internal List<GameObject> _gameObjects = new();
 
     internal protected abstract void Load();
 
@@ -35,9 +38,9 @@ public abstract class Scene
         if (go.IsDestroyed)
             return;
 
-        // 먼저 자식들 제거
-        foreach (var child in go.Transform.Children.ToList())
-            DestroyRecursive(child.GameObject);
+        // 먼저 자식들 제거 - 뒤에서 부터 순차적으로 제거 -> 순회할 때 자식이 하나씩 빠져도 인덱스 안정적
+        for (int i = go.Transform.ChildCount - 1; i >= 0; i--)
+            DestroyRecursive(go.Transform.GetChild(i).GameObject);
 
         // Scene 소유 리스트에서 제거
         _gameObjects.Remove(go);
