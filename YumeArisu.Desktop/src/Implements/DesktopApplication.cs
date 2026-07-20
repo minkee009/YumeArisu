@@ -34,6 +34,7 @@ public class DesktopApplication : IApplication
         WindowSystem.Instance.StartUp(_window);
         TimeSystem.Instance.StartUp(default);
         InputSystem.Instance.StartUp(_window.View);
+        ResourceSystem.Instance.StartUp(_fileIO);
         BehaviourSystem.Instance.StartUp(default);
         CoroutineSystem.Instance.StartUp(default);
         SceneSystem.Instance.StartUp(new TestSceneManifest());
@@ -47,6 +48,7 @@ public class DesktopApplication : IApplication
         CoroutineSystem.Instance.ShutDown();
         BehaviourSystem.Instance.ShutDown();
         TimeSystem.Instance.ShutDown();
+        ResourceSystem.Instance.ShutDown();
         InputSystem.Instance.ShutDown();
         WindowSystem.Instance.ShutDown();
         ApplicationSystem.Instance.ShutDown();

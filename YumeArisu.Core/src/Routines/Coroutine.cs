@@ -13,7 +13,7 @@ public sealed class Coroutine : YieldInstruction
 
     internal LinkedListNode<Coroutine> SchedulerNode { get; set; }
 
-    private List<Coroutine> _waiters = new(); // 나를 기다리고 있는 코루틴 (없으면 null)
+    private List<Coroutine> _waiters = new(); // 나를 기다리고 있는 코루틴 리스트 <- 사실상 소유권을 취득한 것임 == 막 휘둘러도 됨
 
     public Coroutine(ScriptBehaviour owner, IEnumerator routine)
     {
