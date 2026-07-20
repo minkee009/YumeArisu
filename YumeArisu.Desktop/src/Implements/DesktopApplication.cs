@@ -35,6 +35,7 @@ public class DesktopApplication : IApplication
         TimeSystem.Instance.StartUp(default);
         InputSystem.Instance.StartUp(_window.View);
         BehaviourSystem.Instance.StartUp(default);
+        CoroutineSystem.Instance.StartUp(default);
         SceneSystem.Instance.StartUp(new TestSceneManifest());
     }
 

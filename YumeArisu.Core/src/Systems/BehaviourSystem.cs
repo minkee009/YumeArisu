@@ -30,31 +30,31 @@ namespace YumeArisu.Core.Systems;
 
 public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
 {   
-    private List<Behaviour> _behaviours;
-    private List<Behaviour> _scheduledBehaviours;
-    private Queue<Behaviour> _pendingAwake;
-    private Queue<Behaviour> _pendingStart;
-    private Queue<Behaviour> _pendingDestroy;
-    private Queue<Behaviour> _pendingOnEnable;
-    private Queue<Behaviour> _pendingOnDisable;
-    private HashSet<Behaviour> _markedForScheduleCheck;  
-    private Queue<Behaviour> _registrationQueue;
-    private Queue<Behaviour> _unregistrationQueue;
+    private List<Behaviour> _behaviours = new();
+    private List<Behaviour> _scheduledBehaviours = new();
+    private Queue<Behaviour> _pendingAwake = new();
+    private Queue<Behaviour> _pendingStart = new();
+    private Queue<Behaviour> _pendingDestroy = new();
+    private Queue<Behaviour> _pendingOnEnable = new();
+    private Queue<Behaviour> _pendingOnDisable = new();
+    private HashSet<Behaviour> _markedForScheduleCheck = new();  
+    private Queue<Behaviour> _registrationQueue = new();
+    private Queue<Behaviour> _unregistrationQueue = new();
     private bool _needSort = false;
     private bool _needScheduleRebuild = false;
 
     internal override void StartUpInternal(NoConfig control)
     {
-        _behaviours = new();
-        _scheduledBehaviours = new();
-        _pendingAwake = new();
-        _pendingStart = new();
-        _pendingDestroy = new();
-        _pendingOnEnable = new();
-        _pendingOnDisable = new();
-        _markedForScheduleCheck = new();
-        _registrationQueue = new();
-        _unregistrationQueue = new();
+        _behaviours.Clear();
+        _scheduledBehaviours.Clear();
+        _pendingAwake.Clear();
+        _pendingStart.Clear();
+        _pendingDestroy.Clear();
+        _pendingOnEnable.Clear();
+        _pendingOnDisable.Clear();        
+        _markedForScheduleCheck.Clear();
+        _registrationQueue.Clear();
+        _unregistrationQueue.Clear();
     }
 
     internal override void ShutDownInternal()
@@ -69,16 +69,6 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         _markedForScheduleCheck.Clear();
         _registrationQueue.Clear();
         _unregistrationQueue.Clear();
-        _behaviours = null;
-        _scheduledBehaviours = null;
-        _pendingAwake = null;
-        _pendingStart = null;
-        _pendingDestroy = null;
-        _pendingOnEnable = null;
-        _pendingOnDisable = null;
-        _markedForScheduleCheck = null;
-        _registrationQueue = null;
-        _unregistrationQueue = null;
     }
 
     internal void RegisterBehaviour(Behaviour bh)
