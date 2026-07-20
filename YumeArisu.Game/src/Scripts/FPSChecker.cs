@@ -6,36 +6,30 @@ using YumeArisu.Core.Systems;
 
 public class FPSChecker : ScriptBehaviour
 {
-    private float[] _counts = new float[5];
-    private int _index = 0;
-    private float _tickrate = 0.2f;
-    private float _timer = 0.0f;
+    private string _currentTitle = "";
+    private float _accumulatedTime = 0f;
+    private int _frameCount = 0;
+    private float _updateInterval = 0.5f;
 
     public override void Start()
     {
-        Array.Clear(_counts);
+        _currentTitle = WindowControl.GetTitle();
+        Application.SetVSync(false);
     }
 
     public override void Update()
     {
-        if (_timer < _tickrate)
+        _accumulatedTime += Time.DeltaTime;
+        _frameCount++;
+
+        if (_accumulatedTime >= _updateInterval)
         {
-            _timer += Time.DeltaTime;
-            return;
+            float fps = _frameCount / _accumulatedTime;
+
+            WindowControl.SetTitle($"{_currentTitle} | fps - {(int)fps}");
+
+            _accumulatedTime = 0f;
+            _frameCount = 0;
         }
-        _timer = 0.0f;
-        _counts[_index] = 1.0f / Time.DeltaTime;
-        _index++;
-        _index %= _counts.Length;
-
-        var total = 0f;
-        foreach(var c in _counts)
-        {
-            total += c;
-        }
-
-        var average = (int)(total / _counts.Length);
-
-        WindowControl.SetTitle($"fps - {average}");
     }
 }

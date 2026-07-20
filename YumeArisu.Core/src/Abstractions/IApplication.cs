@@ -8,5 +8,6 @@ public interface IApplication
     public bool IsRunning();
     public void RequestClose();
     public void SetTargetFrameRate(int fps);
+    public void SetVSync(bool enabled);     // TODO : 렌더링 옵션에서 VSync를 껐다 켤 수 있는 방향으로 가기 -> RenderSettings 이런걸로
 }
 

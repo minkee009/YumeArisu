@@ -8,6 +8,7 @@ public class DesktopWindow : IWindowControl
 {
     public IView View => _window;
     private IWindow _window;
+    private ScreenMode _screenMode;
 
     public DesktopWindow(string title, int width, int height)
     {
@@ -16,10 +17,14 @@ public class DesktopWindow : IWindowControl
         options.Title = title;
 
         _window = Window.Create(options);
+        _screenMode = ScreenMode.Windowed;
     }
 
     public void SetScreenMode(ScreenMode screenMode)
     {
+        if(_screenMode == screenMode)
+            return;
+
         switch (screenMode)
         {
             case ScreenMode.Windowed:
@@ -38,20 +43,15 @@ public class DesktopWindow : IWindowControl
                 _window.WindowBorder = WindowBorder.Hidden;
                 break;
         }
-    }
 
-    public void SetTitle(string title)
-    {
-        _window.Title = title;
+        _screenMode = screenMode;
     }
+    public void SetTitle(string title) => _window.Title = title;
+    public void SetSize(int width, int height) => _window.Size = new(width,height);
+    public void SetPosition(int x, int y) => _window.Position = new(x,y);
 
-    public void SetSize(int width, int height)
-    {
-        _window.Size = new(width,height);
-    }
-
-    public void SetPosition(int x, int y)
-    {
-        _window.Position = new(x,y);
-    }
+    public ScreenMode GetScreenMode() => _screenMode;
+    public string GetTitle() => _window.Title;
+    public Vector2D<int> GetSize() => _window.Size;
+    public Vector2D<int> GetPosition() => _window.Position;
 }

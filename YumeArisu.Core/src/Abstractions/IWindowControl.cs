@@ -1,3 +1,5 @@
+using Silk.NET.Maths;
+
 namespace YumeArisu.Core.Abstractions;
 
 /// <summary>
@@ -9,4 +11,9 @@ public interface IWindowControl
     public void SetTitle(string title);
     public void SetSize(int width, int height);
     public void SetPosition(int x, int y);
+
+    public ScreenMode GetScreenMode();
+    public string GetTitle();
+    public Vector2D<int> GetSize();
+    public Vector2D<int> GetPosition();
 }

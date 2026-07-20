@@ -16,6 +16,7 @@ public class ApplicationSystem : SystemBase<ApplicationSystem, IApplication>
     public bool IsRunning() => _application.IsRunning();
     public void RequestClose() => _application.RequestClose();
     public void SetTargetFrameRate(int fps) => _application.SetTargetFrameRate(fps);
+    public void SetVSync(bool enabled) => _application.SetVSync(enabled);
 }
 
 // 문법 설탕용 클래스
@@ -23,8 +24,13 @@ public static class Application
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsRunning() => ApplicationSystem.Instance.IsRunning();
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void RequestClose() => ApplicationSystem.Instance.RequestClose();
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void SetTargetFrameRate(int fps) => ApplicationSystem.Instance.SetTargetFrameRate(fps);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void SetVSync(bool enabled) => ApplicationSystem.Instance.SetVSync(enabled);
 }

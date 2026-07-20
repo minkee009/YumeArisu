@@ -1,4 +1,6 @@
+using System.Numerics;
 using System.Runtime.CompilerServices;
+using Silk.NET.Maths;
 using YumeArisu.Core.Abstractions;
 
 namespace YumeArisu.Core.Systems;
@@ -18,6 +20,11 @@ public class WindowSystem : SystemBase<WindowSystem, IWindowControl>
     public void SetTitle(string title) => _control.SetTitle(title);
     public void SetSize(int width, int height) => _control.SetSize(width, height);
     public void SetPosition(int x, int y) => _control.SetPosition(x, y);
+
+    public ScreenMode GetScreenMode() => _control.GetScreenMode();
+    public string GetTitle() => _control.GetTitle();
+    public Vector2D<int> GetSize() => _control.GetSize();
+    public Vector2D<int> GetPosition() => _control.GetPosition();
 }
 
 // 문법 설탕용 클래스
@@ -34,4 +41,16 @@ public static class WindowControl
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void SetPosition(int x, int y) => WindowSystem.Instance.SetPosition(x, y);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ScreenMode GetScreenMode() => WindowSystem.Instance.GetScreenMode();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string GetTitle() => WindowSystem.Instance.GetTitle();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2D<int> GetSize() => WindowSystem.Instance.GetSize();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2D<int> GetPosition() => WindowSystem.Instance.GetPosition();
 }
