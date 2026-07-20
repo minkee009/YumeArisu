@@ -8,7 +8,7 @@ public class TestScene2 : Scene
     {
         Console.WriteLine("ㅎㅎ ㅋㅋ ㅈㅅ");
         GameObject go = CreateGameObject("히후미");
-        GameObject go1 = CreateGameObject("센세",false);
+        GameObject go1 = CreateGameObject("센세", false);
         GameObject go2 = CreateGameObject("히후미2");
         GameObject go3 = CreateGameObject("나기사");
         GameObject go4 = CreateGameObject("화난 히후미");

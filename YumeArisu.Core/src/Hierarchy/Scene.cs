@@ -22,7 +22,7 @@ public abstract class Scene
         GameObject go = new(this, name);
         go.Transform = go.AddComponent<Transform>();
         _gameObjects.Add(go);
-        go.ActiveSelf = active;
+        go.SetActive(active);
         return go;
     }
 

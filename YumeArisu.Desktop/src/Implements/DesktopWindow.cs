@@ -47,11 +47,11 @@ public class DesktopWindow : IWindowControl
 
     public void SetSize(int width, int height)
     {
-        _window.Size = new (width,height);
+        _window.Size = new(width,height);
     }
 
     public void SetPosition(int x, int y)
     {
-        _window.Position = new (x,y);
+        _window.Position = new(x,y);
     }
 }

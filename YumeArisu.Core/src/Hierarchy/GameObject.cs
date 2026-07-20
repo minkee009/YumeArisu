@@ -9,29 +9,18 @@ public sealed class GameObject
     public uint Layer { get; set; }
     public string Tag { get; set; }
     public string Name { get; set; }
-    public bool ActiveSelf
-    {
-        get => _activeSelf;
-        set
-        {
-            if (_activeSelf == value)
-                return;
-
-            _activeSelf = value;
-            RefreshActiveInHierarchy();
-        }
-    }
+    public bool ActiveSelf => _activeSelf;
     public bool ActiveInHierarchy => _activeInHierarchy;
     public Transform Transform { get; internal set; }
     public ReadOnlyListView<Component> Components => _components;
     public bool IsDestroyed { get; private set; }
 
     internal event Action<GameObject> OnActiveInHierarchyChange;
+    internal List<Component> _components;
 
     private bool _activeSelf;
     private bool _activeInHierarchy;
-    internal List<Component> _components;
-    
+
     private static uint _nextID = 0;
 
     internal GameObject(Scene owner, string name = "")
@@ -48,6 +37,15 @@ public sealed class GameObject
         _activeSelf = false;
         _activeInHierarchy = false;
         _components = new();
+    }
+
+    public void SetActive(bool active)
+    {
+        if (_activeSelf == active)
+            return;
+
+        _activeSelf = active;
+        RefreshActiveInHierarchy();
     }
 
     public void Destroy() => Scene.DestroyGameObject(this);
