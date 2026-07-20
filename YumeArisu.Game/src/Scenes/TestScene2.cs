@@ -34,5 +34,7 @@ public class TestScene2 : Scene
         childA.Transform.SetParent(go3.Transform);
         childB.Transform.SetParent(go3.Transform);
         childC.Transform.SetParent(go3.Transform);
+
+        go.AddComponent<FPSChecker>();
     }
 }

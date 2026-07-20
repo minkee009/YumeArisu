@@ -102,14 +102,12 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
         _waitUntilList.Remove(coroutine);
         _waitUntilTime.Remove(coroutine);
 
-        if (coroutine.WaitOption is WaitForSeconds sec)
-            _waitUntilTime[coroutine] = Time.TotalTime + sec.Seconds;
-
         if (!coroutine.MoveNext())
         {
             _allActive.Remove(coroutine);
             return;
         }
+
 
         switch (coroutine.WaitOption)
         {
@@ -119,6 +117,10 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
             case WaitUntil:
                 _waitUntilList.Add(coroutine);
                 break;        
+            case WaitForSeconds sec:
+                _waitUntilTime[coroutine] = Time.TotalTime + sec.Seconds; // MoveNext 이후, 새 값 기준
+                _updateList.Add(coroutine);
+                break;
             case Coroutine inner:
                 if (inner.Done)
                     Proccess(coroutine); // 이미 끝나있었으면 즉시 재진입

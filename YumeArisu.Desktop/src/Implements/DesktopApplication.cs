@@ -20,6 +20,8 @@ public class DesktopApplication : IApplication
         _window.View.Render += OnRender;
         _window.View.Closing += OnClosing;
 
+        _window.View.VSync = false;
+
         _fileIO = new();
     }
 

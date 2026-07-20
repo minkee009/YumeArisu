@@ -101,7 +101,7 @@ public class TimeSystem : SystemBase<TimeSystem, NoConfig>
 }
 
 // 문법 설탕용 클래스
-static class Time
+public static class Time
 {
     public static float DeltaTime => TimeSystem.Instance.DeltaTime;
     public static float UnscaledDeltaTime => TimeSystem.Instance.UnscaledDeltaTime;
