@@ -120,11 +120,11 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
             _needScheduleRebuild = true;
         }
 
-        CheckChangeState();
+        CheckScheduleChange();
 
         if (_needScheduleRebuild)
         {
-            RebuildScheduleList();
+            RebuildSchedule();
             _needScheduleRebuild = false;
         }
     }
@@ -134,7 +134,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         _markedForScheduleCheck.Add(bh);
     }
 
-    private void CheckChangeState()
+    private void CheckScheduleChange()
     {
         if (_markedForScheduleCheck.Count <= 0)
             return;
@@ -146,7 +146,6 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
                 _scheduledBehaviours.Remove(bh);
                 continue;
             }
-
             if (bh.IsActiveAndEnabled && !bh.IsScheduled)
             {
                 bh.IsScheduled = true;
@@ -165,7 +164,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         _markedForScheduleCheck.Clear();
     }
 
-    private void RebuildScheduleList()
+    private void RebuildSchedule()
     {
         _scheduledBehaviours.Clear();
         foreach (var bh in _behaviours)          // 이미 ExecutionOrder로 정렬된 소스

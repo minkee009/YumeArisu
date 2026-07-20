@@ -2,7 +2,7 @@ using YumeArisu.Core.Internal.YieldAbstraction;
 
 namespace YumeArisu.Core.Routines;
 
-public class WaitUntil : YieldInstruction
+public sealed class WaitUntil : YieldInstruction
 {
     public Func<bool> Condition { get; private set; } 
 
