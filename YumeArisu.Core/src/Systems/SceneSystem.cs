@@ -9,6 +9,8 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
     public Scene CurrentScene => _currentScene;
     public Scene StaticScene => _staticScene;
 
+    public event Action OnBeforeSceneChange;
+
     private Dictionary<string,Scene> _dynamicScenes;
     private Scene _staticScene;
     private Scene _currentScene;
@@ -38,6 +40,8 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
         _currentScene?.Unload();
         _staticScene?.Unload();
 
+        OnBeforeSceneChange = null;
+
         _dynamicScenes = null;
         _staticScene = null;
         _currentScene = null;
@@ -60,21 +64,25 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
         ChangeScene(typeof(T).Name);
     }
 
-    public void BeginFrame()
+    public bool BeginFrame()
     {
         if (_nextScene == null)
-            return;
+            return false;
 
         _currentScene?.Unload();
         
         _currentScene = _nextScene;
         _nextScene = null;
 
+        OnBeforeSceneChange?.Invoke();
+
         GC.Collect(2, GCCollectionMode.Optimized);
         GC.WaitForPendingFinalizers();
         GC.Collect(2, GCCollectionMode.Optimized); // finalizer가 새로 만든 쓰레기 정리
 
         _currentScene?.Load();
+
+        return true;
     }
 
     public GameObject FindAnyGameObject(string name)

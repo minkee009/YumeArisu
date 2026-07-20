@@ -37,11 +37,14 @@ public class DesktopApplication : IApplication
         BehaviourSystem.Instance.StartUp(default);
         CoroutineSystem.Instance.StartUp(default);
         SceneSystem.Instance.StartUp(new TestSceneManifest());
+
+        SceneSystem.Instance.OnBeforeSceneChange += CoroutineSystem.Instance.ImmediateStopAllCoroutines;
     }
 
     public void OnClosing()
     {
         SceneSystem.Instance.ShutDown();
+        CoroutineSystem.Instance.ShutDown();
         BehaviourSystem.Instance.ShutDown();
         TimeSystem.Instance.ShutDown();
         InputSystem.Instance.ShutDown();
@@ -66,13 +69,15 @@ public class DesktopApplication : IApplication
             (_) => 
             {
                 BehaviourSystem.Instance.ExecuteFixedUpdate();
-                // CoroutineSystem.Instance.FixedUpdate();
+                CoroutineSystem.Instance.YieldFixedUpdate();
             }
         );
         BehaviourSystem.Instance.ExecuteUpdate();
         BehaviourSystem.Instance.ExecuteLateUpdate();
+        CoroutineSystem.Instance.YieldUpdate();
         BehaviourSystem.Instance.ExecuteOnDisable();
         BehaviourSystem.Instance.ExecuteOnDestroy();
+        CoroutineSystem.Instance.YieldUntil();
         InputSystem.Instance.EndFrame();
     }
 
