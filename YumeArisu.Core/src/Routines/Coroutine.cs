@@ -13,7 +13,7 @@ public sealed class Coroutine : YieldInstruction
 
     internal LinkedListNode<Coroutine> SchedulerNode { get; set; }
 
-    private Coroutine _waiter; // 나를 기다리고 있는 코루틴 (없으면 null)
+    private List<Coroutine> _waiters = new(); // 나를 기다리고 있는 코루틴 (없으면 null)
 
     public Coroutine(ScriptBehaviour owner, IEnumerator routine)
     {
@@ -27,11 +27,12 @@ public sealed class Coroutine : YieldInstruction
         WaitOption = result ? Routine.Current as YieldInstruction : null;
         Done = !result;
 
-        if (Done && _waiter != null)
+        if (Done && _waiters.Count > 0)
         {
-            var waiter = _waiter;
-            _waiter = null;
-            CoroutineSystem.Instance.Proccess(waiter); // 끝나자마자 바로 깨움
+            var toWake = _waiters;
+            _waiters = null;
+            foreach (var waiter in toWake)
+                CoroutineSystem.Instance.Proccess(waiter); // 끝나자마자 바로 깨움 
         }
 
         return result;
@@ -40,13 +41,14 @@ public sealed class Coroutine : YieldInstruction
     internal void ForceStop()
     {
         Done = true;
-        _waiter = null;
+        _waiters.Clear();
     }
 
-    internal void SetWaiter(Coroutine waiter) => _waiter = waiter;
-    internal void ClearWaiter(Coroutine waiter)
+    internal void AddWaiter(Coroutine waiter)
     {
-        if (_waiter == waiter)
-            _waiter = null;
+        _waiters ??= new List<Coroutine>();
+        _waiters.Add(waiter);
     }
+
+    internal void RemoveWaiter(Coroutine waiter) => _waiters?.Remove(waiter);
 }

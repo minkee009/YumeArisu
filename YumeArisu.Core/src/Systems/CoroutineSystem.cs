@@ -9,7 +9,7 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
     private List<Coroutine> _updateList = new();
     private List<Coroutine> _fixedUpdateList = new();
     private List<Coroutine> _waitUntilList = new();
-    private Dictionary<Coroutine, float> _waitUntilTime = new();
+    private Dictionary<Coroutine, double> _waitUntilTime = new();
 
     internal override void StartUpInternal(NoConfig config)
     {
@@ -39,7 +39,7 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
             return;
 
         if (coroutine.WaitOption is Coroutine inner)
-            inner.ClearWaiter(coroutine);
+            inner.RemoveWaiter(coroutine);
 
         coroutine.ForceStop(); 
 
@@ -82,18 +82,24 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
     {
         for (int i = _waitUntilList.Count - 1; i >= 0; i--)
         {
-            var c = _waitUntilList[i];
-            if (((WaitUntil)c.WaitOption).Condition())
-                Proccess(c);
+            var coroutine = _waitUntilList[i];
+            if (((WaitUntil)coroutine.WaitOption).Condition())
+                Proccess(coroutine);
         }
     }
 
-    private bool IsWaitEnd(Coroutine coroutine) => coroutine.WaitOption switch
+    private bool IsWaitEnd(Coroutine coroutine)
     {
-        null => true,
-        WaitForSeconds => _waitUntilTime.TryGetValue(coroutine, out float t) && Time.TotalTime >= t,
-        _ => true
-    };
+        switch (coroutine.WaitOption)
+        {
+            case null:
+                return true;
+            case WaitForSeconds:
+                return _waitUntilTime.TryGetValue(coroutine, out double t) && Time.HighResTotalTime >= t;
+            default:
+                return true;
+        }
+    }
 
     internal void Proccess(Coroutine coroutine)
     {
@@ -108,7 +114,6 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
             return;
         }
 
-
         switch (coroutine.WaitOption)
         {
             case WaitForFixedUpdate:
@@ -118,14 +123,14 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
                 _waitUntilList.Add(coroutine);
                 break;        
             case WaitForSeconds sec:
-                _waitUntilTime[coroutine] = Time.TotalTime + sec.Seconds; // MoveNext 이후, 새 값 기준
+                _waitUntilTime[coroutine] = Time.HighResTotalTime + sec.Seconds; // MoveNext 이후, 새 값 기준
                 _updateList.Add(coroutine);
                 break;
             case Coroutine inner:
                 if (inner.Done)
                     Proccess(coroutine); // 이미 끝나있었으면 즉시 재진입
                 else
-                    inner.SetWaiter(coroutine); // 리스트에 안 넣고 잠재움
+                    inner.AddWaiter(coroutine); // 리스트에 안 넣고 잠재움
                 break;
             default:
                 _updateList.Add(coroutine);

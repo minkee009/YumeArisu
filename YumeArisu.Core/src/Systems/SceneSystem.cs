@@ -10,6 +10,7 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
     public Scene StaticScene => _staticScene;
 
     public event Action OnBeforeSceneChange;
+    public event Action OnAfterSceneChange;
 
     private Dictionary<string,Scene> _dynamicScenes;
     private Scene _staticScene;
@@ -41,6 +42,7 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
         _staticScene?.Unload();
 
         OnBeforeSceneChange = null;
+        OnAfterSceneChange = null;
 
         _dynamicScenes = null;
         _staticScene = null;
@@ -64,10 +66,10 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
         ChangeScene(typeof(T).Name);
     }
 
-    public bool BeginFrame()
+    public void BeginFrame()
     {
         if (_nextScene == null)
-            return false;
+            return;
 
         _currentScene?.Unload();
         
@@ -82,7 +84,9 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
 
         _currentScene?.Load();
 
-        return true;
+        OnAfterSceneChange?.Invoke();
+
+        return;
     }
 
     public GameObject FindAnyGameObject(string name)
