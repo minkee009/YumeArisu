@@ -1,155 +1,104 @@
+using System.Collections;
 using YumeArisu.Core.Routines;
-using YumeArisu.Core.Internal.YieldAbstraction;
-using Silk.NET.Core;
-using System.Diagnostics;
 
 namespace YumeArisu.Core.Systems;
 
 public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
 {
-    // 분류 파이프 라인
-    private LinkedList<Coroutine> _unknownYields;
-    private LinkedList<Coroutine> _coroutineYields;
-    private LinkedList<Coroutine> _waitSecondsYields;
-    private LinkedList<Coroutine> _waitFixedUpdateYields;
-    private LinkedList<Coroutine> _waitUntilYields;
-
-    private Dictionary<Coroutine, float> _waitingTimes;
-    private HashSet<Coroutine> _rescheduleList; 
-
-    // FixedUpdate
-    // Update
-    // AfterRender
-    // WaitSeconds
-    // WaitUntil
+    private List<Coroutine> _updateList = new();
+    private List<Coroutine> _fixedUpdateList = new();
+    private List<Coroutine> _waitUntilList = new();
+    private Dictionary<Coroutine, float> _waitUntilTime = new();
 
     internal override void StartUpInternal(NoConfig config)
     {
-        _unknownYields = new();
-        _coroutineYields = new();
-        _waitSecondsYields = new();
-        _waitFixedUpdateYields = new();
-        _waitUntilYields = new();
-        _waitingTimes = new();
-        _rescheduleList = new();
+        _updateList.Clear();
+        _fixedUpdateList.Clear();
+        _waitUntilList.Clear();
+        _waitUntilTime.Clear();
     }
 
     internal override void ShutDownInternal()
     {
-        _unknownYields.Clear();
-        _unknownYields = null;
-        _coroutineYields.Clear();
-        _coroutineYields = null;
-        _waitSecondsYields.Clear();
-        _waitSecondsYields = null;
-        _waitFixedUpdateYields.Clear();
-        _waitFixedUpdateYields = null;
-        _waitUntilYields.Clear();
-        _waitUntilYields = null;
-        _waitingTimes.Clear();
-        _waitingTimes = null;
-        _rescheduleList.Clear();
-        _rescheduleList = null;
+        _updateList.Clear();
+        _fixedUpdateList.Clear();
+        _waitUntilList.Clear();
+        _waitUntilTime.Clear();
     }
 
-    public void StopCoroutine(Coroutine coroutine)
+    internal Coroutine StartCoroutine(ScriptBehaviour owner, IEnumerator routine)
     {
-        if (coroutine.Done)
-            return;
+        var coroutine = new Coroutine(owner, routine);
+        Proccess(coroutine);
+        return coroutine;
+    }
 
-        coroutine.Done = true;
+    internal void StopCoroutine(Coroutine coroutine)
+    {
+        _updateList.Remove(coroutine);
+        _fixedUpdateList.Remove(coroutine);
+        _waitUntilList.Remove(coroutine);
+        _waitUntilTime.Remove(coroutine);
+    }
 
-        if (coroutine.SchedulerNode != null)
+    public void YieldFixedUpdate()
+    {
+        for (int i = _fixedUpdateList.Count - 1; i >= 0; i--)
+            Proccess(_fixedUpdateList[i]);
+    }
+
+    public void YieldUpdate()
+    {
+        for (int i = _updateList.Count - 1; i >= 0; i--)
         {
-            coroutine.SchedulerNode.List?.Remove(coroutine.SchedulerNode); // O(1)
-            coroutine.SchedulerNode = null;
-        }
-
-        if (_waitingTimes.ContainsKey(coroutine))
-            _waitingTimes.Remove(coroutine);
-    }
-
-    public void ProcessUnknownYields()
-    {
-        foreach (var coroutine in _unknownYields)
-            ProcessCoroutine(coroutine);
-    }
-
-    public void ProcessWaitSecondsYields()
-    {
-        foreach (var coroutine in _waitSecondsYields)
-        {
-            if (_waitingTimes.TryGetValue(coroutine, out float waitTime) 
-                && (double)waitTime < Time.HighResTotalTime)
-                ProcessCoroutine(coroutine);
+            var coroutine = _updateList[i];
+            if (IsWaitEnd(coroutine))
+                Proccess(coroutine);
         }
     }
 
-    public void ProcessWaitFixedUpdateYields()
+    public void YieldUntil()
     {
-        foreach (var coroutine in _waitFixedUpdateYields)
-            ProcessCoroutine(coroutine);
-    }
-
-    public void ProcessWaitUntilYields()
-    {
-        foreach (var coroutine in _waitSecondsYields)
+        for (int i = _waitUntilList.Count - 1; i >= 0; i--)
         {
-            if(((WaitUntil)coroutine.WaitOption)?.Condition() ?? true)
-                ProcessCoroutine(coroutine);
+            var c = _waitUntilList[i];
+            if (((WaitUntil)c.WaitOption).Condition())
+                Proccess(c);
         }
     }
 
-
-    public void ImmediateStopAllCoroutines()
+    private bool IsWaitEnd(Coroutine coroutine) => coroutine.WaitOption switch
     {
-        // TODO : 씬 전환을 대상으로 하기 때문에 전체 코루틴을 Stop 및 Discard해야 함.
-    }
+        null => true,
+        WaitForSeconds => _waitUntilTime.TryGetValue(coroutine, out float t) && Time.TotalTime >= t,
+        Coroutine inner => inner.Done,
+        _ => true
+    };
 
-    public void UpdateSchedule()
+    private void Proccess(Coroutine coroutine)
     {
-        foreach (var coroutine in _rescheduleList)
-            Reschedule(coroutine);
+        _updateList.Remove(coroutine);
+        _fixedUpdateList.Remove(coroutine);
+        _waitUntilList.Remove(coroutine);
+        _waitUntilTime.Remove(coroutine);
 
-        _rescheduleList.Clear();
-    }
+        if (coroutine.WaitOption is WaitForSeconds sec)
+            _waitUntilTime[coroutine] = Time.TotalTime + sec.Seconds;
 
-    internal void Reschedule(Coroutine coroutine)
-    {
-        coroutine.SchedulerNode.List?.Remove(coroutine.SchedulerNode);
-
-        if (coroutine.Done)
+        if (!coroutine.MoveNext())
             return;
 
         switch (coroutine.WaitOption)
         {
-            case null:
-                _unknownYields.AddLast(coroutine);
-                break;
-            case Coroutine other:
-                other.SleepingWaifu(coroutine);
-                _coroutineYields.AddLast(coroutine); 
-                break;
-            case WaitForSeconds sec:
-                _waitingTimes.Add(coroutine, Time.TotalTime + sec.Seconds);
-                _waitSecondsYields.AddLast(coroutine);
-                break;
             case WaitForFixedUpdate:
-                _waitFixedUpdateYields.AddLast(coroutine);
+                _fixedUpdateList.Add(coroutine);
                 break;
             case WaitUntil:
-                _waitUntilYields.AddLast(coroutine);
+                _waitUntilList.Add(coroutine);
+                break;
+            default:
+                _updateList.Add(coroutine);
                 break;
         }
-    }
-
-    private void ProcessCoroutine(Coroutine coroutine)
-    {
-        if (coroutine.MoveNext())
-        {
-            _rescheduleList.Add(coroutine);
-            return;
-        }
-        coroutine.SchedulerNode.List?.Remove(coroutine.SchedulerNode);
     }
 }
