@@ -3,24 +3,24 @@ using YumeArisu.Core.Abstractions;
 
 namespace YumeArisu.Core.Systems;
 
-public class ApplicationSystem : SystemBase<ApplicationSystem, IApplication>
+public class ApplicationSystem : SystemBase<ApplicationSystem, IApplicationControl>
 {
-    private IApplication _application;
+    private IApplicationControl _control;
 
-    internal override void StartUpInternal(IApplication application) 
+    internal override void StartUpInternal(IApplicationControl control) 
     {
-        _application = application;
+        _control = control;
     }
-    internal override void ShutDownInternal() => _application = null;
+    internal override void ShutDownInternal() => _control = null;
 
-    public int TargetFrameRate { get => _application.TargetFrameRate; set => _application.TargetFrameRate = value; }
-    public bool VSync { get => _application.VSync; set => _application.VSync = value; }
-    public bool IsRunning() => _application.IsRunning();
-    public void RequestClose() => _application.RequestClose();
+    public int TargetFrameRate { get => _control.TargetFrameRate; set => _control.TargetFrameRate = value; }
+    public bool VSync { get => _control.VSync; set => _control.VSync = value; }
+    public bool IsRunning() => _control.IsRunning();
+    public void RequestClose() => _control.RequestClose();
 }
 
 // 문법 설탕용 클래스
-public static class Application
+public static class ApplicationControl
 {
     public static int TargetFrameRate { get => ApplicationSystem.Instance.TargetFrameRate; set => ApplicationSystem.Instance.TargetFrameRate = value; }
     

@@ -13,8 +13,8 @@ public class FPSChecker : ScriptBehaviour
 
     public override void Start()
     {
-        _currentTitle = WindowControl.GetTitle();
-        Application.VSync = false;
+        _currentTitle = WindowControl.Title;
+        ApplicationControl.VSync = false;
     }
 
     public override void Update()
@@ -26,7 +26,7 @@ public class FPSChecker : ScriptBehaviour
         {
             float fps = _frameCount / _accumulatedTime;
 
-            WindowControl.SetTitle($"{_currentTitle} | fps - {(int)fps}");
+            WindowControl.Title = $"{_currentTitle} | fps - {(int)fps}";
 
             _accumulatedTime = 0f;
             _frameCount = 0;

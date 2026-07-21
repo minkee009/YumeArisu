@@ -6,7 +6,7 @@ using YumeArisu.Game.Scenes.Manifset;
 
 namespace YumeArisu.Desktop.Implements;
 
-public class DesktopApplication : IApplication
+public class DesktopApplication : IApplicationControl
 {
     private DesktopWindow _window;
     private DesktopFileIO _fileIO;

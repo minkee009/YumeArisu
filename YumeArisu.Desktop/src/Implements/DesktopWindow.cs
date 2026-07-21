@@ -20,38 +20,52 @@ public class DesktopWindow : IWindowControl
         _screenMode = ScreenMode.Windowed;
     }
 
-    public void SetScreenMode(ScreenMode screenMode)
+    public ScreenMode ScreenMode
     {
-        if(_screenMode == screenMode)
-            return;
-
-        switch (screenMode)
+        get => _screenMode;
+        set
         {
-            case ScreenMode.Windowed:
-                _window.WindowState = WindowState.Normal;
-                _window.WindowBorder = WindowBorder.Resizable;
-                break;
+            if(_screenMode == value)
+                return;
 
-            case ScreenMode.Fullscreen:
-            case ScreenMode.BorderlessFullscreen:
-                _window.WindowState = WindowState.Fullscreen;
-                _window.WindowBorder = WindowBorder.Hidden;
-                break;
+            switch (value)
+            {
+                case ScreenMode.Windowed:
+                    _window.WindowState = WindowState.Normal;
+                    _window.WindowBorder = WindowBorder.Resizable;
+                    break;
 
-            case ScreenMode.BorderlessWindow:
-                _window.WindowState = WindowState.Normal;
-                _window.WindowBorder = WindowBorder.Hidden;
-                break;
+                case ScreenMode.Fullscreen:
+                case ScreenMode.BorderlessFullscreen:
+                    _window.WindowState = WindowState.Fullscreen;
+                    _window.WindowBorder = WindowBorder.Hidden;
+                    break;
+
+                case ScreenMode.BorderlessWindow:
+                    _window.WindowState = WindowState.Normal;
+                    _window.WindowBorder = WindowBorder.Hidden;
+                    break;
+            }
+
+            _screenMode = value;
         }
-
-        _screenMode = screenMode;
     }
-    public void SetTitle(string title) => _window.Title = title;
-    public void SetSize(int width, int height) => _window.Size = new(width,height);
-    public void SetPosition(int x, int y) => _window.Position = new(x,y);
 
-    public ScreenMode GetScreenMode() => _screenMode;
-    public string GetTitle() => _window.Title;
-    public Vector2D<int> GetSize() => _window.Size;
-    public Vector2D<int> GetPosition() => _window.Position;
+    public string Title 
+    { 
+        get => _window.Title; 
+        set => _window.Title = value; 
+    }
+
+    public Vector2D<int> Size 
+    { 
+        get => _window.Size; 
+        set => _window.Size = value; 
+    }
+
+    public Vector2D<int> Position 
+    { 
+        get => _window.Position; 
+        set => _window.Position = value; 
+    }
 }

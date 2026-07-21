@@ -14,7 +14,7 @@ public class WindowMover : ScriptBehaviour
 
     public override void Start()
     {
-        var currentPos = WindowControl.GetPosition();
+        var currentPos = WindowControl.Position;
         _localPosition = new(currentPos.X, currentPos.Y);
     }
     
@@ -45,6 +45,6 @@ public class WindowMover : ScriptBehaviour
 
         _localPosition += _velocity;
 
-        WindowControl.SetPosition((int)_localPosition.X, (int)_localPosition.Y);
+        WindowControl.Position = new Vector2D<int>((int)_localPosition.X, (int)_localPosition.Y);
     }
 }
