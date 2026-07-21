@@ -9,7 +9,7 @@ public class FPSChecker : ScriptBehaviour
     private string _currentTitle = "";
     private float _accumulatedTime = 0f;
     private int _frameCount = 0;
-    private float _updateInterval = 0.5f;
+    private float _updateInterval = 0.15f;
 
     public override void Start()
     {
