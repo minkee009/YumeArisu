@@ -36,5 +36,6 @@ public class TestScene2 : Scene
         childC.Transform.SetParent(go3.Transform);
 
         go.AddComponent<FPSChecker>();
+        go.AddComponent<WindowMover>();
     }
 }

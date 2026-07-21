@@ -88,6 +88,18 @@ public class DesktopApplication : IApplication
         
     }
     
+    public int TargetFrameRate
+    {
+        get => (int)_window.View.FramesPerSecond;
+        set => _window.View.FramesPerSecond = Math.Max(0, value);
+    }
+
+    public bool VSync
+    {
+        get => _window.View.VSync;
+        set => _window.View.VSync = value;
+    }
+
     public bool IsRunning()
     {
         return !_window.View.IsClosing;
@@ -96,16 +108,5 @@ public class DesktopApplication : IApplication
     public void RequestClose()
     {
         _window.View.Close();
-    }
-
-
-    public void SetTargetFrameRate(int fps)
-    {
-        _window.View.FramesPerSecond = Math.Max(0, fps);
-    }
-
-    public void SetVSync(bool enabled)
-    {
-        _window.View.VSync = enabled;
     }
 }
