@@ -6,7 +6,7 @@ public class TimeSystem : SystemBase<TimeSystem, NoConfig>
     public float UnscaledDeltaTime => (float)_unscaledDeltaTime;
     public float TotalTime => (float)_totalTime; 
     public float UnscaledTotalTime => (float)_unscaledTotalTime; 
-    public float FixedDeltaTime { get => (float)_fixedDeltaTime; set => _fixedDeltaTime = Math.Max(0.0001, value);}
+    public float FixedDeltaTime { get => (float)_fixedDeltaTime; set => _fixedDeltaTime = Math.Max(0.0001, value); }
     public float FixedTime => (float)_fixedTime; 
     public float TimeScale { get => (float)_timeScale; set => _timeScale = Math.Max(0.0, value); }
     public float MaximumAllowedTimestep { get => (float)_maximumAllowedTimestep; set => _maximumAllowedTimestep = Math.Max(0.0001, value); }
