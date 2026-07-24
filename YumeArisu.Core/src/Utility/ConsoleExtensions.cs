@@ -38,7 +38,7 @@ public static class ConsoleExtensions
         int prefixWidth = GetDisplayWidth(prefix);
         int availableWidth = targetWidth - prefixWidth;
 
-        // 파일 경로를 화면 표시 너비에 맞춰 자르기
+        // 후방 메시지를 화면 표시 너비에 맞춰 자르기
         string fileDisplay = TruncateToDisplayWidth(msg, availableWidth);
 
         string line = prefix + fileDisplay;
