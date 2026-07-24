@@ -32,7 +32,7 @@ public abstract class SystemBase<T, TConfig> where T : SystemBase<T, TConfig>, n
     {
         if (IsStarted)
         {
-            ConsoleColorExtensions.WriteLineColored(
+            ConsoleExtensions.WriteLineColored(
                 $"{typeof(T).Name}는 이미 StartUp 되었습니다. 중복 호출을 확인하세요.",
                 ConsoleColor.Red);
             return;
@@ -46,7 +46,7 @@ public abstract class SystemBase<T, TConfig> where T : SystemBase<T, TConfig>, n
     {
         if (!IsStarted)
         {
-            ConsoleColorExtensions.WriteLineColored(
+            ConsoleExtensions.WriteLineColored(
                 $"{typeof(T).Name}는 StartUp되지 않은 상태에서 ShutDown이 호출되었습니다.",
                 ConsoleColor.Red);
             return;

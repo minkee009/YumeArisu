@@ -75,7 +75,7 @@ public static class PakWriter
                     {   
                         processedCount++;
                         if(printProgress)
-                            ConsoleMessages.PrintProgress(processedCount, totalCount, fileName);
+                            ConsoleExtensions.PrintProgress(processedCount, totalCount, fileName);
                     }
                 );
 
@@ -91,7 +91,7 @@ public static class PakWriter
                     {   
                         processedCount++;
                         if(printProgress)
-                            ConsoleMessages.PrintProgress(processedCount, totalCount, fileName);
+                            ConsoleExtensions.PrintProgress(processedCount, totalCount, fileName);
                     }
                 );
 
