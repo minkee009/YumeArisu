@@ -5,7 +5,7 @@ using Silk.NET.OpenGL;
 
 namespace YumeArisu.Desktop.Implements;
 
-public class DesktopWindow : IWindowControl
+public sealed class DesktopWindow : IWindowControl
 {
     public IView View => _window;
     private IWindow _window;

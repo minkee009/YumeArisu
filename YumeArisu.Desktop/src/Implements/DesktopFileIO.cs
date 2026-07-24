@@ -5,9 +5,24 @@ using YumeArisu.Core.Abstractions;
 
 namespace YumeArisu.Desktop.Implements;
 
-public class DesktopFileIO : IFileIO
+public sealed class DesktopFileIO : IFileIO
 {
     public FileIOFeatures Capabilities => throw new NotImplementedException();
+
+    internal DesktopFileIO()
+    {
+        
+    }
+
+    internal void Open()
+    {
+        
+    }
+
+    internal void Close()
+    {
+        
+    }
 
     public byte[] ReadAllBytes(string path)
     {
