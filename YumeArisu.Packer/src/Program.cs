@@ -18,6 +18,8 @@ internal class Program
                     return;
             }
         }
+
+        System.Console.WriteLine("'help'를 입력하여 실행할 명령어를 확인해주세요.");
     }
 
     private static void ExcutePackerProgram(string[] validArgs)
