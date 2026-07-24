@@ -75,7 +75,7 @@ public static class PakWriter
                     {   
                         processedCount++;
                         if(printProgress)
-                            PrintProgress(processedCount, totalCount, fileName);
+                            ConsoleMessages.PrintProgress(processedCount, totalCount, fileName);
                     }
                 );
 
@@ -91,7 +91,7 @@ public static class PakWriter
                     {   
                         processedCount++;
                         if(printProgress)
-                            PrintProgress(processedCount, totalCount, fileName);
+                            ConsoleMessages.PrintProgress(processedCount, totalCount, fileName);
                     }
                 );
 
@@ -287,29 +287,5 @@ public static class PakWriter
         bw.Write(footer.IndexOffset);
         bw.Write(footer.IndexEntryCount);
         bw.Write(footer.EndMagic);
-    }
-
-    private static void PrintProgress(int current, int total, string currentFile)
-    {
-        const int barWidth = 30;
-        double ratio = (double)current / total;
-        int filled = (int)(barWidth * ratio);
-
-        string bar = new string('#', filled) + new string('-', barWidth - filled);
-        string percent = (ratio * 100).ToString("F1");
-        string prefix = $"[{bar}] {percent}% ({current}/{total}) ";
-
-        // 콘솔 창 너비를 넘지 않도록 파일명 자르기
-        int consoleWidth = Console.IsOutputRedirected ? 120 : Console.WindowWidth;
-        int available = Math.Max(consoleWidth - prefix.Length - 1, 10);
-
-        string fileDisplay = currentFile.Length > available
-            ? "..." + currentFile[^(available - 3)..]  // 뒷부분(파일명 위주)이 더 유용하니 뒤쪽을 남김
-            : currentFile;
-
-        string line = prefix + fileDisplay;
-
-        // 남는 글자 확실히 지우기 위해 콘솔 너비만큼 패딩
-        Console.Write("\r" + line.PadRight(consoleWidth - 1));
     }
 }
