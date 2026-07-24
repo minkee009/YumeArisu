@@ -117,7 +117,7 @@ public static class PakWriter
             // Header
             WriteHeader(bw, new Pak.Header
             {
-                Magic = [0x50, 0x41, 0x4B, 0x00], // "PAK\0"
+                Magic = Pak.MagicNum,
                 Version = 100
             });
 
@@ -144,7 +144,7 @@ public static class PakWriter
                 long estimatedIndexSize = (indexEntries.Count + 1) * Pak.EntryLength;
                 if (currentWriteLength + encodedLength + estimatedIndexSize > Pak.MaximumBytes - Pak.HeaderLength - Pak.FooterLength)
                 {
-                    if (currentWriteLength == 0) // 빈 pak인데도 이 파일 하나가 안 들어감 → 정상 처리 불가능한 상황
+                    if (currentWriteLength == 0) // 빈 pak인데도 이 파일 하나가 안 들어감 -> 정상 처리 불가능한 상황
                         throw new InvalidDataException($"파일이 너무 커서 단독으로도 pak 용량을 초과함: {currentFile}");
 
                     overWrite = true;
@@ -191,7 +191,7 @@ public static class PakWriter
             {
                 IndexOffset = indexOffset,
                 IndexEntryCount = indexEntryCount,
-                EndMagic = [0x4B, 0x41, 0x50, 0x00] // "KAP\0"
+                EndMagic = Pak.EndMagicNum
             });
         }
     }
@@ -209,7 +209,7 @@ public static class PakWriter
             // Header
             WriteHeader(bw, new Pak.Header
             {
-                Magic = [0x50, 0x41, 0x4B, 0x00], // "PAK\0"
+                Magic = Pak.MagicNum,
                 Version = 100
             });
 
@@ -263,7 +263,7 @@ public static class PakWriter
             {
                 IndexOffset = indexOffset,
                 IndexEntryCount = indexEntryCount,
-                EndMagic = [0x4B, 0x41, 0x50, 0x00] // "KAP\0"
+                EndMagic = Pak.EndMagicNum
             });
         }
     }
