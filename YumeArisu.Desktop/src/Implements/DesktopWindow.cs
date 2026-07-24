@@ -1,6 +1,7 @@
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using YumeArisu.Core.Abstractions;
+using Silk.NET.OpenGL;
 
 namespace YumeArisu.Desktop.Implements;
 
@@ -16,8 +17,9 @@ public class DesktopWindow : IWindowControl
         options.Size = new Vector2D<int>(width, height);
         options.Title = title;
 
-        _window = Window.Create(options);
         _screenMode = ScreenMode.Windowed;
+
+        _window = Window.Create(options);
     }
 
     public ScreenMode ScreenMode

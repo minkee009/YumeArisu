@@ -422,3 +422,7 @@ obj/
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,csharp,dotnetcore
+
+### YumeArisu 전용 ###
+# Assets 폴더
+Assets/

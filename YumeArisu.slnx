@@ -2,4 +2,5 @@
   <Project Path="YumeArisu.Core/YumeArisu.Core.csproj" />
   <Project Path="YumeArisu.Desktop/YumeArisu.Desktop.csproj" />
   <Project Path="YumeArisu.Game/YumeArisu.Game.csproj" />
+  <Project Path="YumeArisu.Packer/YumeArisu.Packer.csproj" />
 </Solution>

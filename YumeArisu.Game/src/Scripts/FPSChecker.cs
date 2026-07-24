@@ -14,7 +14,7 @@ public class FPSChecker : ScriptBehaviour
     public override void Start()
     {
         _currentTitle = WindowControl.Title;
-        ApplicationControl.VSync = false;
+        //ApplicationControl.VSync = false;
     }
 
     public override void Update()
