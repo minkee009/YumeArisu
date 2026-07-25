@@ -156,7 +156,7 @@ public static class PakWriter
                 var relativePath = Path.GetRelativePath(rootFolderPath, currentFile)
                     .Replace('\\', '/');
 
-                var seed = Pak.MakeEntrySeed(relativePath); 
+                var seed = Pak.CalcXorSeed(relativePath); 
                 Crypt.Xor(target, 0, encodedLength, seed);
 
                 indexEntries.Enqueue(
@@ -235,7 +235,7 @@ public static class PakWriter
             var relativePath = Path.GetRelativePath(rootFolderPath, currentFile)
                 .Replace('\\', '/');
 
-            var seed = Pak.MakeEntrySeed(relativePath); 
+            var seed = Pak.CalcXorSeed(relativePath); 
             Crypt.Xor(target, 0, encodedLength, seed);
 
             var indexEntry = new Pak.Entry

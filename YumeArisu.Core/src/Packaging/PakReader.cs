@@ -28,9 +28,7 @@ public static class PakReader
 
     private static Pak.Footer ReadFooter(BinaryReader br)
     {
-        const int footerSize = 8 + 4 + 4; // long + int + byte[4]
-
-        br.BaseStream.Seek(-footerSize, SeekOrigin.End); // 파일 맨 끝에서 16바이트 앞으로
+        br.BaseStream.Seek(-Pak.FooterLength, SeekOrigin.End); // 파일 맨 끝에서 16바이트 앞으로
 
         return new Pak.Footer
         {

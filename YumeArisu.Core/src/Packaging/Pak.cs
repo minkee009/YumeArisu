@@ -38,9 +38,9 @@ public static class Pak
         public byte[] EndMagic;
     }
 
-    internal static ulong MakeEntrySeed(string relativePath)
+    internal static ulong CalcXorSeed(string relativePath)
     {
-        // Key + 파일 상대경로를 합쳐서 엔트리별로 유일한 seed 생성
+        // Key + 파일 상대경로를 합쳐서 파일별로 유일한 seed 생성
         byte[] keyBytes = BitConverter.GetBytes(VersionNum);
         byte[] pathBytes = Encoding.UTF8.GetBytes(relativePath);
 
