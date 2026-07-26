@@ -12,6 +12,10 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
     private LinkedList<Coroutine> _waitUntilList = new();
     private Dictionary<Coroutine, double> _waitUntilTime = new();
 
+    private Coroutine[] _updateBuffer = Array.Empty<Coroutine>();
+    private Coroutine[] _fixedUpdateBuffer = Array.Empty<Coroutine>();
+    private Coroutine[] _waitUntilBuffer = Array.Empty<Coroutine>();
+
     internal override void OnStartUp(NoConfig config)
     {
         _allActive.Clear();
@@ -24,6 +28,10 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
     internal override void OnShutDown()
     {
         ImmediateStopAllCoroutines();
+
+        _updateBuffer = Array.Empty<Coroutine>();
+        _fixedUpdateBuffer = Array.Empty<Coroutine>();
+        _waitUntilBuffer = Array.Empty<Coroutine>();
     }
 
     internal Coroutine StartCoroutine(ScriptBehaviour owner, IEnumerator routine)
@@ -76,38 +84,28 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
 
     public void YieldFixedUpdate()
     {
-        var node = _fixedUpdateList.First;
-        while (node != null)
-        {
-            var next = node.Next; // Proccess가 node를 리스트에서 제거해도 안전하게 다음으로 이동
-            Proccess(node.Value);
-            node = next;
-        }
+        var snapshot = SnapshotToBuffer(_fixedUpdateList, ref _fixedUpdateBuffer);
+        foreach (var coroutine in snapshot)
+            Proccess(coroutine);
     }
-
+ 
     public void YieldUpdate()
     {
-        var node = _updateList.First;
-        while (node != null)
+        var snapshot = SnapshotToBuffer(_updateList, ref _updateBuffer);
+        foreach (var coroutine in snapshot)
         {
-            var next = node.Next;
-            var coroutine = node.Value;
             if (IsWaitEnd(coroutine))
                 Proccess(coroutine);
-            node = next;
         }
     }
-
+ 
     public void YieldUntil()
     {
-        var node = _waitUntilList.First;
-        while (node != null)
+        var snapshot = SnapshotToBuffer(_waitUntilList, ref _waitUntilBuffer);
+        foreach (var coroutine in snapshot)
         {
-            var next = node.Next;
-            var coroutine = node.Value;
             if (((WaitUntil)coroutine.WaitOption).Condition())
                 Proccess(coroutine);
-            node = next;
         }
     }
 
@@ -138,6 +136,7 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
                 _waitUntilList.Remove(coroutine.Node); 
                 break;
         }
+
         coroutine.ListState = WaitListState.None;
         coroutine.Node = null;
         _waitUntilTime.Remove(coroutine);
@@ -179,5 +178,24 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
                 coroutine.ListState = WaitListState.Update;
                 break;
         }
+    }
+
+    /// <summary>
+    /// 내부 순회용 코루틴 리스트 스냅샷을 제공합니다.
+    /// </summary>
+    /// <param name="list">복사할 리스트</param>
+    /// <param name="buffer">복사된 스냅샷용 버퍼</param>
+    /// <returns></returns>
+    private static Span<Coroutine> SnapshotToBuffer(LinkedList<Coroutine> list, ref Coroutine[] buffer)
+    {
+        int count = list.Count;
+        if (count == 0)
+            return Span<Coroutine>.Empty;
+ 
+        if (buffer.Length < count)
+            buffer = new Coroutine[count]; 
+ 
+        list.CopyTo(buffer, 0);
+        return buffer.AsSpan(0, count);
     }
 }
