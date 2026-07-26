@@ -47,4 +47,4 @@
 ## Release/Publish 빌드 시
 - 게임의 아트 작업물인 Assets와 아트 작업물의 바이너리 패키지인 Data는 git 하위 폴더로 직접 제공되지 않습니다. (용량 초과 문제)
 - Assets 폴더와 Data 폴더를 **[이곳]**에서 다운받아 최상단 폴더에 배치해두고 빌드해주세요.
-- Android 진입점 프로젝트의 경우 YumeArisu.Android 내부에 `Assets`로 빈 폴더를 생성하고 Data 폴더만 넣어주세요
+- Android 진입점 프로젝트의 경우 YumeArisu.Android 내부에 `Assets`란 이름으로 빈 폴더를 생성하고 Data 폴더만 넣어주세요, Android는 Debug 빌드여도 이 Data폴더가 꼭 필요합니다.
