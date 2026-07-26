@@ -1,28 +1,69 @@
 using System.Text;
+using Android.Content;
+using Android.Content.Res;
 using YumeArisu.Core.Abstractions;
-using YumeArisu.Core.Utility;
 using YumeArisu.Core.Packaging;
+using YumeArisu.Core.Utility;
 
-namespace YumeArisu.Desktop.Implements;
+namespace YumeArisu.Android.Implements;
 
-public sealed class DesktopFileIO : IFileIO, IDisposable
+/// <summary>
+/// Helper to assist with file loading.
+/// </summary>
+public sealed class AndroidFileIO : IFileIO
 {
+    private AssetManager _assetManager;
+    private Context _context;
+
     public bool IsOpened { get; private set; } // _disposed 역할 겸비 
     private List<Stream> _pakChunkStreams;
     private Dictionary<ulong, PakReader.MetaData> _metaDataTable;
 
+    public AndroidFileIO(AssetManager assets, Context context)
+    {
+        _assetManager = assets;
+        _context = context;
+    }
+
     internal void Open(string pakRootFolder, string pakName)
     {
         if (IsOpened)
-        {
-            ConsoleExtensions.WriteLineColored($"FileIO가 이미 열려있습니다.", ConsoleColor.Red);
             return;
-        }
-
-        if (!Directory.Exists(pakRootFolder))
-            throw new DirectoryNotFoundException($"PAK 루트 폴더를 찾을 수 없습니다: {pakRootFolder}");
 
         _pakChunkStreams = new();
+
+        long versionCodeRaw;
+        if (OperatingSystem.IsAndroidVersionAtLeast(28))
+        {
+            versionCodeRaw = _context.PackageManager
+                .GetPackageInfo(_context.PackageName, 0)
+                .LongVersionCode;
+        }
+        else
+        {
+        #pragma warning disable CS0618
+            versionCodeRaw = _context.PackageManager
+                .GetPackageInfo(_context.PackageName, 0)
+                .VersionCode;
+        #pragma warning restore CS0618
+        }
+
+        string appVersion = versionCodeRaw.ToString();
+
+        string targetDir = Path.Combine(_context.FilesDir.AbsolutePath, pakRootFolder);
+        string versionMarkerPath = Path.Combine(targetDir, ".version");
+
+        // 저장된 버전과 현재 앱 버전이 다르면(또는 최초 실행이면) 통째로 밀고 새로 복사
+        bool needsCopy = !File.Exists(versionMarkerPath) 
+            || File.ReadAllText(versionMarkerPath) != appVersion;
+
+        if (needsCopy)
+        {
+            if (Directory.Exists(targetDir))
+                Directory.Delete(targetDir, recursive: true);
+
+            Directory.CreateDirectory(targetDir);
+        }
 
         try
         {
@@ -30,17 +71,34 @@ public sealed class DesktopFileIO : IFileIO, IDisposable
 
             while (true)
             {
-                string chunkFileName = $"{pakName}.pak{chunkOrder:D2}";
-                string chunkFilePath = Path.Combine(pakRootFolder, chunkFileName);
+                string fileName = $"{pakName}.pak{chunkOrder:D2}";
+                string assetPath = $"{pakRootFolder}/{fileName}";
+                string localPath = Path.Combine(targetDir, fileName);
 
-                if (!File.Exists(chunkFilePath))
-                    break;
+                if (needsCopy)
+                {
+                    try
+                    {
+                        using var assetStream = _assetManager.Open(assetPath, Access.Streaming);
+                        using var fileStream = File.Create(localPath);
+                        assetStream.CopyTo(fileStream);
+                    }
+                    catch
+                    {
+                        break; // 더 이상 청크 없음
+                    }
+                }
+                else if (!File.Exists(localPath))
+                {
+                    break; // 캐시는 있는데 이 청크만 없음 -> 여기서 종료
+                }
 
-                var stream = new FileStream(chunkFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                _pakChunkStreams.Add(stream);
-
+                _pakChunkStreams.Add(File.OpenRead(localPath));
                 chunkOrder++;
             }
+
+            if (needsCopy)
+                File.WriteAllText(versionMarkerPath, appVersion);
 
             if (_pakChunkStreams.Count == 0)
                 throw new FileNotFoundException($"'{pakName}'에 해당하는 PAK 청크 파일을 찾을 수 없습니다.");
@@ -52,7 +110,6 @@ public sealed class DesktopFileIO : IFileIO, IDisposable
         }
         catch
         {
-            // 오픈 과정 실패 시 열어둔 스트림 정리
             if (_pakChunkStreams != null)
             {
                 foreach (var stream in _pakChunkStreams)
@@ -65,10 +122,9 @@ public sealed class DesktopFileIO : IFileIO, IDisposable
             _metaDataTable?.Clear();
             _metaDataTable = null;
 
-            throw; // 예외 다시 던지기
+            throw;
         }
     }
-
     internal void Close()
     {
         if (!IsOpened)

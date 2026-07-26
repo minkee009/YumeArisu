@@ -31,6 +31,7 @@ public static class Pak
         public int OriginalLength;
     }
 
+    // TODO : 엔드매직 앞에 체크섬 꼭 만들기 - 마감은 0.01a 퍼블리싱 전까지
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Footer
     {

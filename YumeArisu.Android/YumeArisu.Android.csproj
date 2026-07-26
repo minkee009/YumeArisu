@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>NETSDK1202</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AndroidStoreUncompressedFileExtensions>.pak00;.pak01;.pak02;.pak03</AndroidStoreUncompressedFileExtensions>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AndroidAsset Include="Assets\Data\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\YumeArisu.Core\YumeArisu.Core.csproj" />
+    <ProjectReference Include="..\YumeArisu.Game\YumeArisu.Game.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+		<TargetFramework>net9.0-android</TargetFramework>
+		<SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+    <RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
+    <OutputType>Exe</OutputType>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationId>com.yumearisu.android</ApplicationId>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>0.0.1-alpha</ApplicationDisplayVersion>
+    <Configurations>Debug;Release</Configurations>
+    <TrimMode>partial</TrimMode>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <EmbedAssembliesIntoApk>false</EmbedAssembliesIntoApk>
+    <PublishTrimmed>false</PublishTrimmed>
+  </PropertyGroup>
+</Project>
