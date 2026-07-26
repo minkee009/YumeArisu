@@ -10,7 +10,7 @@ namespace YumeArisu.Android.Implements;
 /// <summary>
 /// Helper to assist with file loading.
 /// </summary>
-public sealed class AndroidFileIO : IFileIO
+public sealed class AndroidFileIO : IFileIO, IDisposable
 {
     private AssetManager _assetManager;
     private Context _context;
