@@ -6,12 +6,12 @@ public class ResourceSystem : SystemBase<ResourceSystem, IFileIO>
 {
     private IFileIO _fileIO;
 
-    internal override void StartUpInternal(IFileIO fileIO)
+    internal override void OnStartUp(IFileIO fileIO)
     {
         _fileIO = fileIO;
     }
 
-    internal override void ShutDownInternal()
+    internal override void OnShutDown()
     {
         _fileIO = null;
     }

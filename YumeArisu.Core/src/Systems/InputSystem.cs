@@ -12,7 +12,7 @@ public class InputSystem : SystemBase<InputSystem, IView>
     private MouseState _mouseState;
     private IInputContext _input;
 
-    internal override void StartUpInternal(IView view)
+    internal override void OnStartUp(IView view)
     {
         _input = view.CreateInput();
         _keyboardState = new KeyboardState(_input.Keyboards[0]);
@@ -20,7 +20,7 @@ public class InputSystem : SystemBase<InputSystem, IView>
         _input.ConnectionChanged += DoConnect;
     }
 
-    internal override void ShutDownInternal() => _input?.Dispose();
+    internal override void OnShutDown() => _input?.Dispose();
 
     public void DoConnect(IInputDevice device, bool connected)
     {

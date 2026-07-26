@@ -94,8 +94,17 @@ public sealed class AndroidApplication : IApplicationControl
         _fileIO.Close();
     }
 
-    public int TargetFrameRate { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public bool VSync { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public int TargetFrameRate
+    {
+        get => (int)_window.View.FramesPerSecond;
+        set => _window.View.FramesPerSecond = Math.Max(0, value);
+    }
+
+    public bool VSync
+    {
+        get => _window.View.VSync;
+        set => _window.View.VSync = value;
+    }
 
     public bool IsRunning() => !_window.View.IsClosing;
 

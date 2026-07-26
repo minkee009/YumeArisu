@@ -134,7 +134,7 @@ public sealed class AndroidFileIO : IFileIO
         }
 
         // 스트림 닫기 + 멤버 필드 비우기
-        foreach(var stream in _pakChunkStreams)
+        foreach (var stream in _pakChunkStreams)
             stream.Close();
 
         _pakChunkStreams?.Clear();
@@ -158,7 +158,7 @@ public sealed class AndroidFileIO : IFileIO
 
     public byte[] ReadAllBytes(string path)
     {
-        if(!IsOpened)
+        if (!IsOpened)
             throw new Exception("아직 FileIO가 열리지 않았습니다!");
 
         return PakReader.Unpack(path, _pakChunkStreams, _metaDataTable);
@@ -167,7 +167,7 @@ public sealed class AndroidFileIO : IFileIO
     public string ReadAllString(string path)
     {
         if (!IsOpened)
-            throw new InvalidOperationException("아직 FileIO가 열리지 않았습니다!");
+            throw new Exception("아직 FileIO가 열리지 않았습니다!");
 
         byte[] bytes = ReadAllBytes(path);
         return Encoding.UTF8.GetString(bytes);

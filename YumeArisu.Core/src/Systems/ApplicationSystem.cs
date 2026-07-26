@@ -7,11 +7,11 @@ public class ApplicationSystem : SystemBase<ApplicationSystem, IApplicationContr
 {
     private IApplicationControl _control;
 
-    internal override void StartUpInternal(IApplicationControl control) 
+    internal override void OnStartUp(IApplicationControl control) 
     {
         _control = control;
     }
-    internal override void ShutDownInternal() => _control = null;
+    internal override void OnShutDown() => _control = null;
 
     public int TargetFrameRate { get => _control.TargetFrameRate; set => _control.TargetFrameRate = value; }
     public bool VSync { get => _control.VSync; set => _control.VSync = value; }

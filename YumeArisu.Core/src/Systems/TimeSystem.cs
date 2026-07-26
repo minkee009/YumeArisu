@@ -33,7 +33,7 @@ public class TimeSystem : SystemBase<TimeSystem, NoConfig>
     private double _accumulator;
     private int _fixedStepsThisFrame;
 
-    internal override void StartUpInternal(NoConfig config = default)
+    internal override void OnStartUp(NoConfig config = default)
     {
         _deltaTime = 0.0;
         _unscaledDeltaTime = 0.0;
@@ -50,7 +50,7 @@ public class TimeSystem : SystemBase<TimeSystem, NoConfig>
         _fixedStepsThisFrame = 0;
     }
 
-    internal override void ShutDownInternal() { }
+    internal override void OnShutDown() { }
 
     /// <summary>
     /// TimeSystem 내부의 변수값을 갱신합니다.

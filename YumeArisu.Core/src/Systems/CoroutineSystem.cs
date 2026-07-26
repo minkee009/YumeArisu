@@ -11,7 +11,7 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
     private List<Coroutine> _waitUntilList = new();
     private Dictionary<Coroutine, double> _waitUntilTime = new();
 
-    internal override void StartUpInternal(NoConfig config)
+    internal override void OnStartUp(NoConfig config)
     {
         _allActive.Clear();
         _updateList.Clear();
@@ -20,7 +20,7 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
         _waitUntilTime.Clear();
     }
 
-    internal override void ShutDownInternal()
+    internal override void OnShutDown()
     {
         ImmediateStopAllCoroutines();
     }

@@ -17,7 +17,7 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
     private Scene _currentScene;
     private Scene _nextScene;
 
-    internal override void StartUpInternal(ISceneManifest bootstrap)
+    internal override void OnStartUp(ISceneManifest bootstrap)
     {
         _nextScene = bootstrap.DynamicScenes.FirstOrDefault();
 
@@ -33,10 +33,9 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
         }
 
         _staticScene = bootstrap.StaticScene;
-        _staticScene?.Load();
     }
 
-    internal override void ShutDownInternal()
+    internal override void OnShutDown()
     {
         _currentScene?.Unload();
         _staticScene?.Unload();
@@ -68,6 +67,9 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
 
     public void BeginFrame()
     {
+        if (!_staticScene?.IsLoaded ?? false)
+            _staticScene.Load();
+
         if (_nextScene == null)
             return;
 

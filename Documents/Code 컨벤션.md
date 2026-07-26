@@ -48,7 +48,7 @@ else
 ```CSharp
 if (OhMyGA)
 {
-    if(what)
+    if (what)
         Hello();
 }
 ```
@@ -60,7 +60,7 @@ if (OhMyGA)
 while(!quit)
     Spamming();
 
-foreach(var go in GameObjects)
+foreach (var go in GameObjects)
 {
     go.ActiveSelf = true;
     go.Name = $"Enemy[{enemyCount++}]";

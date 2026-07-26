@@ -9,12 +9,12 @@ public class WindowSystem : SystemBase<WindowSystem, IWindowControl>
 {
     private IWindowControl _control;
 
-    internal override void StartUpInternal(IWindowControl control) 
+    internal override void OnStartUp(IWindowControl control) 
     {
         _control = control;
     }
 
-    internal override void ShutDownInternal() => _control = null;
+    internal override void OnShutDown() => _control = null;
 
     public ScreenMode ScreenMode { get => _control.ScreenMode; set => _control.ScreenMode = value; }
     public string Title { get => _control.Title; set => _control.Title = value; }

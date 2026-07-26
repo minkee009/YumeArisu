@@ -4,10 +4,7 @@ namespace YumeArisu.Game.Scenes;
 
 public class EmptyScene : Scene
 {
-    protected override void Load() { }
+    protected override void OnLoad() { }
 
-    protected override void Unload()
-    {
-        base.Unload();
-    }
+    protected override void OnUnload() { }
 }

@@ -43,7 +43,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
     private bool _needSort = false;
     private bool _needScheduleRebuild = false;
 
-    internal override void StartUpInternal(NoConfig control)
+    internal override void OnStartUp(NoConfig control)
     {
         _behaviours.Clear();
         _scheduledBehaviours.Clear();
@@ -57,7 +57,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         _unregistrationQueue.Clear();
     }
 
-    internal override void ShutDownInternal()
+    internal override void OnShutDown()
     {
         _behaviours.Clear();
         _scheduledBehaviours.Clear();

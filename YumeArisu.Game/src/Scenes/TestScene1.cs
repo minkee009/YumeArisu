@@ -7,7 +7,7 @@ public class TestScene1 : Scene
 {
     private GameObject _player;
     private GameObject _weapon;
-    protected override void Load()
+    protected override void OnLoad()
     {
         _player = CreateGameObject("Player");
         System.Console.WriteLine("크하하 플레이어가 생성됐다고!!"); // 센포티스런 대사
@@ -24,7 +24,7 @@ public class TestScene1 : Scene
         if (testManager != null)
             System.Console.WriteLine($"{testManager.Name} : 전역 쿼리에서 찾은 결과입니다.");
 
-        foreach(var tr in _player.Transform.Children)
+        foreach (var tr in _player.Transform.Children)
         {
             System.Console.WriteLine($"{tr.GameObject.Name} -> 플레이어 하위 객체");
         }
@@ -33,9 +33,9 @@ public class TestScene1 : Scene
         SceneControl.ChangeScene("TestScene2");
     }
 
-    protected override void Unload()
+    protected override void OnUnload()
     {
-        base.Unload();
+        base.OnUnload();
         System.Console.WriteLine($"{_player == null} -> 플레이어 null 상태");
     }
 }

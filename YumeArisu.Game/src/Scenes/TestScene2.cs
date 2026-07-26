@@ -4,7 +4,7 @@ namespace YumeArisu.Game.Scenes;
 
 public class TestScene2 : Scene
 {
-    protected override void Load()
+    protected override void OnLoad()
     {
         Console.WriteLine("ㅎㅎ ㅋㅋ ㅈㅅ");
         GameObject go = CreateGameObject("히후미");

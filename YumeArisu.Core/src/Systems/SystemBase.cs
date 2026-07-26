@@ -25,8 +25,8 @@ public abstract class SystemBase<T, TConfig> where T : SystemBase<T, TConfig>, n
     
     private static T _instance;
 
-    internal abstract void StartUpInternal(TConfig config); 
-    internal abstract void ShutDownInternal(); 
+    internal abstract void OnStartUp(TConfig config); 
+    internal abstract void OnShutDown(); 
 
     public void StartUp(TConfig config)
     {
@@ -38,7 +38,7 @@ public abstract class SystemBase<T, TConfig> where T : SystemBase<T, TConfig>, n
             return;
         }
 
-        StartUpInternal(config);
+        OnStartUp(config);
         IsStarted = true;
     }
 
@@ -52,7 +52,7 @@ public abstract class SystemBase<T, TConfig> where T : SystemBase<T, TConfig>, n
             return;
         }
 
-        ShutDownInternal();
+        OnShutDown();
         IsStarted = false;
 
         if (_instance == this)

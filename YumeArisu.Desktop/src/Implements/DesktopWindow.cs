@@ -27,7 +27,7 @@ public sealed class DesktopWindow : IWindowControl
         get => _screenMode;
         set
         {
-            if(_screenMode == value)
+            if (_screenMode == value)
                 return;
 
             switch (value)

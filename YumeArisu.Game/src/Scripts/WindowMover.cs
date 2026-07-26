@@ -26,16 +26,16 @@ public class WindowMover : ScriptBehaviour
         var targetVelocity = new Vector2(hInput,vInput) * Speed * Time.DeltaTime;
         _velocity = Vector2.Lerp(_velocity, targetVelocity, Time.DeltaTime * 2.0f);
         
-        // if(_isGrounded && Input.GetKeyDown(Key.Space))
+        // if (_isGrounded && Input.GetKeyDown(Key.Space))
         // {
         //     _isGrounded = false;
         //     _velocity += new Vector2(0.0f, -0.5f);
         // }
 
-        // if(!_isGrounded && _localPosition.Y < 1080 - WindowControl.GetSize().Y)
+        // if (!_isGrounded && _localPosition.Y < 1080 - WindowControl.GetSize().Y)
         // {
         //     _localPosition += new Vector2(0.0f, 600.0f) * Time.DeltaTime;
-        //     if(_localPosition.Y >= 1080 - WindowControl.GetSize().Y)
+        //     if (_localPosition.Y >= 1080 - WindowControl.GetSize().Y)
         //     {
         //         _isGrounded = true;
         //         _localPosition.Y = 1081 - WindowControl.GetSize().Y;

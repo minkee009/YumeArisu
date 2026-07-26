@@ -26,7 +26,7 @@ public static class PakReader
     {
         metaDataTable = new();
 
-        for(int i = 0; i < pakChunkStreams.Count; i++)
+        for (int i = 0; i < pakChunkStreams.Count; i++)
         {
             var ps = pakChunkStreams[i];
             using (var br = new BinaryReader(ps, Encoding.UTF8, true))

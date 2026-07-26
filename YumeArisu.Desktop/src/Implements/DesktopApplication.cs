@@ -44,22 +44,6 @@ public sealed class DesktopApplication : IApplicationControl
         SceneSystem.Instance.OnBeforeSceneChange += CoroutineSystem.Instance.ImmediateStopAllCoroutines;
     }
 
-    public void OnClosing()
-    {
-        SceneSystem.Instance.OnBeforeSceneChange -= CoroutineSystem.Instance.ImmediateStopAllCoroutines;
-
-        SceneSystem.Instance.ShutDown();
-        CoroutineSystem.Instance.ShutDown();
-        BehaviourSystem.Instance.ShutDown();
-        TimeSystem.Instance.ShutDown();
-        ResourceSystem.Instance.ShutDown();
-        InputSystem.Instance.ShutDown();
-        WindowSystem.Instance.ShutDown();
-        ApplicationSystem.Instance.ShutDown();
-        
-        _fileIO.Close();
-    }
-
     public void OnResized(Vector2D<int> newSize)
     {
         // Handle view resizing if necessary
@@ -93,6 +77,22 @@ public sealed class DesktopApplication : IApplicationControl
     {
         
     }
+
+    public void OnClosing()
+    {
+        SceneSystem.Instance.OnBeforeSceneChange -= CoroutineSystem.Instance.ImmediateStopAllCoroutines;
+
+        SceneSystem.Instance.ShutDown();
+        CoroutineSystem.Instance.ShutDown();
+        BehaviourSystem.Instance.ShutDown();
+        TimeSystem.Instance.ShutDown();
+        ResourceSystem.Instance.ShutDown();
+        InputSystem.Instance.ShutDown();
+        WindowSystem.Instance.ShutDown();
+        ApplicationSystem.Instance.ShutDown();
+        
+        _fileIO.Close();
+    }
     
     public int TargetFrameRate
     {
@@ -106,13 +106,7 @@ public sealed class DesktopApplication : IApplicationControl
         set => _window.View.VSync = value;
     }
 
-    public bool IsRunning()
-    {
-        return !_window.View.IsClosing;
-    }
+    public bool IsRunning() => !_window.View.IsClosing;
 
-    public void RequestClose()
-    {
-        _window.View.Close();
-    }
+    public void RequestClose() => _window.View.Close();
 }

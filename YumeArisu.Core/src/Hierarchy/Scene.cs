@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using YumeArisu.Core.Utility;
 
 namespace YumeArisu.Core.Hierarchy;
@@ -6,16 +7,42 @@ public abstract class Scene
 {
     public ReadOnlyListView<GameObject> GameObjects => _gameObjects;
     
+    public bool IsLoaded { get; private set; }
+
     internal List<GameObject> _gameObjects = new();
 
-    internal protected abstract void Load();
-
-    internal protected virtual void Unload()
+    internal void Load()
     {
+        if (IsLoaded)
+        {
+            ConsoleExtensions.WriteLineColored("씬이 이미 로드되어 있습니다. Unload이후 다시 호출해주세요", ConsoleColor.Yellow);
+            return;
+        }
+
+        OnLoad();
+
+        IsLoaded = true;
+    }
+
+    internal void Unload()
+    {
+        if (!IsLoaded)
+        {
+            ConsoleExtensions.WriteLineColored("씬이 로드되어 있지 않습니다. Load 이후 호출해주세요", ConsoleColor.Yellow);
+            return;
+        }
+
+        OnUnload();
+
         foreach (var go in _gameObjects)
             go.DestroyInternal();
         _gameObjects.Clear();
+
+        IsLoaded = false;
     }
+
+    protected abstract void OnLoad();
+    protected virtual void OnUnload() { }
 
     public GameObject CreateGameObject(string name = "",bool active = true)
     {
