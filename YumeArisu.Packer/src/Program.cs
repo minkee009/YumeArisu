@@ -28,19 +28,12 @@ internal class Program
         if (validArgs.Length < 2)
             throw new InvalidDataException("인자가 올바르지 않습니다");
 
-        try
-        {
-            string rootFolderPath = validArgs[0];
-            string outputFolderPath = validArgs[1];
+        string rootFolderPath = validArgs[0];
+        string outputFolderPath = validArgs[1];
 
-            // 2번째 인자(validArgs[2])가 들어왔다면 출력 이름으로 전달, 없으면 null 전달
-            string? outputName = validArgs.Length >= 3 ? validArgs[2] : null;
+        // 2번째 인자(validArgs[2])가 들어왔다면 출력 이름으로 전달, 없으면 null 전달
+        string? outputName = validArgs.Length >= 3 ? validArgs[2] : null;
 
-            PakWriter.Pack(rootFolderPath, outputFolderPath, outputName);
-        }
-        catch (IndexOutOfRangeException ex)
-        {
-            throw new Exception("인자의 개수가 적습니다.", ex);
-        }
+        PakWriter.Pack(rootFolderPath, outputFolderPath, outputName);
     }
 }

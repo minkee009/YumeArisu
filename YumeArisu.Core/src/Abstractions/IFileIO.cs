@@ -5,8 +5,7 @@ namespace YumeArisu.Core.Abstractions;
 /// </summary>
 public interface IFileIO
 {
-    FileIOFeatures Capabilities { get; }
-
+    public bool Exists(string path);
     byte[] ReadAllBytes(string path);
     string ReadAllString(string path);
 }

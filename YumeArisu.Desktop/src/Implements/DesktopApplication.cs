@@ -30,6 +30,8 @@ public sealed class DesktopApplication : IApplicationControl
 
     public void OnLoad()
     {
+        _fileIO.Open("./Data", "dat");
+
         ApplicationSystem.Instance.StartUp(this);
         WindowSystem.Instance.StartUp(_window);
         TimeSystem.Instance.StartUp(default);
@@ -44,6 +46,8 @@ public sealed class DesktopApplication : IApplicationControl
 
     public void OnClosing()
     {
+        SceneSystem.Instance.OnBeforeSceneChange -= CoroutineSystem.Instance.ImmediateStopAllCoroutines;
+
         SceneSystem.Instance.ShutDown();
         CoroutineSystem.Instance.ShutDown();
         BehaviourSystem.Instance.ShutDown();
@@ -52,6 +56,8 @@ public sealed class DesktopApplication : IApplicationControl
         InputSystem.Instance.ShutDown();
         WindowSystem.Instance.ShutDown();
         ApplicationSystem.Instance.ShutDown();
+        
+        _fileIO.Close();
     }
 
     public void OnResized(Vector2D<int> newSize)

@@ -426,3 +426,5 @@ obj/
 ### YumeArisu 전용 ###
 # Assets 폴더
 Assets/
+# Data 폴더
+Data/

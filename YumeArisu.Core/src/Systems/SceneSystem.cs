@@ -12,7 +12,7 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
     public event Action OnBeforeSceneChange;
     public event Action OnAfterSceneChange;
 
-    private Dictionary<string,Scene> _dynamicScenes;
+    private Dictionary<string, Scene> _dynamicScenes;
     private Scene _staticScene;
     private Scene _currentScene;
     private Scene _nextScene;

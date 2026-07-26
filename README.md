@@ -11,8 +11,9 @@
 
 | Library      | License     | Link |
 |-------------|------------|------|
-| ImGui       | MIT        | [GitHub](https://github.com/ocornut/imgui) |
 | Silk.NET | MIT        | [GitHub](https://github.com/dotnet/Silk.NET) |
+| ImGui       | MIT        | [GitHub](https://github.com/ocornut/imgui) |
+| K4os.Compression.LZ4 | MIT        | [GitHub](https://github.com/MiloszKrajewski/K4os.Compression.LZ4) |
 | StbImageSharp | MIT        | [GitHub](https://github.com/StbSharp/StbImageSharp) |
 
 
