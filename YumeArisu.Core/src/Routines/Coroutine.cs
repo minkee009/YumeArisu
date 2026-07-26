@@ -1,6 +1,6 @@
 using System.Collections;
 using YumeArisu.Core.Systems;
-using YumeArisu.Core.Internal.YieldAbstraction;
+using YumeArisu.Core.Internal.YieldHandling;
 
 namespace YumeArisu.Core.Routines;
 
@@ -10,6 +10,9 @@ public sealed class Coroutine : YieldInstruction
     public IEnumerator Routine { get; }
     public YieldInstruction WaitOption { get; private set; }
     public bool Done { get; private set; }
+
+    internal WaitListState ListState { get; set; }
+    internal LinkedListNode<Coroutine> Node { get; set; }
 
     private List<Coroutine> _waiters; // 나를 기다리고 있는 코루틴 리스트 <- 사실상 소유권을 취득한 것임 == 막 휘둘러도 됨
 
@@ -21,7 +24,19 @@ public sealed class Coroutine : YieldInstruction
 
     internal bool MoveNext()
     {
+        if (Done)
+            return false;
+
         bool result = Routine.MoveNext();
+
+        if (Done)
+        {
+            // Routine.MoveNext() 실행 도중 ForceStop()이 재진입 호출되어
+            // 이미 종료 처리됨 (예: 코루틴이 자기 자신의 오너를 Destroy한 경우).
+            // 여기서 상태를 덮어쓰면 안 됨 - 웨이커 처리는 ForceStop이 이미 수행함.
+            return false;
+        }
+
         WaitOption = result ? Routine.Current as YieldInstruction : null;
         Done = !result;
 

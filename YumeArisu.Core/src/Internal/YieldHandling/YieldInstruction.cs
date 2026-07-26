@@ -1,4 +1,4 @@
-namespace YumeArisu.Core.Internal.YieldAbstraction;
+namespace YumeArisu.Core.Internal.YieldHandling;
 
 public abstract class YieldInstruction
 {

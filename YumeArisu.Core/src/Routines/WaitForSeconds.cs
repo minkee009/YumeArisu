@@ -1,4 +1,4 @@
-using YumeArisu.Core.Internal.YieldAbstraction;
+using YumeArisu.Core.Internal.YieldHandling;
 
 namespace YumeArisu.Core.Routines;
 

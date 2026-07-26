@@ -1,14 +1,15 @@
 using System.Collections;
 using YumeArisu.Core.Routines;
+using YumeArisu.Core.Internal.YieldHandling;
 
 namespace YumeArisu.Core.Systems;
 
 public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
 {
     private List<Coroutine> _allActive = new(); 
-    private List<Coroutine> _updateList = new();
-    private List<Coroutine> _fixedUpdateList = new();
-    private List<Coroutine> _waitUntilList = new();
+    private LinkedList<Coroutine> _updateList = new();
+    private LinkedList<Coroutine> _fixedUpdateList = new();
+    private LinkedList<Coroutine> _waitUntilList = new();
     private Dictionary<Coroutine, double> _waitUntilTime = new();
 
     internal override void OnStartUp(NoConfig config)
@@ -37,16 +38,27 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
     {
         if (coroutine.Done)
             return;
-
+ 
         if (coroutine.WaitOption is Coroutine inner)
             inner.RemoveWaiter(coroutine);
+ 
+        coroutine.ForceStop();
+ 
+        RemoveFromCurrentList(coroutine);
+        _allActive.Remove(coroutine);
+    }
 
-        coroutine.ForceStop(); 
-
-        _updateList.Remove(coroutine);
-        _fixedUpdateList.Remove(coroutine);
-        _waitUntilList.Remove(coroutine);
-        _waitUntilTime.Remove(coroutine);
+    /// <summary>
+    /// 특정 owner가 시작시킨 코루틴들을 모두 정지시킵니다.
+    /// </summary>
+    internal void StopAllCoroutines(ScriptBehaviour owner)
+    {
+        for (int i = _allActive.Count - 1; i >= 0; i--)
+        {
+            var coroutine = _allActive[i];
+            if (coroutine.Owner == owner)
+                StopCoroutine(coroutine);
+        }
     }
 
     public void ImmediateStopAllCoroutines()
@@ -64,27 +76,38 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
 
     public void YieldFixedUpdate()
     {
-        for (int i = _fixedUpdateList.Count - 1; i >= 0; i--)
-            Proccess(_fixedUpdateList[i]);
+        var node = _fixedUpdateList.First;
+        while (node != null)
+        {
+            var next = node.Next; // Proccess가 node를 리스트에서 제거해도 안전하게 다음으로 이동
+            Proccess(node.Value);
+            node = next;
+        }
     }
 
     public void YieldUpdate()
     {
-        for (int i = _updateList.Count - 1; i >= 0; i--)
+        var node = _updateList.First;
+        while (node != null)
         {
-            var coroutine = _updateList[i];
+            var next = node.Next;
+            var coroutine = node.Value;
             if (IsWaitEnd(coroutine))
                 Proccess(coroutine);
+            node = next;
         }
     }
 
     public void YieldUntil()
     {
-        for (int i = _waitUntilList.Count - 1; i >= 0; i--)
+        var node = _waitUntilList.First;
+        while (node != null)
         {
-            var coroutine = _waitUntilList[i];
+            var next = node.Next;
+            var coroutine = node.Value;
             if (((WaitUntil)coroutine.WaitOption).Condition())
                 Proccess(coroutine);
+            node = next;
         }
     }
 
@@ -101,12 +124,28 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
         }
     }
 
+    private void RemoveFromCurrentList(Coroutine coroutine)
+    {
+        switch (coroutine.ListState)
+        {
+            case WaitListState.Update:
+                _updateList.Remove(coroutine.Node); 
+                break;
+            case WaitListState.FixedUpdate:
+                _fixedUpdateList.Remove(coroutine.Node);
+                break;
+            case WaitListState.WaitUntil:
+                _waitUntilList.Remove(coroutine.Node); 
+                break;
+        }
+        coroutine.ListState = WaitListState.None;
+        coroutine.Node = null;
+        _waitUntilTime.Remove(coroutine);
+    }
+
     internal void Proccess(Coroutine coroutine)
     {
-        _updateList.Remove(coroutine);
-        _fixedUpdateList.Remove(coroutine);
-        _waitUntilList.Remove(coroutine);
-        _waitUntilTime.Remove(coroutine);
+        RemoveFromCurrentList(coroutine);
 
         if (!coroutine.MoveNext())
         {
@@ -117,14 +156,17 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
         switch (coroutine.WaitOption)
         {
             case WaitForFixedUpdate:
-                _fixedUpdateList.Add(coroutine);
+                coroutine.Node = _fixedUpdateList.AddLast(coroutine);
+                coroutine.ListState = WaitListState.FixedUpdate;
                 break;
             case WaitUntil:
-                _waitUntilList.Add(coroutine);
-                break;        
+                coroutine.Node = _waitUntilList.AddLast(coroutine);
+                coroutine.ListState = WaitListState.WaitUntil;
+                break;
             case WaitForSeconds sec:
                 _waitUntilTime[coroutine] = Time.HighResTotalTime + sec.Seconds; // MoveNext 이후, 새 값 기준
-                _updateList.Add(coroutine);
+                coroutine.Node = _updateList.AddLast(coroutine);
+                coroutine.ListState = WaitListState.Update;
                 break;
             case Coroutine inner:
                 if (inner.Done)
@@ -133,7 +175,8 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
                     inner.AddWaiter(coroutine); // 리스트에 안 넣고 잠재움
                 break;
             default:
-                _updateList.Add(coroutine);
+                coroutine.Node = _updateList.AddLast(coroutine);
+                coroutine.ListState = WaitListState.Update;
                 break;
         }
     }
