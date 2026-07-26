@@ -12,6 +12,7 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
     private LinkedList<Coroutine> _waitUntilList = new();
     private Dictionary<Coroutine, double> _waitUntilTime = new();
 
+    // 파이프라인 순회 스냅샷용 버퍼
     private Coroutine[] _updateBuffer = Array.Empty<Coroutine>();
     private Coroutine[] _fixedUpdateBuffer = Array.Empty<Coroutine>();
     private Coroutine[] _waitUntilBuffer = Array.Empty<Coroutine>();
@@ -34,6 +35,9 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
         _waitUntilBuffer = Array.Empty<Coroutine>();
     }
 
+    /// <summary>
+    /// 코루틴을 시작시킵니다.
+    /// </summary>
     internal Coroutine StartCoroutine(ScriptBehaviour owner, IEnumerator routine)
     {
         var coroutine = new Coroutine(owner, routine);
@@ -42,6 +46,9 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
         return coroutine;
     }
 
+    /// <summary>
+    /// 특정 코루틴을 정지시킵니다.
+    /// </summary>
     internal void StopCoroutine(Coroutine coroutine)
     {
         if (coroutine.Done)
@@ -69,6 +76,9 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
         }
     }
 
+    /// <summary>
+    /// 모든 파이프라인의 코루틴들을 즉시 정지시킵니다.
+    /// </summary>
     public void ImmediateStopAllCoroutines()
     {
         foreach (var coroutine in _updateList) coroutine.ForceStop();
@@ -82,6 +92,9 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
         _waitUntilTime.Clear();
     }
 
+    /// <summary>
+    /// wait fixed인 코루틴들을 전부 순회하며 진행시킵니다.
+    /// </summary>
     public void YieldFixedUpdate()
     {
         var snapshot = SnapshotToBuffer(_fixedUpdateList, ref _fixedUpdateBuffer);
@@ -89,6 +102,9 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
             Proccess(coroutine);
     }
  
+    /// <summary>
+    /// wait update 혹은 wait unknown인 코루틴들을 전부 순회하며 진행시킵니다.
+    /// </summary>
     public void YieldUpdate()
     {
         var snapshot = SnapshotToBuffer(_updateList, ref _updateBuffer);
@@ -99,6 +115,9 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
         }
     }
  
+    /// <summary>
+    /// wait until인 코루틴들을 전부 순회하며 진행시킵니다.
+    /// </summary>
     public void YieldUntil()
     {
         var snapshot = SnapshotToBuffer(_waitUntilList, ref _waitUntilBuffer);
@@ -109,6 +128,11 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
         }
     }
 
+    /// <summary>
+    /// 코루틴의 대기 상태가 끝났는지 확인합니다.
+    /// </summary>
+    /// <param name="coroutine"></param>
+    /// <returns></returns>
     private bool IsWaitEnd(Coroutine coroutine)
     {
         switch (coroutine.WaitOption)
@@ -122,6 +146,10 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
         }
     }
 
+    /// <summary>
+    /// 코루틴 파이프라인을 재분류하기 위해 코루틴이 현재 속한 리스트에서 제거합니다.
+    /// </summary>
+    /// <param name="coroutine">재분류 대상 코루틴</param>
     private void RemoveFromCurrentList(Coroutine coroutine)
     {
         switch (coroutine.ListState)
@@ -142,6 +170,10 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
         _waitUntilTime.Remove(coroutine);
     }
 
+    /// <summary>
+    /// 코루틴에 담긴 루틴을 진행시킨 뒤 waitOption을 확인해 코루틴 파이프라인에 재분류시킵니다.
+    /// </summary>
+    /// <param name="coroutine"></param>
     internal void Proccess(Coroutine coroutine)
     {
         RemoveFromCurrentList(coroutine);
@@ -181,9 +213,9 @@ public class CoroutineSystem : SystemBase<CoroutineSystem, NoConfig>
     }
 
     /// <summary>
-    /// 내부 순회용 코루틴 리스트 스냅샷을 제공합니다.
+    /// 내부 순회용 코루틴 파이프라인 스냅샷을 제공합니다.
     /// </summary>
-    /// <param name="list">복사할 리스트</param>
+    /// <param name="list">복사할 파이프라인</param>
     /// <param name="buffer">복사된 스냅샷용 버퍼</param>
     /// <returns></returns>
     private static Span<Coroutine> SnapshotToBuffer(LinkedList<Coroutine> list, ref Coroutine[] buffer)
