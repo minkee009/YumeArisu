@@ -18,8 +18,8 @@ public sealed class DesktopWindow : IWindowControl
     {
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
-            SdlWindowing.RegisterPlatform();
-            SdlInput.RegisterPlatform();
+            SdlWindowing.Use();
+            SdlInput.Use();
         }
 
         var options = WindowOptions.Default;
