@@ -28,7 +28,7 @@ public sealed class DesktopWindow : IWindowControl
 
         _screenMode = ScreenMode.Windowed;
        
-        _window = Silk.NET.Windowing.Window.Create(options);
+        _window = Window.Create(options);
     }
 
     public ScreenMode ScreenMode
