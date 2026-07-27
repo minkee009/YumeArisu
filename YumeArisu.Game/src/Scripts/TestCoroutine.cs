@@ -30,16 +30,16 @@ public class TestCoroutine : ScriptBehaviour
         for (int i = 0; i < text.Length; i++)
         {
             System.Console.Write(text[i]);
-            yield return null;yield return null;yield return null;
-            yield return null;yield return null;yield return null;
-            yield return null;yield return null;yield return null;
-            yield return null;yield return null;yield return null;
-            yield return null;yield return null;yield return null;
-            yield return null;yield return null;yield return null;
-            yield return null;yield return null;yield return null;
-            yield return null;yield return null;yield return null;
-            yield return null;yield return null;yield return null;
-        }
+            yield return null; yield return null; yield return null;
+            yield return null; yield return null; yield return null;
+            yield return null; yield return null; yield return null;
+            yield return null; yield return null; yield return null;
+            yield return null; yield return null; yield return null;
+            yield return null; yield return null; yield return null;
+            yield return null; yield return null; yield return null;
+            yield return null; yield return null; yield return null;
+            yield return null; yield return null; yield return null;
+        } 
         System.Console.Write("\n");
     }
 

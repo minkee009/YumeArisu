@@ -35,7 +35,7 @@ public abstract class Scene
         OnUnload();
 
         foreach (var go in _gameObjects)
-            go.DestroyInternal();
+            go.Destroy();
         _gameObjects.Clear();
 
         IsLoaded = false;
@@ -73,7 +73,7 @@ public abstract class Scene
         _gameObjects.Remove(go);
 
         // GameObject 내부 정리
-        go.DestroyInternal();
+        go.Destroy();
     }
 
     public GameObject FindGameObject(string name)
@@ -88,7 +88,7 @@ public abstract class Scene
         return null;
     }
 
-    public GameObject FindGameObjectWithTag(string tag) 
+    public GameObject FindGameObjectByTag(string tag) 
     { 
         foreach (var go in _gameObjects)
         {
@@ -100,7 +100,7 @@ public abstract class Scene
         return null;
     }
 
-    public List<GameObject> FindGameObjectsWithTag(string tag) 
+    public List<GameObject> FindGameObjectsByTag(string tag) 
     { 
         List<GameObject> matches = new();
         foreach (var go in _gameObjects)
@@ -108,6 +108,31 @@ public abstract class Scene
             if (!go.ActiveInHierarchy || go.IsDestroyed)
                 continue;
             if (go.Tag == tag)
+                matches.Add(go);
+        }
+        return matches;
+    }
+
+    public GameObject FindGameObjectByLayer(int layer)
+    {
+        foreach (var go in _gameObjects)
+        {
+            if (!go.ActiveInHierarchy || go.IsDestroyed)
+                continue;
+            if (go.Layer == layer)
+                return go;
+        }
+        return null;
+    }
+
+    public List<GameObject> FindGameObjectsByLayer(int layer)
+    {
+        List<GameObject> matches = new();
+        foreach (var go in _gameObjects)
+        {
+            if (!go.ActiveInHierarchy || go.IsDestroyed)
+                continue;
+            if (go.Layer == layer)
                 matches.Add(go);
         }
         return matches;

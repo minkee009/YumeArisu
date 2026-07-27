@@ -48,7 +48,10 @@ public sealed class GameObject
         RefreshActiveInHierarchy();
     }
 
-    public void Destroy() => Scene.DestroyGameObject(this);
+    /// <summary>
+    /// 자신을 소유한 씬에 자신을 파괴하는 요청을 보냅니다.
+    /// </summary>
+    public void DestroySelf() => Scene.DestroyGameObject(this);
 
     internal void RefreshActiveInHierarchy()
     {
@@ -142,7 +145,7 @@ public sealed class GameObject
         component.OnDetached();
     }
 
-    internal void DestroyInternal()
+    internal void Destroy()
     {
         if (IsDestroyed)
             return;

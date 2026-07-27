@@ -32,7 +32,7 @@ public class TestDestroyer : ScriptBehaviour
     {
         if (Input.GetKeyDown(Key.F))
         {
-            GameObject.Destroy();
+            GameObject.DestroySelf();
         }
     }
 
