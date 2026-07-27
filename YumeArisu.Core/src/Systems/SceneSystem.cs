@@ -129,7 +129,7 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
         return matches;
     }
 
-    public GameObject FindAnyGameObjectByLayer(int layer)
+    public GameObject FindAnyGameObjectByLayer(uint layer)
     {
         var target = _currentScene?.FindGameObjectByLayer(layer);
         if (target != null) 
@@ -142,7 +142,7 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
         return null;
     }
 
-    public List<GameObject> FindAnyGameObjectsByLayer(int layer)
+    public List<GameObject> FindAnyGameObjectsByLayer(uint layer)
     {
         List<GameObject> matches = new();
 
@@ -180,9 +180,9 @@ public static class SceneQuery
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static List<GameObject> FindGameObjectsByTag(string tag) => SceneSystem.Instance.FindAnyGameObjectsByTag(tag);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static GameObject FindGameObjectByLayer(int layer) => SceneSystem.Instance.FindAnyGameObjectByLayer(layer);
+        public static GameObject FindGameObjectByLayer(uint layer) => SceneSystem.Instance.FindAnyGameObjectByLayer(layer);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static List<GameObject> FindGameObjectsByTag(int layer) => SceneSystem.Instance.FindAnyGameObjectsByLayer(layer);
+        public static List<GameObject> FindGameObjectsByTag(uint layer) => SceneSystem.Instance.FindAnyGameObjectsByLayer(layer);
     }
 
     public static class Current
@@ -194,9 +194,9 @@ public static class SceneQuery
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static List<GameObject> FindGameObjectsByTag(string tag) => SceneSystem.Instance.CurrentScene?.FindGameObjectsByTag(tag);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static GameObject FindGameObjectByLayer(int layer) => SceneSystem.Instance.CurrentScene?.FindGameObjectByLayer(layer);
+        public static GameObject FindGameObjectByLayer(uint layer) => SceneSystem.Instance.CurrentScene?.FindGameObjectByLayer(layer);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static List<GameObject> FindGameObjectsByTag(int layer) => SceneSystem.Instance.CurrentScene?.FindGameObjectsByLayer(layer);
+        public static List<GameObject> FindGameObjectsByTag(uint layer) => SceneSystem.Instance.CurrentScene?.FindGameObjectsByLayer(layer);
     }
 
     public static class Static
@@ -208,8 +208,8 @@ public static class SceneQuery
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static List<GameObject> FindGameObjectsByTag(string tag) => SceneSystem.Instance.StaticScene?.FindGameObjectsByTag(tag);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static GameObject FindGameObjectByLayer(int layer) => SceneSystem.Instance.StaticScene?.FindGameObjectByLayer(layer);
+        public static GameObject FindGameObjectByLayer(uint layer) => SceneSystem.Instance.StaticScene?.FindGameObjectByLayer(layer);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static List<GameObject> FindGameObjectsByTag(int layer) => SceneSystem.Instance.StaticScene?.FindGameObjectsByLayer(layer);
+        public static List<GameObject> FindGameObjectsByTag(uint layer) => SceneSystem.Instance.StaticScene?.FindGameObjectsByLayer(layer);
     }
 }

@@ -113,7 +113,7 @@ public abstract class Scene
         return matches;
     }
 
-    public GameObject FindGameObjectByLayer(int layer)
+    public GameObject FindGameObjectByLayer(uint layer)
     {
         foreach (var go in _gameObjects)
         {
@@ -125,7 +125,7 @@ public abstract class Scene
         return null;
     }
 
-    public List<GameObject> FindGameObjectsByLayer(int layer)
+    public List<GameObject> FindGameObjectsByLayer(uint layer)
     {
         List<GameObject> matches = new();
         foreach (var go in _gameObjects)
