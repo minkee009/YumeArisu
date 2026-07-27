@@ -1,7 +1,9 @@
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
+using Silk.NET.Windowing.Sdl;
+using Silk.NET.Input.Sdl;
 using YumeArisu.Core.Abstractions;
-using Silk.NET.OpenGL;
+
 
 namespace YumeArisu.Desktop.Implements;
 
@@ -13,6 +15,9 @@ public sealed class DesktopWindow : IWindowControl
 
     public DesktopWindow(string title, int width, int height)
     {
+        SdlWindowing.RegisterPlatform();
+        SdlInput.RegisterPlatform();
+
         var options = WindowOptions.Default;
         options.Size = new Vector2D<int>(width, height);
         options.Title = title;
