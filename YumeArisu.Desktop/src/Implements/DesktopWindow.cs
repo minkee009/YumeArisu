@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Sdl;
@@ -15,16 +16,19 @@ public sealed class DesktopWindow : IWindowControl
 
     public DesktopWindow(string title, int width, int height)
     {
-        SdlWindowing.RegisterPlatform();
-        SdlInput.RegisterPlatform();
+        if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            SdlWindowing.RegisterPlatform();
+            SdlInput.RegisterPlatform();
+        }
 
         var options = WindowOptions.Default;
         options.Size = new Vector2D<int>(width, height);
         options.Title = title;
 
         _screenMode = ScreenMode.Windowed;
-
-        _window = Window.Create(options);
+       
+        _window = Silk.NET.Windowing.Window.Create(options);
     }
 
     public ScreenMode ScreenMode
@@ -58,12 +62,12 @@ public sealed class DesktopWindow : IWindowControl
         }
     }
 
-    public string Title 
-    { 
-        get => _window.Title; 
-        set => _window.Title = value; 
+    public string Title
+    {
+        get => _window.Title;
+        set => _window.Title = value;
     }
-
+    
     public Vector2D<int> Size 
     { 
         get => _window.Size; 
