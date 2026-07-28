@@ -81,7 +81,7 @@ public sealed class DesktopApplication : IApplicationControl
 
     public void OnClosing()
     {
-        if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && _window.View.IsClosing) // sdl 버그 -> close 이벤트 2번 발행, 한 번만 실행시키기 위한 장치, TODO : 패치되면 삭제
+        if (_window.IsSDL && _window.View.IsClosing) // SDL 버그 -> close 이벤트 2번 발행, 한 번만 실행시키기 위한 장치, TODO : 패치되면 삭제
             return;
 
         SceneSystem.Instance.OnBeforeSceneChange -= CoroutineSystem.Instance.ImmediateStopAllCoroutines;

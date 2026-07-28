@@ -11,16 +11,21 @@ namespace YumeArisu.Desktop.Implements;
 public sealed class DesktopWindow : IWindowControl
 {
     public IView View => _window;
+    public bool IsSDL { get; private set; }
     private IWindow _window;
     private ScreenMode _screenMode;
 
     public DesktopWindow(string title, int width, int height)
     {
+        // 리눅스는 SDL로 생성 - Silk.NET 2.23.0 기준 안정성 높음
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
             SdlWindowing.Use();
             SdlInput.Use();
+            IsSDL = true;
         }
+        else
+            IsSDL = false;
 
         var options = WindowOptions.Default;
         options.Size = new Vector2D<int>(width, height);
