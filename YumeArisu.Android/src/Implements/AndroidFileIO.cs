@@ -10,7 +10,7 @@ namespace YumeArisu.Android.Implements;
 /// <summary>
 /// Helper to assist with file loading.
 /// </summary>
-public sealed class AndroidFileIO : IFileIO, IDisposable
+public sealed class AndroidFileIO : IFileIO
 {
     private AssetManager _assetManager;
     private Context _context;
@@ -129,7 +129,7 @@ public sealed class AndroidFileIO : IFileIO, IDisposable
     {
         if (!IsOpened)
         {
-            ConsoleExtensions.WriteLineColored($"FileIO가 열리지 않은 상태에서 닫기 요청이 호출되었습니다.", ConsoleColor.Red);
+            ConsoleExtensions.WriteLineColored($"FileIO가 열리지 않은 상태에서 닫기 요청이 호출되었습니다.", ConsoleColor.Yellow);
             return;
         }
 

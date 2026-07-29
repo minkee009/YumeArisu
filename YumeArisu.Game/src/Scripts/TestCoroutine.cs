@@ -2,7 +2,8 @@ using Silk.NET.Input;
 using System.Collections;
 using YumeArisu.Core.Systems;
 using YumeArisu.Core.Routines;
-using System.Reflection.Metadata;
+
+namespace YumeArisu.Game.Scripts;
 
 public class TestCoroutine : ScriptBehaviour
 {

@@ -17,22 +17,22 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
     private Scene _currentScene;
     private Scene _nextScene;
 
-    internal override void OnStartUp(ISceneManifest bootstrap)
+    internal override void OnStartUp(ISceneManifest manifest)
     {
-        _nextScene = bootstrap.DynamicScenes.FirstOrDefault();
+        _nextScene = manifest.DynamicScenes.FirstOrDefault();
 
         if (_nextScene == null)
             throw new InvalidOperationException("진입용 Scene이 존재하지 않습니다!");        
 
         _dynamicScenes = new();
 
-        foreach (var scene in bootstrap.DynamicScenes)
+        foreach (var scene in manifest.DynamicScenes)
         {
             string name = scene.GetType().Name;
             _dynamicScenes.Add(name,scene);
         }
 
-        _staticScene = bootstrap.StaticScene;
+        _staticScene = manifest.StaticScene;
     }
 
     internal override void OnShutDown()

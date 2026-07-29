@@ -4,6 +4,8 @@ using Silk.NET.Input;
 using YumeArisu.Core.Hierarchy;
 using YumeArisu.Core.Utility;
 
+namespace YumeArisu.Game.Scripts;
+
 public class TestDestroyer : ScriptBehaviour
 {
     public Behaviour OnEnableTarget; // 죽으면서 켤 Behaviour 컴포넌트 대상

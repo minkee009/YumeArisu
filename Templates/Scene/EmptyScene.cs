@@ -1,4 +1,5 @@
 using YumeArisu.Core.Hierarchy;
+using YumeArisu.Game.Scripts;
 
 namespace YumeArisu.Game.Scenes;
 

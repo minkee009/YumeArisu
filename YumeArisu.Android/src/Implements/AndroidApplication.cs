@@ -3,7 +3,7 @@ using Android.Content.Res;
 using Silk.NET.Windowing;
 using YumeArisu.Core.Abstractions;
 using YumeArisu.Core.Systems;
-using YumeArisu.Game.Scenes.Manifset;
+using YumeArisu.Game.SceneManifests;
 
 namespace YumeArisu.Android.Implements;
 

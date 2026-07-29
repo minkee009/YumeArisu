@@ -1,11 +1,10 @@
-using YumeArisu.Core.Routines;
-using YumeArisu.Core.Internal.BehaviourTracking;
-
-namespace YumeArisu.Core.Systems;
-
 /*
     -------------------------------------------------
     Behaviour System - 주의사항 
+    -------------------------------------------------
+    - 작성자 : minkee009
+    - 작성일 : 2026-07-15
+    - 최신화 : 2026-07-29
     -------------------------------------------------
     
     Awake <- GameObject의 ActiveInHierarchy에만 의존함
@@ -27,6 +26,11 @@ namespace YumeArisu.Core.Systems;
 
     -------------------------------------------------
 */
+
+using YumeArisu.Core.Routines;
+using YumeArisu.Core.Internal.BehaviourTracking;
+
+namespace YumeArisu.Core.Systems;
 
 public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
 {   

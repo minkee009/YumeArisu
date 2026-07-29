@@ -5,6 +5,8 @@ using Silk.NET.Maths;
 using YumeArisu.Core.Routines;
 using YumeArisu.Core.Systems;
 
+namespace YumeArisu.Game.Scripts;
+
 public class WindowMover : ScriptBehaviour
 {
     public float Speed { get; set; } = 250.0f;

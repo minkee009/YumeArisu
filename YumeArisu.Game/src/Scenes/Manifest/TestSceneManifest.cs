@@ -1,7 +1,8 @@
 using YumeArisu.Core.Abstractions;
 using YumeArisu.Core.Hierarchy;
+using YumeArisu.Game.Scenes;
 
-namespace YumeArisu.Game.Scenes.Manifset;
+namespace YumeArisu.Game.SceneManifests;
 
 public class TestSceneManifest : ISceneManifest
 {

@@ -4,6 +4,8 @@ using YumeArisu.Core.Systems;
 using YumeArisu.Core.Hierarchy;
 using System.Collections;
 
+namespace YumeArisu.Game.Scripts;
+
 public class TestAwaker : ScriptBehaviour
 {
     public GameObject Target { get; set; } = null;

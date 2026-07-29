@@ -3,7 +3,7 @@ using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using YumeArisu.Core.Systems;
 using YumeArisu.Core.Abstractions;
-using YumeArisu.Game.Scenes.Manifset;
+using YumeArisu.Game.SceneManifests;
 
 namespace YumeArisu.Desktop.Implements;
 

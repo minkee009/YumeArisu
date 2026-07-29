@@ -4,6 +4,8 @@ using Silk.NET.Windowing;
 using YumeArisu.Core.Routines;
 using YumeArisu.Core.Systems;
 
+namespace YumeArisu.Game.Scripts;
+
 public class FPSChecker : ScriptBehaviour
 {
     private string _currentTitle = "";

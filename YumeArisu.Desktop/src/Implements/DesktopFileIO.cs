@@ -5,7 +5,7 @@ using YumeArisu.Core.Packaging;
 
 namespace YumeArisu.Desktop.Implements;
 
-public sealed class DesktopFileIO : IFileIO, IDisposable
+public sealed class DesktopFileIO : IFileIO
 {
     public bool IsOpened { get; private set; } // _disposed 역할 겸비 
     private List<Stream> _pakChunkStreams;
@@ -15,7 +15,7 @@ public sealed class DesktopFileIO : IFileIO, IDisposable
     {
         if (IsOpened)
         {
-            ConsoleExtensions.WriteLineColored($"FileIO가 이미 열려있습니다.", ConsoleColor.Red);
+            ConsoleExtensions.WriteLineColored($"FileIO가 이미 열려있습니다.", ConsoleColor.Yellow);
             return;
         }
 
@@ -82,8 +82,8 @@ public sealed class DesktopFileIO : IFileIO, IDisposable
             stream.Close();
 
         _pakChunkStreams?.Clear();
-        _pakChunkStreams = null;
         _metaDataTable?.Clear();
+        _pakChunkStreams = null;
         _metaDataTable = null;
 
         IsOpened = false;

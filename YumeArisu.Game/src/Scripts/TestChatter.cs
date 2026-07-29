@@ -2,6 +2,8 @@ using Silk.NET.Input;
 using YumeArisu.Core.Routines;
 using YumeArisu.Core.Systems;
 
+namespace YumeArisu.Game.Scripts;
+
 public class TestChatter : ScriptBehaviour
 {
     public override int ExecutionOrder => base.ExecutionOrder;
