@@ -73,7 +73,7 @@ public sealed class DesktopFileIO : IFileIO
     {
         if (!IsOpened)
         {
-            ConsoleExtensions.WriteLineColored($"FileIO가 열리지 않은 상태에서 닫기 요청이 호출되었습니다.", ConsoleColor.Red);
+            ConsoleExtensions.WriteLineColored($"FileIO가 열리지 않은 상태에서 닫기 요청이 호출되었습니다.", ConsoleColor.Yellow);
             return;
         }
 
