@@ -30,6 +30,7 @@ public sealed class DesktopWindow : IWindowControl
         var options = WindowOptions.Default;
         options.Size = new Vector2D<int>(width, height);
         options.Title = title;
+        options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.ForwardCompatible, new APIVersion(3, 3));
 
         _screenMode = ScreenMode.Windowed;
        

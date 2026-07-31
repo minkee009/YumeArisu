@@ -23,6 +23,7 @@ public sealed class DesktopApplication : IApplicationControl
     {
         _window = new(title, width, height);
         _window.View.Load += OnLoad;
+        _window.View.FramebufferResize += OnFrameBufferResized;
         _window.View.Resize += OnResized;
         _window.View.Update += OnUpdate;
         _window.View.Render += OnRender;
@@ -60,6 +61,11 @@ public sealed class DesktopApplication : IApplicationControl
             InputSystem.Instance.GetInputContext()
         );
 #endif
+    }
+
+    public void OnFrameBufferResized(Vector2D<int> newSize)
+    {
+        RenderSystem.Instance.OnFramebufferResize(newSize);
     }
 
     public void OnResized(Vector2D<int> newSize)

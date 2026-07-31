@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using YumeArisu.Core.Abstractions;
@@ -12,17 +13,23 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
 
     internal override void OnStartUp(IView view)
     {
-        _gl = GL.GetApi(view);
-        if(_gl == null)
-            throw new Exception("그래픽 라이브러리를 초기화 하지 못했습니다.");
-
-        view.FramebufferResize += size => _gl.Viewport(size);
+        try
+        {
+            _gl = GL.GetApi(view);
+        }
+        catch
+        {
+            Environment.FailFast("GL 컨텍스트를 찾지 못했습니다. 그래픽스 API는 OpenGL를 사용해야합니다.");
+            return; // Exit가 비동기 콜백 안에서 즉시 안 먹힐 상황 대비한 안전장치
+        }
     }
 
     internal override void OnShutDown()
     {
         _gl = null;
     }
+
+    public void OnFramebufferResize(Vector2D<int> size) => _gl.Viewport(size);
 
     public void BeginFrame()
     {

@@ -1,5 +1,6 @@
 using Android.Content;
 using Android.Content.Res;
+using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using YumeArisu.Core.Abstractions;
 using YumeArisu.Core.Systems;
@@ -21,6 +22,7 @@ public sealed class AndroidApplication : IApplicationControl
     public void Run()
     {
         _window.View.Load += OnLoad;
+        _window.View.FramebufferResize += OnFrameBufferResized;
         _window.View.Update += OnUpdate;
         _window.View.Render += OnRender;
         _window.View.Closing += OnClosing;
@@ -46,6 +48,12 @@ public sealed class AndroidApplication : IApplicationControl
 
         SceneSystem.Instance.OnBeforeSceneChange += CoroutineSystem.Instance.ImmediateStopAllCoroutines;
     }
+
+    public void OnFrameBufferResized(Vector2D<int> newSize)
+    {
+        RenderSystem.Instance.OnFramebufferResize(newSize);
+    }
+
 
     public void OnUpdate(double deltaTime)
     {
