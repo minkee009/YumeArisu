@@ -85,6 +85,9 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         _unregistrationQueue.Enqueue(bh);
     }
 
+    /// <summary>
+    /// 등록/해제 대기열에 들어간 Behaviour를 모두 처리하고 활성상태를 체크합니다.
+    /// </summary>
     public void BeginFrame()
     {
         while (_registrationQueue.Count > 0)
@@ -123,11 +126,18 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         }
     }
 
+    /// <summary>
+    /// 활성 상태가 바뀌었음을 마킹합니다.
+    /// </summary>
+    /// <param name="bh">바뀐 Behaviour</param>
     internal void MarkScheduleChange(Behaviour bh)
     {
         _markedForScheduleCheck.Add(bh);
     }
 
+    /// <summary>
+    /// MarkScheduleChange()로 마킹된 Behaviour에 대해 현재 활성 상태를 추적하고 갱신합니다.
+    /// </summary>
     private void CheckScheduleChange()
     {
         if (_markedForScheduleCheck.Count <= 0)
@@ -158,6 +168,9 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         _markedForScheduleCheck.Clear();
     }
 
+    /// <summary>
+    /// 활성화 된 Behaviour 리스트를 다시 구성합니다.
+    /// </summary>
     private void RebuildSchedule()
     {
         _scheduledBehaviours.Clear();
@@ -250,6 +263,10 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         }
     }
 
+    /// <summary>
+    /// Execution Order로 Behaviour의 실행순서를 정렬합니다.
+    /// </summary>
+    /// <param name="behaviours"></param>
     private static void SortBehaviours(List<Behaviour> behaviours)
     {
         if (behaviours.Count > 1)

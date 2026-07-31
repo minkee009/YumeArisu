@@ -24,6 +24,13 @@ public class ResourceSystem : SystemBase<ResourceSystem, IFileIO>
         _resourceTable = null;
     }
 
+    /// <summary>
+    /// 리소스를 가져옵니다. 처음으로 가져오는 리소스의 경우 리소스 테이블 캐시에 할당이 일어납니다.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
     public T GetResource<T>(string path) where T : Resource, new()
     {
         if(typeof(T) == typeof(Resource))
@@ -54,6 +61,11 @@ public class ResourceSystem : SystemBase<ResourceSystem, IFileIO>
         throw new Exception("리소스 로드에 실패했습니다.");
     }
 
+    /// <summary>
+    /// 리소스를 반환시킵니다. 더 이상 참조하는 객체가 없는 경우 리소스가 해제됩니다.
+    /// </summary>
+    /// <param name="resource">반환할 리소스</param>
+    /// <exception cref="Exception"></exception>
     public void ReleaseResource(Resource resource)
     {
         if (resource == null)
