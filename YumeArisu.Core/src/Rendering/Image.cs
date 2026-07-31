@@ -12,6 +12,7 @@ public class Image : Resource
 
     protected override bool OnLoad(byte[] bytes)
     {
+        // OpenGL 이미지 처리 -> 상-하 뒤집기
         StbImage.stbi_set_flip_vertically_on_load(1);
 
         ImageResult image = ImageResult.FromMemory(bytes, ColorComponents.RedGreenBlueAlpha);
