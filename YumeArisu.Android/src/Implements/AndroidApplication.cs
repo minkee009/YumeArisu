@@ -20,9 +20,6 @@ public sealed class AndroidApplication : IApplicationControl
 
     public void Run()
     {
-        // Included assets should be loaded with the help of Android.Content.Res.AssetManager.
-        // The included example shaders and texture have build action of "AndroidAsset".
-
         _window.View.Load += OnLoad;
         _window.View.Update += OnUpdate;
         _window.View.Render += OnRender;
@@ -41,6 +38,7 @@ public sealed class AndroidApplication : IApplicationControl
         WindowSystem.Instance.StartUp(_window);
         TimeSystem.Instance.StartUp(default);
         InputSystem.Instance.StartUp(_window.View);
+        RenderSystem.Instance.StartUp(_window.View);
         ResourceSystem.Instance.StartUp(_fileIO);
         BehaviourSystem.Instance.StartUp(default);
         CoroutineSystem.Instance.StartUp(default);
@@ -75,7 +73,9 @@ public sealed class AndroidApplication : IApplicationControl
 
     public void OnRender(double deltaTime)
     {
-        
+        RenderSystem.Instance.BeginFrame();
+        RenderSystem.Instance.Render();
+        RenderSystem.Instance.EndFrame();
     }
 
     public void OnClosing()
@@ -87,6 +87,7 @@ public sealed class AndroidApplication : IApplicationControl
         BehaviourSystem.Instance.ShutDown();
         TimeSystem.Instance.ShutDown();
         ResourceSystem.Instance.ShutDown();
+        RenderSystem.Instance.ShutDown();
         InputSystem.Instance.ShutDown();
         WindowSystem.Instance.ShutDown();
         ApplicationSystem.Instance.ShutDown();

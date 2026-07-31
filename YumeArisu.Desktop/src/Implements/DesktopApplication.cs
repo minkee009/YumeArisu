@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
+using Silk.NET.OpenGL.Extensions.ImGui;
 using YumeArisu.Core.Systems;
 using YumeArisu.Core.Abstractions;
 using YumeArisu.Game.SceneManifests;
@@ -10,7 +11,13 @@ namespace YumeArisu.Desktop.Implements;
 public sealed class DesktopApplication : IApplicationControl
 {
     private DesktopWindow _window;
+
+#if !DEBUG
     private DesktopFileIO _fileIO;
+#else
+    private DebugFileIO _fileIO;
+    private ImGuiController _controller;
+#endif
 
     public DesktopApplication(string title, int width, int height)
     {
@@ -31,18 +38,28 @@ public sealed class DesktopApplication : IApplicationControl
 
     public void OnLoad()
     {
+#if !DEBUG
         _fileIO.Open("./Data", "dat");
+#endif
 
         ApplicationSystem.Instance.StartUp(this);
         WindowSystem.Instance.StartUp(_window);
         TimeSystem.Instance.StartUp(default);
         InputSystem.Instance.StartUp(_window.View);
+        RenderSystem.Instance.StartUp(_window.View);
         ResourceSystem.Instance.StartUp(_fileIO);
         BehaviourSystem.Instance.StartUp(default);
         CoroutineSystem.Instance.StartUp(default);
         SceneSystem.Instance.StartUp(new TestSceneManifest());
 
         SceneSystem.Instance.OnBeforeSceneChange += CoroutineSystem.Instance.ImmediateStopAllCoroutines;
+#if DEBUG
+        _controller = new ImGuiController(
+            RenderSystem.Instance.GetGL(), 
+            _window.View, 
+            InputSystem.Instance.GetInputContext()
+        );
+#endif
     }
 
     public void OnResized(Vector2D<int> newSize)
@@ -76,7 +93,16 @@ public sealed class DesktopApplication : IApplicationControl
 
     public void OnRender(double deltaTime)
     {
-        
+#if DEBUG
+        _controller.Update((float)deltaTime);
+#endif
+        RenderSystem.Instance.BeginFrame();
+        RenderSystem.Instance.Render();
+#if DEBUG
+        ImGuiNET.ImGui.ShowDemoWindow();
+        _controller.Render();
+#endif
+        RenderSystem.Instance.EndFrame();
     }
 
     public void OnClosing()
@@ -91,11 +117,14 @@ public sealed class DesktopApplication : IApplicationControl
         BehaviourSystem.Instance.ShutDown();
         TimeSystem.Instance.ShutDown();
         ResourceSystem.Instance.ShutDown();
+        RenderSystem.Instance.ShutDown();
         InputSystem.Instance.ShutDown();
         WindowSystem.Instance.ShutDown();
         ApplicationSystem.Instance.ShutDown();
-        
+    
+#if !DEBUG
         _fileIO.Close();
+#endif
     }
     
     public int TargetFrameRate

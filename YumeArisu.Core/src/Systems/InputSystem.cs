@@ -57,6 +57,8 @@ public class InputSystem : SystemBase<InputSystem, IView>
     public bool GetMouseButton(MouseButton button) => (_mouseState!.ButtonCurrent & (1 << (int)button)) != 0;
     public bool GetMouseButtonDown(MouseButton button) => (_mouseState!.ButtonPressed & (1 << (int)button)) != 0;
     public bool GetMouseButtonUp(MouseButton button) => (_mouseState!.ButtonReleased & (1 << (int)button)) != 0;
+
+    public IInputContext GetInputContext() => _input;
 }
 
 // 문법 설탕용 클래스
