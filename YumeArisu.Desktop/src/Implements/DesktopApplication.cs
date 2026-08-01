@@ -65,12 +65,13 @@ public sealed class DesktopApplication : IApplicationControl
 
     public void OnFrameBufferResized(Vector2D<int> newSize)
     {
+        // 물리적 : 내부 프레임버퍼 크기 변경 시
         RenderSystem.Instance.OnFramebufferResize(newSize);
     }
 
     public void OnResized(Vector2D<int> newSize)
     {
-        // Handle view resizing if necessary
+        // 논리적 : 윈도우 핸들 크기 변경 시
     }
 
     public void OnUpdate(double deltaTime)
