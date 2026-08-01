@@ -70,7 +70,6 @@ public sealed class DesktopApplication : IApplicationControl
     public void OnFrameBufferResized(Vector2D<int> newSize)
     {
         // 물리적 : 내부 프레임버퍼 크기 변경 시
-        Console.WriteLine($"[FBResize] {newSize}");
         RenderSystem.Instance.OnFramebufferResize(newSize);
     }
 
