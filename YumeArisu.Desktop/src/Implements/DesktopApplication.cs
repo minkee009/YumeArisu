@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.OpenGL.Extensions.ImGui;
@@ -64,11 +63,6 @@ public sealed class DesktopApplication : IApplicationControl
             [Silk.NET.Input.Key.AltLeft], 
             Silk.NET.Input.Key.Enter, 
             _window.SwitchScreenMode
-        );
-        InputSystem.Instance.RegisterSystemKeyCombo(
-            [Silk.NET.Input.Key.AltLeft, Silk.NET.Input.Key.ControlLeft], 
-            Silk.NET.Input.Key.X, 
-            () =>Console.WriteLine(_window.GetCurrentMonitorIndex())
         );
     }
 
