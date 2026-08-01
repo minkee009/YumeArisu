@@ -34,7 +34,15 @@ public sealed class DesktopWindow : IWindowControl
     {
         if (_screenMode == ScreenMode.Windowed)
         {
+            int cachedMonitorIndex = _window.Monitor.Index;
+            
             ScreenMode = ScreenMode.Fullscreen;
+
+            var targetMonitor = WindowingMonitor.GetMonitors(_window)
+                .FirstOrDefault(m => m.Index == cachedMonitorIndex)
+                ??  WindowingMonitor.GetMainMonitor(_window);
+            
+            _window.Monitor = targetMonitor;   
         }
         else
         {
@@ -59,17 +67,8 @@ public sealed class DesktopWindow : IWindowControl
             
                 case ScreenMode.Fullscreen:
                 case ScreenMode.BorderlessFullscreen:
-                    int cachedMonitorIndex = _window.Monitor.Index;
-
                     _window.WindowState = WindowState.Fullscreen;
                     _window.WindowBorder = WindowBorder.Hidden;
-
-                    var targetMonitor = WindowingMonitor.GetMonitors(_window)
-                        .FirstOrDefault(m => m.Index == cachedMonitorIndex)
-                        ??  WindowingMonitor.GetMainMonitor(_window);
-                    
-                    _window.Monitor = targetMonitor;   
-
                     break;
 
                 case ScreenMode.BorderlessWindow:
