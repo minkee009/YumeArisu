@@ -3,8 +3,6 @@
   <ItemGroup>
     <ProjectReference Include="..\YumeArisu.Core\YumeArisu.Core.csproj" />
     <ProjectReference Include="..\YumeArisu.Game\YumeArisu.Game.csproj" />
-    <PackageReference Include="Silk.NET.Windowing.Sdl" Version="2.23.0" />
-    <PackageReference Include="Silk.NET.Input.Sdl" Version="2.23.0" />
     <PackageReference Include="Silk.NET.OpenGL.Extensions.ImGui" Version="2.23.0" />
   </ItemGroup>
 
@@ -58,33 +56,6 @@
       </ResolvedFileToPublish>
     </ItemGroup>
   </Target> 
-
-  <!-- linux 빌드일 때만: 참조 해석 단계에서 원본 Glfw.dll을 patched로 치환 (일반 dotnet build / run 시점에 적용됨) -->
-  <Target Name="InjectPatchedGlfw_Reference"
-          AfterTargets="ResolveReferences;ResolveAssemblyReferences"
-          Condition="$(RuntimeIdentifier.StartsWith('linux-')) AND Exists('$(PatchedGlfwDll)')">
-    <ItemGroup>
-      <!-- 원본 참조 제거 -->
-      <ReferencePath Remove="@(ReferencePath)" Condition="'%(FileName)' == 'Silk.NET.Windowing.Glfw'" />
-      <!-- patched dll을 참조 목록에 추가 -->
-      <ReferencePath Include="$(PatchedGlfwDll)" />
-      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="'%(FileName)' == 'Silk.NET.Windowing.Glfw'" />
-      <ReferenceCopyLocalPaths Include="$(PatchedGlfwDll)" />
-    </ItemGroup>
-  </Target>
-
-  <!-- linux 빌드일 때만: 퍼블리시(단일 파일) 단계에서도 patched로 치환 -->
-  <Target Name="InjectPatchedGlfw_Publish"
-          AfterTargets="ComputeResolvedFilesToPublishList"
-          Condition="$(RuntimeIdentifier.StartsWith('linux-')) AND Exists('$(PatchedGlfwDll)')">
-    <ItemGroup>
-      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="'%(FileName)' == 'Silk.NET.Windowing.Glfw'" />
-      <ResolvedFileToPublish Include="$(PatchedGlfwDll)">
-        <RelativePath>Silk.NET.Windowing.Glfw.dll</RelativePath>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      </ResolvedFileToPublish>
-    </ItemGroup>
-  </Target>
 
   <Target Name="ExcludeSpecificDllsFromSingleFile" AfterTargets="ComputeResolvedFilesToPublishList">
     <ItemGroup>

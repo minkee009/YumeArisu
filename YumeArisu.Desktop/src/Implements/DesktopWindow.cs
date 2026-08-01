@@ -1,10 +1,7 @@
 using System.Runtime.InteropServices;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
-using Silk.NET.Windowing.Sdl;
-using Silk.NET.Input.Sdl;
 using YumeArisu.Core.Abstractions;
-
 
 namespace YumeArisu.Desktop.Implements;
 
@@ -14,7 +11,6 @@ public sealed class DesktopWindow : IWindowControl
 
     private IWindow _window;
     private ScreenMode _screenMode;
-    private Vector2D<int> _lastSize;
 
     public DesktopWindow(string title, int width, int height)
     {
@@ -24,15 +20,12 @@ public sealed class DesktopWindow : IWindowControl
         options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.ForwardCompatible, new APIVersion(3, 3));
 
         _screenMode = ScreenMode.Windowed;
-       
         _window = Window.Create(options);
-        _window.Resize += (s) => _lastSize = s;
     }
 
     /// <summary>
     /// 전체화면과 창모드 전환을 수행합니다.
     /// </summary>
-    /// <param name="mode"></param>
     internal void SwitchScreenMode()
     {
         if (_screenMode == ScreenMode.Windowed)
@@ -42,7 +35,6 @@ public sealed class DesktopWindow : IWindowControl
         else
         {
             ScreenMode = ScreenMode.Windowed;
-            _window.Size = _lastSize;
         }
     }
 
