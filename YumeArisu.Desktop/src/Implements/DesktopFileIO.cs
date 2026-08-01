@@ -8,6 +8,7 @@ namespace YumeArisu.Desktop.Implements;
 public sealed class DesktopFileIO : IFileIO
 {
     public bool IsOpened { get; private set; } // _disposed 역할 겸비 
+    
     private List<Stream> _pakChunkStreams;
     private Dictionary<ulong, PakReader.MetaData> _metaDataTable;
 

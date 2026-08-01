@@ -7,7 +7,6 @@ public class Image : Resource
 {
     public int Width { get; private set; }
     public int Height { get; private set; }
-
     public byte[] PixelData { get; private set; }
 
     protected override bool OnLoad(byte[] bytes)

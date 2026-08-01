@@ -11,6 +11,7 @@ public class InputSystem : SystemBase<InputSystem, IView>
     private KeyboardState _keyboardState;
     private MouseState _mouseState;
     private IInputContext _input;
+    private List<(List<Key> alternativeKeys, Key triggerKey, Action action)> _systemKeyCombos;
 
     internal override void OnStartUp(IView view)
     {
@@ -18,9 +19,17 @@ public class InputSystem : SystemBase<InputSystem, IView>
         _keyboardState = new KeyboardState(_input.Keyboards[0]);
         _mouseState = new MouseState(_input.Mice[0]);
         _input.ConnectionChanged += DoConnect;
+        _systemKeyCombos = new();
     }
 
-    internal override void OnShutDown() => _input?.Dispose();
+    internal override void OnShutDown()
+    {
+        _input?.Dispose();
+        _systemKeyCombos?.Clear();
+
+        _input = null;
+        _systemKeyCombos = null;
+    }
 
     public void DoConnect(IInputDevice device, bool connected)
     {
@@ -28,9 +37,11 @@ public class InputSystem : SystemBase<InputSystem, IView>
         {
             case IKeyboard:
                 if (_input.Keyboards.Count > 0)
-                    _keyboardState.ConnectionChanged(_input.Keyboards[0]);
+                    _keyboardState.ConnectionChanged(_input.Keyboards[0]);  
                 else
                     _keyboardState.Reset();
+
+                RefreshSystemKeyCombos();
                 break;
 
             case IMouse:
@@ -59,6 +70,37 @@ public class InputSystem : SystemBase<InputSystem, IView>
     public bool GetMouseButtonUp(MouseButton button) => (_mouseState!.ButtonReleased & (1 << (int)button)) != 0;
 
     public IInputContext GetInputContext() => _input;
+
+    /// <summary>
+    /// alternativeKeys가 모두 눌린 상태에서 triggerKey가 눌리는 순간 action을 실행합니다.
+    /// </summary>
+    public void RegisterSystemKeyCombo(List<Key> alternativeKeys, Key triggerKey, Action action)
+    {
+        _systemKeyCombos.Add((alternativeKeys, triggerKey, action));
+        RefreshSystemKeyCombos();
+    }
+
+    /// <summary>
+    /// 키보드 이벤트에서 시스템 키콤보에 대해 구독을 갱신합니다. (키보드 연결/해제 시 호출)
+    /// </summary>
+    private void RefreshSystemKeyCombos()
+    {
+        if (_input.Keyboards.Count == 0)
+            return;
+
+        var keyboard = _input.Keyboards[0];
+        keyboard.KeyDown -= OnSystemKeyComboKeyDown; // 이미 구독돼 있으면 먼저 제거 (중복 방지)
+        keyboard.KeyDown += OnSystemKeyComboKeyDown;
+    }
+
+    private void OnSystemKeyComboKeyDown(IKeyboard keyboard, Key key, int scancode)
+    {
+        foreach (var (alternativeKeys, triggerKey, action) in _systemKeyCombos)
+        {
+            if (key == triggerKey && alternativeKeys.All(k => keyboard.IsKeyPressed(k)))
+                action();
+        }
+    }
 }
 
 // 문법 설탕용 클래스

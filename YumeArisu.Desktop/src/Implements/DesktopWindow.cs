@@ -11,22 +11,13 @@ namespace YumeArisu.Desktop.Implements;
 public sealed class DesktopWindow : IWindowControl
 {
     public IView View => _window;
-    public bool IsSDL { get; private set; }
+
     private IWindow _window;
     private ScreenMode _screenMode;
+    private Vector2D<int> _lastSize;
 
     public DesktopWindow(string title, int width, int height)
     {
-        // 리눅스는 SDL로 생성 - Silk.NET 2.23.0 기준 안정성 높음
-        if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
-            SdlWindowing.Use();
-            SdlInput.Use();
-            IsSDL = true;
-        }
-        else
-            IsSDL = false;
-
         var options = WindowOptions.Default;
         options.Size = new Vector2D<int>(width, height);
         options.Title = title;
@@ -35,6 +26,24 @@ public sealed class DesktopWindow : IWindowControl
         _screenMode = ScreenMode.Windowed;
        
         _window = Window.Create(options);
+        _window.Resize += (s) => _lastSize = s;
+    }
+
+    /// <summary>
+    /// 전체화면과 창모드 전환을 수행합니다.
+    /// </summary>
+    /// <param name="mode"></param>
+    internal void SwitchScreenMode()
+    {
+        if (_screenMode == ScreenMode.Windowed)
+        {
+            ScreenMode = ScreenMode.BorderlessFullscreen;
+        }
+        else
+        {
+            ScreenMode = ScreenMode.Windowed;
+            _window.Size = _lastSize;
+        }
     }
 
     public ScreenMode ScreenMode

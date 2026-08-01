@@ -4,8 +4,6 @@ namespace YumeArisu.Desktop.Implements;
 
 public sealed class DebugFileIO : IFileIO
 {
-    public void Dispose() { }
-
     public bool Exists(string path)
     {
         return File.Exists(path);
@@ -20,4 +18,6 @@ public sealed class DebugFileIO : IFileIO
     {
         return File.ReadAllText(path);
     }
+
+    public void Dispose() { }
 }

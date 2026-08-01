@@ -11,7 +11,6 @@ namespace YumeArisu.Desktop.Implements;
 public sealed class DesktopApplication : IApplicationControl
 {
     private DesktopWindow _window;
-
 #if !DEBUG
     private DesktopFileIO _fileIO;
 #else
@@ -61,11 +60,17 @@ public sealed class DesktopApplication : IApplicationControl
             InputSystem.Instance.GetInputContext()
         );
 #endif
+        InputSystem.Instance.RegisterSystemKeyCombo(
+            [Silk.NET.Input.Key.AltLeft], 
+            Silk.NET.Input.Key.Enter, 
+            _window.SwitchScreenMode
+        );
     }
 
     public void OnFrameBufferResized(Vector2D<int> newSize)
     {
         // 물리적 : 내부 프레임버퍼 크기 변경 시
+        Console.WriteLine($"[FBResize] {newSize}");
         RenderSystem.Instance.OnFramebufferResize(newSize);
     }
 
@@ -114,9 +119,6 @@ public sealed class DesktopApplication : IApplicationControl
 
     public void OnClosing()
     {
-        if (_window.IsSDL && _window.View.IsClosing) // SDL 버그 -> close 이벤트 2번 발행, 한 번만 실행시키기 위한 장치, TODO : 패치되면 삭제
-            return;
-
         SceneSystem.Instance.OnBeforeSceneChange -= CoroutineSystem.Instance.ImmediateStopAllCoroutines;
 
         SceneSystem.Instance.ShutDown();
