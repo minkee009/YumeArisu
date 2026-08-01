@@ -65,6 +65,11 @@ public sealed class DesktopApplication : IApplicationControl
             Silk.NET.Input.Key.Enter, 
             _window.SwitchScreenMode
         );
+        InputSystem.Instance.RegisterSystemKeyCombo(
+            [Silk.NET.Input.Key.AltLeft, Silk.NET.Input.Key.ControlLeft], 
+            Silk.NET.Input.Key.X, 
+            () =>Console.WriteLine(_window.GetCurrentMonitorIndex())
+        );
     }
 
     public void OnFrameBufferResized(Vector2D<int> newSize)

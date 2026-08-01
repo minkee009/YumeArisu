@@ -72,11 +72,11 @@ public class InputSystem : SystemBase<InputSystem, IView>
     public IInputContext GetInputContext() => _input;
 
     /// <summary>
-    /// alternativeKeys가 모두 눌린 상태에서 triggerKey가 눌리는 순간 action을 실행합니다.
+    /// holdKeys가 모두 눌린 상태에서 triggerKey가 눌리는 순간 action을 실행합니다.
     /// </summary>
-    public void RegisterSystemKeyCombo(List<Key> alternativeKeys, Key triggerKey, Action action)
+    public void RegisterSystemKeyCombo(List<Key> holdKeys, Key triggerKey, Action action)
     {
-        _systemKeyCombos.Add((alternativeKeys, triggerKey, action));
+        _systemKeyCombos.Add((holdKeys, triggerKey, action));
         RefreshSystemKeyCombos();
     }
 
@@ -95,9 +95,9 @@ public class InputSystem : SystemBase<InputSystem, IView>
 
     private void OnSystemKeyComboKeyDown(IKeyboard keyboard, Key key, int scancode)
     {
-        foreach (var (alternativeKeys, triggerKey, action) in _systemKeyCombos)
+        foreach (var (holdKeys, triggerKey, action) in _systemKeyCombos)
         {
-            if (key == triggerKey && alternativeKeys.All(k => keyboard.IsKeyPressed(k)))
+            if (key == triggerKey && holdKeys.All(k => keyboard.IsKeyPressed(k)))
                 action();
         }
     }
