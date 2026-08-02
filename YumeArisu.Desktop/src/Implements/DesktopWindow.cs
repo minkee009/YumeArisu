@@ -35,19 +35,18 @@ public sealed class DesktopWindow : IWindowControl
         if (_screenMode == ScreenMode.Windowed)
         {
             int cachedMonitorIndex = _window.Monitor.Index;
-            bool isMaximumized = _window.WindowState == WindowState.Maximized;
+
+            // GLFW 안정성을 위해 최대화인 경우 경계없는 창으로 변환 후 전체화면으로
+            if (_window.WindowState == WindowState.Maximized)
+                ScreenMode = ScreenMode.BorderlessWindow;
+
             ScreenMode = ScreenMode.BorderlessFullscreen;
             
-            // TODO : GLFW 버그가 있음 -> 최대화 상태에서 전체화면 후 창모드로 복귀 시 Resizble이 적용되지 않아 화면 타이틀 바를 잃어버림... (한 번 더 전체화면 후 창모드로 복귀 시 정상 작동)
-            // 추가로 모니터 2대 이상 시 최대화가 보조 모니터에 걸려있던 상황임에도 전체화면 전환 시 주 모니터로 이동함
-            if(!isMaximumized)
-            {
-                var targetMonitor = WindowingMonitor.GetMonitors(_window)
-                    .FirstOrDefault(m => m.Index == cachedMonitorIndex)
-                    ?? WindowingMonitor.GetMainMonitor(_window);
-            
-                _window.Monitor = targetMonitor;   
-            }
+            var targetMonitor = WindowingMonitor.GetMonitors(_window)
+                .FirstOrDefault(m => m.Index == cachedMonitorIndex)
+                ?? WindowingMonitor.GetMainMonitor(_window);
+        
+            _window.Monitor = targetMonitor;   
         }
         else
         {
@@ -66,20 +65,17 @@ public sealed class DesktopWindow : IWindowControl
             switch (value)
             {
                 case ScreenMode.Windowed:
-                    _window.TopMost = false;
                     _window.WindowState = WindowState.Normal;
                     _window.WindowBorder = WindowBorder.Resizable;
                     break;
             
                 case ScreenMode.Fullscreen:
                 case ScreenMode.BorderlessFullscreen:
-                    _window.TopMost = false;
                     _window.WindowState = WindowState.Fullscreen;
                     _window.WindowBorder = WindowBorder.Hidden;
                     break;
 
                 case ScreenMode.BorderlessWindow:
-                    _window.TopMost = false;
                     _window.WindowState = WindowState.Normal;
                     _window.WindowBorder = WindowBorder.Hidden;
                     break;
