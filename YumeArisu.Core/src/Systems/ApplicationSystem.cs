@@ -7,10 +7,8 @@ public class ApplicationSystem : SystemBase<ApplicationSystem, IApplicationContr
 {
     private IApplicationControl _control;
 
-    internal override void OnStartUp(IApplicationControl control) 
-    {
-        _control = control;
-    }
+    internal override void OnStartUp(IApplicationControl control) => _control = control;
+    
     internal override void OnShutDown() => _control = null;
 
     public int TargetFrameRate { get => _control.TargetFrameRate; set => _control.TargetFrameRate = value; }

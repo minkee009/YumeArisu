@@ -75,15 +75,9 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         _unregistrationQueue.Clear();
     }
 
-    internal void RegisterBehaviour(Behaviour bh)
-    {
-        _registrationQueue.Enqueue(bh);
-    }
+    internal void RegisterBehaviour(Behaviour bh) => _registrationQueue.Enqueue(bh);
 
-    internal void UnregisterBehaviour(Behaviour bh)
-    {
-        _unregistrationQueue.Enqueue(bh);
-    }
+    internal void UnregisterBehaviour(Behaviour bh) => _unregistrationQueue.Enqueue(bh);
 
     /// <summary>
     /// 등록/해제 대기열에 들어간 Behaviour를 모두 처리하고 활성상태를 체크합니다.
@@ -130,10 +124,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
     /// 활성 상태가 바뀌었음을 마킹합니다.
     /// </summary>
     /// <param name="bh">바뀐 Behaviour</param>
-    internal void MarkScheduleChange(Behaviour bh)
-    {
-        _markedForScheduleCheck.Add(bh);
-    }
+    internal void MarkScheduleChange(Behaviour bh) => _markedForScheduleCheck.Add(bh);
 
     /// <summary>
     /// MarkScheduleChange()로 마킹된 Behaviour에 대해 현재 활성 상태를 추적하고 갱신합니다.

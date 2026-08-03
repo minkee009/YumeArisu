@@ -1,5 +1,3 @@
-using System.Numerics;
-using System.Runtime.CompilerServices;
 using Silk.NET.Maths;
 using YumeArisu.Core.Abstractions;
 
@@ -9,10 +7,7 @@ public class WindowSystem : SystemBase<WindowSystem, IWindowControl>
 {
     private IWindowControl _control;
 
-    internal override void OnStartUp(IWindowControl control) 
-    {
-        _control = control;
-    }
+    internal override void OnStartUp(IWindowControl control) => _control = control;
 
     internal override void OnShutDown() => _control = null;
 

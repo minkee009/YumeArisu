@@ -27,6 +27,9 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
     internal override void OnShutDown()
     {
         _gl = null;
+
+        // 카메라 리스트 해제
+        // 렌더러 리스트 해제
     }
 
     public void OnFramebufferResize(Vector2D<int> size) => _gl.Viewport(size);

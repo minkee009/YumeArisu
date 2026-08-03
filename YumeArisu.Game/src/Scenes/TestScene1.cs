@@ -12,7 +12,7 @@ public class TestScene1 : Scene
         _player = CreateGameObject("Player");
         System.Console.WriteLine("크하하 플레이어가 생성됐다고!!"); // 센포티스런 대사
 
-        _player.Transform.Position = new(30f, 45f, 0f);
+        _player.Transform.WorldPosition = new(30f, 45f, 0f);
 
         _weapon = CreateGameObject("Weapon");
         _weapon.Transform.SetParent(_player.Transform);

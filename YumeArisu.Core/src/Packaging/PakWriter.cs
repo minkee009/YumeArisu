@@ -144,15 +144,13 @@ public static class PakWriter
                 var seed = Pak.CalcXorSeed(pathId); 
                 Crypt.Xor(target, 0, encodedLength, seed);
 
-                indexEntries.Enqueue(
-                    new Pak.Entry
-                    {
-                        PathId = pathId,
-                        Offset = fs.Position,
-                        CompressedLength = encodedLength,
-                        OriginalLength = source.Length
-                    }
-                );
+                indexEntries.Enqueue(new Pak.Entry
+                {
+                    PathId = pathId,
+                    Offset = fs.Position,
+                    CompressedLength = encodedLength,
+                    OriginalLength = source.Length
+                });
 
                 // 바이너리 파일 만들기
                 // 원본 크기 저장 (항상 리틀 엔디안으로 고정)

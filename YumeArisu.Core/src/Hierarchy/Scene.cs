@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using YumeArisu.Core.Utility;
 
 namespace YumeArisu.Core.Hierarchy;
@@ -36,6 +35,7 @@ public abstract class Scene
 
         foreach (var go in _gameObjects)
             go.Destroy();
+            
         _gameObjects.Clear();
 
         IsLoaded = false;
