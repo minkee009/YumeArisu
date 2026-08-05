@@ -72,13 +72,13 @@ public sealed class DesktopApplication : IApplicationControl
     {
         // 물리적 : 내부 프레임버퍼 크기 변경 시
         RenderSystem.Instance.OnFramebufferResize(newSize);
-        System.Console.WriteLine($"Physical FB Size : {newSize}");
     }
 
     public void OnResized(Vector2D<int> newSize)
     {
-        // 논리적 : 윈도우 핸들 크기 변경 시
-        System.Console.WriteLine($"Logical FB Size : {newSize}");
+        // 논리적 : 윈도우 핸들 크기 변경 시 (DPI 있음)
+        // PointerEventSystem.Instance.OnScreenResize(newSize);
+        // TouchSystem.Instance.OnPanelResize(newSize);
     }
 
     public void OnUpdate(double deltaTime)

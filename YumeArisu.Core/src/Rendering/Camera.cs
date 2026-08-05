@@ -7,10 +7,10 @@ namespace YumeArisu.Core.Rendering;
 
 public class Camera : Behaviour
 {
+    public int Depth { get; set; } = 0;
+    public Rectangle<float> ViewRect { get; set; }
     private Matrix4x4 _cachedViewMatrix;
     private bool _viewMatrixDirty = true;
-
-    Rectangle<float> ViewRect { get; set; }
 
     protected internal override void OnAttached()
     {
