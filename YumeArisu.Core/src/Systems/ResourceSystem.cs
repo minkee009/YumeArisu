@@ -6,7 +6,7 @@ namespace YumeArisu.Core.Systems;
 public class ResourceSystem : SystemBase<ResourceSystem, IFileIO>
 {
     private IFileIO _fileIO;
-    private Dictionary<string, Dictionary<Type, CacheEntry>> _resourceTable;
+    private Dictionary<string, CacheEntry> _resourceTable;
 
     internal override void OnStartUp(IFileIO fileIO)
     {
@@ -16,8 +16,7 @@ public class ResourceSystem : SystemBase<ResourceSystem, IFileIO>
 
     internal override void OnShutDown()
     {
-        foreach(var types in _resourceTable.Values)
-            foreach(var cache in types.Values)
+        foreach(var cache in _resourceTable.Values)
                 cache.Resource.Unload();
 
         _fileIO = null;
@@ -27,18 +26,21 @@ public class ResourceSystem : SystemBase<ResourceSystem, IFileIO>
     /// <summary>
     /// 리소스를 가져옵니다. 처음으로 가져오는 리소스의 경우 리소스 테이블 캐시에 할당이 일어납니다.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="path"></param>
-    /// <returns></returns>
+    /// <typeparam name="T">반환받을 타입</typeparam>
+    /// <param name="path">파일 경로</param>
+    /// <returns>리소스</returns>
     /// <exception cref="Exception"></exception>
     public T GetResource<T>(string path) where T : Resource, new()
     {
         if(typeof(T) == typeof(Resource))
             throw new Exception("추상 클래스로 리소스를 불러올 수 없습니다.");
 
-        if (_resourceTable.TryGetValue(path, out var types)
-            && types.TryGetValue(typeof(T), out var cached))
+        if (_resourceTable.TryGetValue(path, out var cached))
         {
+            // 이미 있는 캐시가 T 타입이 아닌 경우 -> 에러, 단일 타입 리소스만 처리 가능
+            if(typeof(T) != cached.Resource.GetType())
+                throw new Exception($"리소스 타입 불일치: {path}는 이미 {cached.Resource.GetType().Name}로 로드됨");
+
             cached.RefCount++;
             return (T)cached.Resource;
         }
@@ -47,13 +49,7 @@ public class ResourceSystem : SystemBase<ResourceSystem, IFileIO>
         if (resource.Load(_fileIO.ReadAllBytes(path)))
         {
             resource.Path = path;
-
-            if (!_resourceTable.TryGetValue(path, out types))
-            {
-                types = new();
-                _resourceTable[path] = types;
-            }
-            types[typeof(T)] = new(resource, 1);
+            _resourceTable[path] = new(resource, 1);
 
             return resource;
         }
@@ -74,24 +70,17 @@ public class ResourceSystem : SystemBase<ResourceSystem, IFileIO>
         if (resource.Path == null || resource.Path == string.Empty)
             throw new Exception("경로를 알 수 없는 리소스를 반납하려 했습니다.");
 
-        var actualType = resource.GetType();
-
-        if (_resourceTable.TryGetValue(resource.Path, out var types)
-            && types.TryGetValue(actualType, out var cached))
+        if (_resourceTable.TryGetValue(resource.Path, out var cached))
         {
+            // 경로 주입 공격을 막는 방어
             if (!ReferenceEquals(cached.Resource, resource))
                 throw new Exception($"캐시된 인스턴스와 다른 객체를 반납하려 했습니다: {resource.Path}");
 
             cached.RefCount--;
             if(cached.RefCount <= 0)
             {
-                // 해당 타입 캐시 제거
-                types.Remove(actualType);
-
-                // 해당 경로로 타입이 더 이상 없으면 전체 리소스 테이블에서 제거 
-                if(types.Count == 0)
-                    _resourceTable.Remove(resource.Path);
-
+                // 참조가 남아 있지 않는 경우 캐시에서 제거
+                _resourceTable.Remove(resource.Path);
                 resource.Unload();
             }
         }

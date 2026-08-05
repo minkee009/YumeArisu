@@ -57,7 +57,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
             return; // Exit가 비동기 콜백 안에서 즉시 안 먹힐 상황 대비한 안전장치
         }
 
-        _frameBufferSize = view.FramebufferSize / 2;
+        _frameBufferSize = view.FramebufferSize;
 
         _pixelVAO = _gl.GenVertexArray();
         _pixelVBO = _gl.GenBuffer();
@@ -118,8 +118,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
 
     public void OnFramebufferResize(Vector2D<int> size)
     {
-        _frameBufferSize = size * 2;
-        System.Console.WriteLine($"fb - {_frameBufferSize} / window size - {size}");
+        _frameBufferSize = size;
     }
 
     public void BeginFrame()
@@ -162,10 +161,11 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
     public void Render()
     {
         var halfViewSize = (_frameBufferSize / 2);
-        _gl.Viewport(halfViewSize,_frameBufferSize);
+        var quaterViewSize = halfViewSize / 2;
+        _gl.Viewport(quaterViewSize, halfViewSize);
 
         _gl.Enable(EnableCap.ScissorTest);
-        _gl.Scissor(halfViewSize.X, halfViewSize.Y, (uint)_frameBufferSize.X, (uint)_frameBufferSize.Y); // 여기에 뷰포트와 같은 값을 넣어야 함
+        _gl.Scissor(quaterViewSize.X, quaterViewSize.Y, (uint)halfViewSize.X, (uint)halfViewSize.Y); // 여기에 뷰포트와 같은 값을 넣어야 함
 
         _gl.ClearColor(Color.FromArgb(255, (int) (.45f * 255), (int) (.55f * 255), (int) (.60f * 255)));
         _gl.Clear((uint)ClearBufferMask.ColorBufferBit);
@@ -199,7 +199,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
             6
         );
 
-        //_gl.Viewport(_frameBufferSize / 2);
+        _gl.Viewport(_frameBufferSize);
     }
 
     public void EndFrame()
