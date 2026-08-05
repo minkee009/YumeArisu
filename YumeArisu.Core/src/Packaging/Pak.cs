@@ -10,7 +10,9 @@ public static class Pak
     public const long MaximumBytes = 536870912L; // 512mb
     public const long HeaderLength = 12; // byte
     public const long EntryLength = 24; // byte
-    public const long FooterLength = 16; // byte
+    public const long ChecksumLength = 4;  // byte
+    public const long EndMagicLength = 4;  // byte
+    public const long FooterLength = 20; // byte (IndexOffset 8 + IndexEntryCount 4 + Checksum 4 + EndMagic 4)
     public static readonly byte[] MagicNum = [0x50, 0x41, 0x4B, 0x00]; // "PAK\0"
     public static readonly byte[] EndMagicNum = [0x4B, 0x41, 0x50, 0x00]; // "KAP\0"
 
@@ -31,12 +33,12 @@ public static class Pak
         public int OriginalLength;
     }
 
-    // TODO : 엔드매직 앞에 체크섬 꼭 만들기 - 마감은 0.01a 퍼블리싱 전까지
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Footer
     {
         public long IndexOffset;
         public int IndexEntryCount;
+        public uint Checksum;
         public byte[] EndMagic;
     }
 

@@ -39,6 +39,8 @@ public sealed class DesktopApplication : IApplicationControl
     {
 #if !DEBUG
         _fileIO.Open("./Data", "dat");
+#else
+        _fileIO.SetRootFolder("./Assets");
 #endif
 
         ApplicationSystem.Instance.StartUp(this);

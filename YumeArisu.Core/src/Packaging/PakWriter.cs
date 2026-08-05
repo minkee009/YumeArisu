@@ -99,7 +99,8 @@ public static class PakWriter
     {
         long currentWriteLength = 0;
         using(var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write))
-        using(var bw = new BinaryWriter(fs))
+        using(var crcStream = new Crc32Stream(fs))
+        using(var bw = new BinaryWriter(crcStream))
         {
             // Header
             WriteHeader(bw, new Pak.Header
@@ -170,7 +171,7 @@ public static class PakWriter
             }
 
             // Footer
-            WriteFooter(bw, new Pak.Footer
+            WriteFooter(bw, crcStream, new Pak.Footer
             {
                 IndexOffset = indexOffset,
                 IndexEntryCount = indexEntryCount,
@@ -188,7 +189,8 @@ public static class PakWriter
     {
         long currentWriteLength = 0;
         using(var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write))
-        using(var bw = new BinaryWriter(fs))
+        using(var crcStream = new Crc32Stream(fs))
+        using(var bw = new BinaryWriter(crcStream))
         {
             // Header
             WriteHeader(bw, new Pak.Header
@@ -241,7 +243,7 @@ public static class PakWriter
             WriteEntry(bw, indexEntry);
 
             // Footer
-            WriteFooter(bw, new Pak.Footer
+            WriteFooter(bw, crcStream, new Pak.Footer
             {
                 IndexOffset = indexOffset,
                 IndexEntryCount = indexEntryCount,
@@ -265,10 +267,15 @@ public static class PakWriter
         bw.Write(entry.OriginalLength);
     }
 
-    private static void WriteFooter(BinaryWriter bw, Pak.Footer footer)
+    private static void WriteFooter(BinaryWriter bw, Crc32Stream crcStream, Pak.Footer footer)
     {
         bw.Write(footer.IndexOffset);
         bw.Write(footer.IndexEntryCount);
+
+        // index 테이블까지 작성 후 캡처
+        footer.Checksum = crcStream.Checksum;
+
+        bw.Write(footer.Checksum);
         bw.Write(footer.EndMagic);
     }
 }

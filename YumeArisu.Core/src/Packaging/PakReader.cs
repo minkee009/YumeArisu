@@ -54,6 +54,12 @@ public static class PakReader
                 if (!footer.EndMagic.SequenceEqual(Pak.EndMagicNum))
                     throw new InvalidDataException("PAK 엔드 매직 넘버 불일치");
 
+                // Checksum 검증
+                long checksumRegionLength = ps.Length - Pak.EndMagicLength - Pak.ChecksumLength;
+                uint computedChecksum = ChecksumUtility.ComputeCrc32(ps, checksumRegionLength);
+                if (computedChecksum != footer.Checksum)
+                    throw new InvalidDataException("PAK 체크섬 불일치: 파일이 손상되었을 수 있습니다");
+
                 // Pak Index Entry 읽기
                 ps.Seek(footer.IndexOffset, SeekOrigin.Begin);                
                 for (int j = 0; j < footer.IndexEntryCount; j++)
@@ -159,6 +165,7 @@ public static class PakReader
         {
             IndexOffset = br.ReadInt64(),
             IndexEntryCount = br.ReadInt32(),
+            Checksum = br.ReadUInt32(),
             EndMagic = br.ReadBytes(4)
         };
     }
