@@ -15,7 +15,7 @@ public sealed class GameObject
     public ReadOnlyListView<Component> Components => _components;
     public bool IsDestroyed { get; private set; }
 
-    internal event Action<GameObject> OnActiveInHierarchyChange;
+    internal event Action<GameObject> ActiveInHierarchyChange;
     internal List<Component> _components;
 
     private bool _activeSelf;
@@ -60,7 +60,7 @@ public sealed class GameObject
             return;
 
         _activeInHierarchy = nextActiveInHierarchy;
-        OnActiveInHierarchyChange?.Invoke(this);
+        ActiveInHierarchyChange?.Invoke(this);
 
         if (Transform != null)
         {

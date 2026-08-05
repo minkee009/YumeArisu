@@ -13,13 +13,13 @@ public class FPSChecker : ScriptBehaviour
     private int _frameCount = 0;
     private float _updateInterval = 0.15f;
 
-    public override void Start()
+    public override void OnStart()
     {
         _currentTitle = WindowControl.Title;
         //ApplicationControl.VSync = false;
     }
 
-    public override void Update()
+    public override void OnUpdate()
     {
         _accumulatedTime += Time.DeltaTime;
         _frameCount++;

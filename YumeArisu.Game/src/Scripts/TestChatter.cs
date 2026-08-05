@@ -8,9 +8,9 @@ public class TestChatter : ScriptBehaviour
 {
     public override int ExecutionOrder => base.ExecutionOrder;
     public int Dialogue { get; set; } = 0;
-    public override void Update()
+    public override void OnUpdate()
     {
-        base.Update();
+        base.OnUpdate();
         if (Input.GetKeyDown(Key.Space))
         {
             switch(Dialogue)

@@ -9,8 +9,8 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
     public Scene CurrentScene => _currentScene;
     public Scene StaticScene => _staticScene;
 
-    public event Action OnBeforeSceneChange;
-    public event Action OnAfterSceneChange;
+    public event Action BeforeSceneChange;
+    public event Action AfterSceneChange;
 
     private Dictionary<string, Scene> _dynamicScenes;
     private Scene _staticScene;
@@ -40,8 +40,8 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
         _currentScene?.Unload();
         _staticScene?.Unload();
 
-        OnBeforeSceneChange = null;
-        OnAfterSceneChange = null;
+        BeforeSceneChange = null;
+        AfterSceneChange = null;
 
         _dynamicScenes = null;
         _staticScene = null;
@@ -78,7 +78,7 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
         _currentScene = _nextScene;
         _nextScene = null;
 
-        OnBeforeSceneChange?.Invoke();
+        BeforeSceneChange?.Invoke();
 
         GC.Collect(2, GCCollectionMode.Optimized);
         GC.WaitForPendingFinalizers();
@@ -86,7 +86,7 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
 
         _currentScene?.Load();
 
-        OnAfterSceneChange?.Invoke();
+        AfterSceneChange?.Invoke();
 
         return;
     }

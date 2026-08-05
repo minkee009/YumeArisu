@@ -9,19 +9,6 @@ public class Camera : Behaviour
 {
     public int Depth { get; set; } = 0;
     public Rectangle<float> ViewRect { get; set; }
-    private Matrix4x4 _cachedViewMatrix;
-    private bool _viewMatrixDirty = true;
-
-    protected internal override void OnAttached()
-    {
-        GameObject.Transform.OnWorldMatrixDirty += HandleTransformMatrixChange;
-    }
-
-    protected internal override void OnDetached()
-    {
-        GameObject.Transform.OnWorldMatrixDirty -= HandleTransformMatrixChange;
-    }
-
     public Matrix4x4 ViewMatrix
     {
         get
@@ -34,6 +21,18 @@ public class Camera : Behaviour
             }
             return _cachedViewMatrix;
         }
+    }
+    private Matrix4x4 _cachedViewMatrix;
+    private bool _viewMatrixDirty = true;
+
+    protected internal override void OnAttached()
+    {
+        GameObject.Transform.OnWorldMatrixDirty += HandleTransformMatrixChange;
+    }
+
+    protected internal override void OnDetached()
+    {
+        GameObject.Transform.OnWorldMatrixDirty -= HandleTransformMatrixChange;
     }
 
     private void HandleTransformMatrixChange(Transform t)

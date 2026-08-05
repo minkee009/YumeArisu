@@ -9,7 +9,7 @@ namespace YumeArisu.Game.Scripts;
 public class TestAwaker : ScriptBehaviour
 {
     public GameObject Target { get; set; } = null;
-    public override void Update()
+    public override void OnUpdate()
     {
         if (Input.GetKeyDown(Key.G) && Target != null)
         {

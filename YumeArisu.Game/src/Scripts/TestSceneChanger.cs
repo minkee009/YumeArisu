@@ -7,7 +7,7 @@ namespace YumeArisu.Game.Scripts;
 public class TestSceneChanger : ScriptBehaviour
 {
     public Key DefaultKey = Key.R;
-    public override void Update()
+    public override void OnUpdate()
     {
         if (Input.GetKeyUp(DefaultKey))
         {

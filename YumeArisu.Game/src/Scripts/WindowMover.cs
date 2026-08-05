@@ -14,13 +14,13 @@ public class WindowMover : ScriptBehaviour
     Vector2 _localPosition;
     //public bool _isGrounded = false;
 
-    public override void Start()
+    public override void OnStart()
     {
         var currentPos = WindowControl.Position;
         _localPosition = new(currentPos.X, currentPos.Y);
     }
     
-    public override void Update()
+    public override void OnUpdate()
     {
         var hInput = (Input.GetKey(Key.Right) ? 1.0f : 0.0f) + (Input.GetKey(Key.Left) ? -1.0f : 0.0f);
         var vInput = (Input.GetKey(Key.Down) ? 1.0f : 0.0f) + (Input.GetKey(Key.Up) ? -1.0f : 0.0f);

@@ -12,7 +12,7 @@ public class TestDestroyer : ScriptBehaviour
     string _이가;
     string _은는;
     string _을를;
-    public override void Awake()
+    public override void OnAwake()
     {
         _이가 = KoreanJosa.GetIGa(GameObject.Name);
         _은는 = KoreanJosa.GetEunNeun(GameObject.Name);
@@ -20,7 +20,7 @@ public class TestDestroyer : ScriptBehaviour
         System.Console.WriteLine($"{GameObject.Name}{_이가} 잠에서 일어남");
     }
 
-    public override void Start()
+    public override void OnStart()
     {
         System.Console.WriteLine($"{GameObject.Name}{_은는} 말했다 : 시작할게요!");
     }
@@ -30,7 +30,7 @@ public class TestDestroyer : ScriptBehaviour
         System.Console.WriteLine($"{GameObject.Name}{_은는} 켜졌어요");    
     }
 
-    public override void Update()
+    public override void OnUpdate()
     {
         if (Input.GetKeyDown(Key.F))
         {

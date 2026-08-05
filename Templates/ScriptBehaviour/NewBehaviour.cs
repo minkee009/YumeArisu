@@ -7,12 +7,12 @@ namespace YumeArisu.Game.Scripts;
 
 public class NewBehaviour : ScriptBehaviour
 {
-    public override void Start()
+    public override void OnStart()
     {
         
     }
     
-    public override void Update()
+    public override void OnUpdate()
     {
         
     }

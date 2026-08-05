@@ -28,12 +28,12 @@ public abstract class Behaviour : Component
     internal bool IsRegistered { get; set; } = false;
     internal bool IsScheduled { get; set; } = false;
 
-    public virtual void Awake() { }
+    public virtual void OnAwake() { }
     public virtual void OnEnable() { }
-    public virtual void Start() { }
-    public virtual void FixedUpdate() { }
-    public virtual void Update() { }
-    public virtual void LateUpdate() { }
+    public virtual void OnStart() { }
+    public virtual void OnFixedUpdate() { }
+    public virtual void OnUpdate() { }
+    public virtual void OnLateUpdate() { }
     public virtual void OnDisable() { }
     public virtual void OnDestroy() { }
 
@@ -41,13 +41,13 @@ public abstract class Behaviour : Component
 
     protected internal override void OnAttached()
     {
-        GameObject.OnActiveInHierarchyChange += HandleActiveChange;
+        GameObject.ActiveInHierarchyChange += HandleActiveChange;
         BehaviourSystem.Instance.RegisterBehaviour(this);
     }
 
     protected internal override void OnDetached()
     {
-        GameObject.OnActiveInHierarchyChange -= HandleActiveChange;
+        GameObject.ActiveInHierarchyChange -= HandleActiveChange;
         BehaviourSystem.Instance.UnregisterBehaviour(this);
     }
 

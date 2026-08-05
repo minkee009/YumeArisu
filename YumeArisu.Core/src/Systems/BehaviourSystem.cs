@@ -172,7 +172,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         }
     }
 
-    public void ExecuteAwake()
+    public void ExecuteOnAwake()
     {
         var flushCount = _pendingAwake.Count;
         for (int i = 0; i < flushCount; i++)
@@ -180,7 +180,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
             var bh = _pendingAwake.Dequeue();
             if (bh.GameObject.ActiveInHierarchy)
             {
-                bh.Awake();
+                bh.OnAwake();
                 bh.ExecutionPhase = ExecutionPhase.Awoken;
             }
             else if (bh.ExecutionPhase != ExecutionPhase.Awoken && !bh.IsPendingDestroy)
@@ -196,7 +196,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
             _pendingOnEnable.Dequeue().OnEnable();
     }
 
-    public void ExecuteStart()
+    public void ExecuteOnStart()
     {
         var flushCount = _pendingStart.Count;
         for (int i = 0; i < flushCount; i++)
@@ -204,7 +204,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
             var bh = _pendingStart.Dequeue();
             if (bh.IsActiveAndEnabled)
             {
-                bh.Start();
+                bh.OnStart();
                 bh.ExecutionPhase = ExecutionPhase.Started;
             }
             else if (bh.ExecutionPhase != ExecutionPhase.Started && !bh.IsPendingDestroy)
@@ -214,22 +214,22 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         }
     }
 
-    public void ExecuteFixedUpdate()
+    public void ExecuteOnFixedUpdate()
     {
         foreach (var bh in _scheduledBehaviours)
-            bh.FixedUpdate();
+            bh.OnFixedUpdate();
     }
 
-    public void ExecuteUpdate()
+    public void ExecuteOnUpdate()
     {
         foreach (var bh in _scheduledBehaviours)
-            bh.Update();
+            bh.OnUpdate();
     }
 
-    public void ExecuteLateUpdate()
+    public void ExecuteOnLateUpdate()
     {
         foreach (var bh in _scheduledBehaviours)
-            bh.LateUpdate();
+            bh.OnLateUpdate();
     }
 
     public void ExecuteOnDisable()

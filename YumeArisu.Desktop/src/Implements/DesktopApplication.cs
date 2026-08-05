@@ -53,7 +53,7 @@ public sealed class DesktopApplication : IApplicationControl
         CoroutineSystem.Instance.StartUp(default);
         SceneSystem.Instance.StartUp(new TestSceneManifest());
 
-        SceneSystem.Instance.OnBeforeSceneChange += CoroutineSystem.Instance.ImmediateStopAllCoroutines;
+        SceneSystem.Instance.BeforeSceneChange += CoroutineSystem.Instance.ImmediateStopAllCoroutines;
 #if DEBUG
         _controller = new ImGuiController(
             RenderSystem.Instance.GetGL(), 
@@ -86,18 +86,18 @@ public sealed class DesktopApplication : IApplicationControl
         TimeSystem.Instance.BeginFrame(deltaTime);
         SceneSystem.Instance.BeginFrame();
         BehaviourSystem.Instance.BeginFrame();
-        BehaviourSystem.Instance.ExecuteAwake();
+        BehaviourSystem.Instance.ExecuteOnAwake();
         BehaviourSystem.Instance.ExecuteOnEnable();
-        BehaviourSystem.Instance.ExecuteStart();
+        BehaviourSystem.Instance.ExecuteOnStart();
         TimeSystem.Instance.ConsumeFixedSteps(
             (_) => 
             {
-                BehaviourSystem.Instance.ExecuteFixedUpdate();
+                BehaviourSystem.Instance.ExecuteOnFixedUpdate();
                 CoroutineSystem.Instance.YieldFixedUpdate();
             }
         );
-        BehaviourSystem.Instance.ExecuteUpdate();
-        BehaviourSystem.Instance.ExecuteLateUpdate();
+        BehaviourSystem.Instance.ExecuteOnUpdate();
+        BehaviourSystem.Instance.ExecuteOnLateUpdate();
         CoroutineSystem.Instance.YieldUpdate();
         BehaviourSystem.Instance.ExecuteOnDisable();
         BehaviourSystem.Instance.ExecuteOnDestroy();
@@ -121,7 +121,7 @@ public sealed class DesktopApplication : IApplicationControl
 
     public void OnClosing()
     {
-        SceneSystem.Instance.OnBeforeSceneChange -= CoroutineSystem.Instance.ImmediateStopAllCoroutines;
+        SceneSystem.Instance.BeforeSceneChange -= CoroutineSystem.Instance.ImmediateStopAllCoroutines;
 
         SceneSystem.Instance.ShutDown();
         CoroutineSystem.Instance.ShutDown();
