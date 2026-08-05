@@ -25,12 +25,12 @@ public class Camera : Behaviour
     private Matrix4x4 _cachedViewMatrix;
     private bool _viewMatrixDirty = true;
 
-    protected internal override void OnAttached()
+    protected internal override void OnAttach()
     {
         GameObject.Transform.OnWorldMatrixDirty += HandleTransformMatrixChange;
     }
 
-    protected internal override void OnDetached()
+    protected internal override void OnDetach()
     {
         GameObject.Transform.OnWorldMatrixDirty -= HandleTransformMatrixChange;
     }

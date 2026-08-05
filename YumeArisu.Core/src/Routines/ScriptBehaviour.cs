@@ -5,9 +5,9 @@ namespace YumeArisu.Core.Routines;
 
 public class ScriptBehaviour : Behaviour
 {
-    protected internal override void OnDetached()
+    protected internal override void OnDetach()
     {
-        base.OnDetached();
+        base.OnDetach();
         StopAllCoroutine();
     }
 

@@ -39,13 +39,13 @@ public abstract class Behaviour : Component
 
     private bool _enabled = true;
 
-    protected internal override void OnAttached()
+    protected internal override void OnAttach()
     {
         GameObject.ActiveInHierarchyChange += HandleActiveChange;
         BehaviourSystem.Instance.RegisterBehaviour(this);
     }
 
-    protected internal override void OnDetached()
+    protected internal override void OnDetach()
     {
         GameObject.ActiveInHierarchyChange -= HandleActiveChange;
         BehaviourSystem.Instance.UnregisterBehaviour(this);

@@ -81,7 +81,7 @@ public sealed class GameObject
     public T AddComponent<T>() where T : Component, new()
     {
         T instance = new() { GameObject = this };
-        instance.OnAttached();
+        instance.OnAttach();
 
         _components.Add(instance);
         return instance;
@@ -142,7 +142,7 @@ public sealed class GameObject
         if (!_components.Remove(component))
             throw new InvalidOperationException("제거할 컴포넌트가 존재하지 않습니다.");
 
-        component.OnDetached();
+        component.OnDetach();
     }
 
     internal void Destroy()
@@ -156,7 +156,7 @@ public sealed class GameObject
         Transform.SetParent(null);
 
         foreach (var comp in _components)
-            comp.OnDetached();
+            comp.OnDetach();
 
         _components.Clear();
     }
