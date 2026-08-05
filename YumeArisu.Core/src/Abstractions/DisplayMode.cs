@@ -1,6 +1,6 @@
 namespace YumeArisu.Core.Abstractions;
 
-public enum ScreenMode
+public enum DisplayMode
 {
     Windowed,
     Fullscreen,

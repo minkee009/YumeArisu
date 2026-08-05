@@ -8,7 +8,7 @@ public sealed class AndroidWindow : IWindowControl
 {
     public IView View { get; private set; }
 
-    public ScreenMode _screenMode;
+    public DisplayMode _screenMode;
 
     public AndroidWindow()
     {
@@ -19,10 +19,10 @@ public sealed class AndroidWindow : IWindowControl
         options.API = new GraphicsAPI(ContextAPI.OpenGLES, ContextProfile.Compatability, ContextFlags.Default, new APIVersion(3, 0));
         View = Silk.NET.Windowing.Window.GetView(options); // note also GetView, instead of Window.Create.
 
-        _screenMode = ScreenMode.Fullscreen;
+        _screenMode = DisplayMode.Fullscreen;
     }
 
-    public ScreenMode ScreenMode { get; set; }
+    public DisplayMode DisplayMode { get; set; }
     public string Title { get; set; }
     public Vector2D<int> Size { get; set; }
     public Vector2D<int> Position { get; set; }

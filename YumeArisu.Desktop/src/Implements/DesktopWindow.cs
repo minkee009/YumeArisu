@@ -12,7 +12,7 @@ public sealed class DesktopWindow : IWindowControl
     public IView View => _window;
 
     private IWindow _window;
-    private ScreenMode _screenMode;
+    private DisplayMode _displayMode;
 
     public DesktopWindow(string title, int width, int height)
     {
@@ -23,24 +23,24 @@ public sealed class DesktopWindow : IWindowControl
         options.Title = title;
         options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.ForwardCompatible, new APIVersion(3, 3));
 
-        _screenMode = ScreenMode.Windowed;
+        _displayMode = DisplayMode.Windowed;
         _window = Window.Create(options);
     }
 
     /// <summary>
     /// 전체화면과 창모드 전환을 수행합니다.
     /// </summary>
-    internal void SwitchScreenMode()
+    internal void SwitchDisplayMode()
     {
-        if (_screenMode == ScreenMode.Windowed)
+        if (_displayMode == DisplayMode.Windowed)
         {
             int cachedMonitorIndex = _window.Monitor.Index;
 
             // GLFW 안정성을 위해 최대화인 경우 경계없는 창으로 변환 후 전체화면으로
             if (_window.WindowState == WindowState.Maximized)
-                ScreenMode = ScreenMode.BorderlessWindow;
+                DisplayMode = DisplayMode.BorderlessWindow;
 
-            ScreenMode = ScreenMode.BorderlessFullscreen;
+            DisplayMode = DisplayMode.BorderlessFullscreen;
             
             var targetMonitor = WindowingMonitor.GetMonitors(_window)
                 .FirstOrDefault(m => m.Index == cachedMonitorIndex)
@@ -50,38 +50,38 @@ public sealed class DesktopWindow : IWindowControl
         }
         else
         {
-            ScreenMode = ScreenMode.Windowed;
+            DisplayMode = DisplayMode.Windowed;
         }
     }
 
-    public ScreenMode ScreenMode
+    public DisplayMode DisplayMode
     {
-        get => _screenMode;
+        get => _displayMode;
         set
         {
-            if (_screenMode == value)
+            if (_displayMode == value)
                 return;
 
             switch (value)
             {
-                case ScreenMode.Windowed:
+                case DisplayMode.Windowed:
                     _window.WindowState = WindowState.Normal;
                     _window.WindowBorder = WindowBorder.Resizable;
                     break;
             
-                case ScreenMode.Fullscreen:
-                case ScreenMode.BorderlessFullscreen:
+                case DisplayMode.Fullscreen:
+                case DisplayMode.BorderlessFullscreen:
                     _window.WindowState = WindowState.Fullscreen;
                     _window.WindowBorder = WindowBorder.Hidden;
                     break;
 
-                case ScreenMode.BorderlessWindow:
+                case DisplayMode.BorderlessWindow:
                     _window.WindowState = WindowState.Normal;
                     _window.WindowBorder = WindowBorder.Hidden;
                     break;
             }
 
-            _screenMode = value;
+            _displayMode = value;
         }
     }
 

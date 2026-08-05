@@ -7,7 +7,7 @@ namespace YumeArisu.Core.Abstractions;
 /// </summary>
 public interface IWindowControl
 {
-    public ScreenMode ScreenMode { get; set; }
+    public DisplayMode DisplayMode { get; set; }
     public string Title { get; set; }
     public Vector2D<int> Size { get; set; }
     public Vector2D<int> Position { get; set; }
