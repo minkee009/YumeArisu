@@ -49,11 +49,11 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
     {
         try
         {
-            _gl = GL.GetApi(view);
+            _gl = view.CreateOpenGL();
         }
         catch
         {
-            Environment.FailFast("GL 컨텍스트를 찾지 못했습니다. 그래픽스 API는 OpenGL를 사용해야합니다.");
+            Environment.FailFast("GL 컨텍스트를 생성하지 못했습니다.");
             return; // Exit가 비동기 콜백 안에서 즉시 안 먹힐 상황 대비한 안전장치
         }
 

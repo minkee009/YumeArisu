@@ -15,10 +15,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <PatchedGlfwDll>$(MSBuildThisFileDirectory)..\Patches\Silk.NET.Windowing.Glfw\linux-x64\Silk.NET.Windowing.Glfw.dll</PatchedGlfwDll>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <OutputType>Exe</OutputType>
   </PropertyGroup>
@@ -50,18 +46,7 @@
 
   <Target Name="ExcludeSpecificDllsFromSingleFile" AfterTargets="ComputeResolvedFilesToPublishList">
     <ItemGroup>
-      <ResolvedFileToPublish Update="@(ResolvedFileToPublish)"
-                              Condition="'%(FileName)' == 'YumeArisu.Core' or '%(FileName)' == 'YumeArisu.Game'">
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      </ResolvedFileToPublish>
-    </ItemGroup>
-  </Target> 
-
-  <Target Name="ExcludeSpecificDllsFromSingleFile" AfterTargets="ComputeResolvedFilesToPublishList">
-    <ItemGroup>
-      <ResolvedFileToPublish Update="@(ResolvedFileToPublish)"
-        Condition="'%(FileName)' == 'YumeArisu.Core' or '%(FileName)' == 'YumeArisu.Game'">
+      <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(FileName)' == 'YumeArisu.Core' or '%(FileName)' == 'YumeArisu.Game'">
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </ResolvedFileToPublish>
