@@ -22,19 +22,36 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
 
         layout(location = 0) in vec2 position;
 
+        out vec2 vPos; // fragment로 넘길 값
+
         void main()
         {
+            vPos = position;
             gl_Position = vec4(position, 0.0, 1.0);
         }
         """;
     private const string _fragmentShader = """
         #version 330 core
 
+        in vec2 vPos;
         out vec4 FragColor;
+
+        uniform vec2 iResolution;
+        uniform vec2 iMouse;
+        uniform float iTime;
 
         void main()
         {
-            FragColor = vec4(1.0, 0.0, 0.8, 1.0);
+            vec2 uv = vPos * 0.5 + 0.5;
+
+            // 기본 ShaderToy 느낌
+            vec3 col = vec3(uv, 0.5 + 0.5 * sin(iTime));
+
+            // 마우스 기반 효과
+            // float dist = distance(uv, iMouse / iResolution);
+            // col += vec3(1.0 - smoothstep(0.0, 0.2, dist));
+
+            FragColor = vec4(col, 1.0);
         }
         """;
 
@@ -123,56 +140,55 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
 
     public void BeginFrame()
     {
-
         // TestCode
-        var windowSize = WindowControl.Size;
-        float sx = (float)_frameBufferSize.X / windowSize.X;
-        float sy = (float)_frameBufferSize.Y / windowSize.Y;
-
-        var mousePos = Input.GetMousePosition();
-        float px = mousePos.X * sx;
-        float py = mousePos.Y * sy; 
-
-        py = _frameBufferSize.Y - py;
-
-        float half = 3f;
-
-        float left   = px - half;
-        float right  = px + half;
-
-        float bottom = py - half;
-        float top    = py + half;
-
-        var ToNdcX = (float x) => x / _frameBufferSize.X * 2.0f - 1.0f;
-        var ToNdcY = (float y) => y / _frameBufferSize.Y * 2.0f - 1.0f;
 
         _vertices =
         [
-            ToNdcX(left),  ToNdcY(bottom),
-            ToNdcX(right), ToNdcY(bottom),
-            ToNdcX(right), ToNdcY(top),
+            -1f, -1f,
+            1f, -1f,
+            1f,  1f,
 
-            ToNdcX(left),  ToNdcY(bottom),
-            ToNdcX(right), ToNdcY(top),
-            ToNdcX(left),  ToNdcY(top)
+            -1f, -1f,
+            1f,  1f,
+            -1f,  1f
         ];
+
+        int resLoc = _gl.GetUniformLocation(_program, "iResolution");
+        _gl.Uniform2(resLoc, _frameBufferSize.X, _frameBufferSize.Y);
+
+        // var windowSize = WindowControl.Size;
+        // float sx = (float)_frameBufferSize.X / windowSize.X;
+        // float sy = (float)_frameBufferSize.Y / windowSize.Y;
+
+        var mouse = Input.GetMousePosition();
+        // mouse = new(mouse.X * sx, mouse.Y * sy);
+        // mouse.Y = _frameBufferSize.Y - mouse.Y;
+        int mouseLoc = _gl.GetUniformLocation(_program, "iMouse");
+        _gl.Uniform2(mouseLoc, mouse.X, _frameBufferSize.Y - mouse.Y);
+
+        int timeLoc = _gl.GetUniformLocation(_program, "iTime");
+        _gl.Uniform1(timeLoc, (float)Time.TotalTime);
+
+        // var halfViewSize = (_frameBufferSize / 2);
+        // var quaterViewSize = halfViewSize / 2;
+        // _gl.Viewport(quaterViewSize, halfViewSize);
+
+        // _gl.Enable(EnableCap.ScissorTest);
+        // _gl.Scissor(quaterViewSize.X, quaterViewSize.Y, (uint)halfViewSize.X, (uint)halfViewSize.Y); // 여기에 뷰포트와 같은 값을 넣어야 함
+
+        // _gl.ClearColor(Color.FromArgb(255, (int) (.45f * 255), (int) (.55f * 255), (int) (.60f * 255)));
+        // _gl.Clear((uint)ClearBufferMask.ColorBufferBit);
+        // _gl.Disable(EnableCap.ScissorTest); // 이후 그리기에 영향 없도록 꺼줌
+
+        _gl.ClearColor(Color.FromArgb(255, (int) (.45f * 255), (int) (.55f * 255), (int) (.60f * 255)));
+        _gl.Clear((uint)ClearBufferMask.ColorBufferBit);
+        _gl.Viewport(_frameBufferSize);
+
+        // Camera Clear
     }
 
     public void Render()
     {
-        var halfViewSize = (_frameBufferSize / 2);
-        var quaterViewSize = halfViewSize / 2;
-        _gl.Viewport(quaterViewSize, halfViewSize);
-
-        _gl.Enable(EnableCap.ScissorTest);
-        _gl.Scissor(quaterViewSize.X, quaterViewSize.Y, (uint)halfViewSize.X, (uint)halfViewSize.Y); // 여기에 뷰포트와 같은 값을 넣어야 함
-
-        _gl.ClearColor(Color.FromArgb(255, (int) (.45f * 255), (int) (.55f * 255), (int) (.60f * 255)));
-        _gl.Clear((uint)ClearBufferMask.ColorBufferBit);
-        _gl.Disable(EnableCap.ScissorTest); // 이후 그리기에 영향 없도록 꺼줌
-
-        // Camera Clear
-
         _gl.UseProgram(_program);
 
         _gl.BindVertexArray(_pixelVAO);
@@ -198,13 +214,11 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
             0,
             6
         );
-
-        _gl.Viewport(_frameBufferSize);
     }
 
     public void EndFrame()
     {
-        
+        _gl.Viewport(_frameBufferSize);
     }
 
     public GL GetGL() => _gl;

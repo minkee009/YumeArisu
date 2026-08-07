@@ -72,6 +72,7 @@ public sealed class DesktopApplication : IApplicationControl
     {
         // 물리적 : 내부 프레임버퍼 크기 변경 시
         RenderSystem.Instance.OnFramebufferResize(newSize);
+        //System.Console.WriteLine($"Physical Screen Size : {newSize}");
     }
 
     public void OnResized(Vector2D<int> newSize)
@@ -79,6 +80,7 @@ public sealed class DesktopApplication : IApplicationControl
         // 논리적 : 윈도우 핸들 크기 변경 시 (DPI 있음)
         // PointerEventSystem.Instance.OnScreenResize(newSize);
         // TouchSystem.Instance.OnPanelResize(newSize);
+        //System.Console.WriteLine($"Logical Screen Size : {newSize}");
     }
 
     public void OnUpdate(double deltaTime)
@@ -112,11 +114,11 @@ public sealed class DesktopApplication : IApplicationControl
 #endif
         RenderSystem.Instance.BeginFrame();
         RenderSystem.Instance.Render();
+        RenderSystem.Instance.EndFrame();
 #if DEBUG
         ImGuiNET.ImGui.ShowDemoWindow();
         _controller.Render();
 #endif
-        RenderSystem.Instance.EndFrame();
     }
 
     public void OnClosing()

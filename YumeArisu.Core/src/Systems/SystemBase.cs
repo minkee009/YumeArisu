@@ -10,7 +10,6 @@ public readonly struct NoConfig { }
 /// 
 /// SystemBase에서 사용되는 주된 스텝용 함수의 이름은 다음과 같이 작성해야 합니다.
 /// 
-///  - Update() : 호출 순서와 상관 없음
 ///  - BeginFrame() : 프레임 시작 부분에 호출해야 함
 ///  - EndFrame() : 프레임 끝 부분에 호출해야 함
 /// 
