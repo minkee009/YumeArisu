@@ -16,7 +16,7 @@ public class ResourceSystem : SystemBase<ResourceSystem, IFileIO>
 
     internal override void OnShutDown()
     {
-        foreach(var cache in _resourceTable.Values)
+        foreach (var cache in _resourceTable.Values)
                 cache.Resource.Unload();
 
         _fileIO = null;
@@ -32,13 +32,13 @@ public class ResourceSystem : SystemBase<ResourceSystem, IFileIO>
     /// <exception cref="Exception"></exception>
     public T GetResource<T>(string path) where T : Resource, new()
     {
-        if(typeof(T) == typeof(Resource))
+        if (typeof(T) == typeof(Resource))
             throw new Exception("추상 클래스로 리소스를 불러올 수 없습니다.");
 
         if (_resourceTable.TryGetValue(path, out var cached))
         {
             // 이미 있는 캐시가 T 타입이 아닌 경우 -> 에러, 단일 타입 리소스만 처리 가능
-            if(typeof(T) != cached.Resource.GetType())
+            if (typeof(T) != cached.Resource.GetType())
                 throw new Exception($"리소스 타입 불일치: {path}는 이미 {cached.Resource.GetType().Name}로 로드됨");
 
             cached.RefCount++;
@@ -77,7 +77,7 @@ public class ResourceSystem : SystemBase<ResourceSystem, IFileIO>
                 throw new Exception($"캐시된 인스턴스와 다른 객체를 반납하려 했습니다: {resource.Path}");
 
             cached.RefCount--;
-            if(cached.RefCount <= 0)
+            if (cached.RefCount <= 0)
             {
                 // 참조가 남아 있지 않는 경우 캐시에서 제거
                 _resourceTable.Remove(resource.Path);

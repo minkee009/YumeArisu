@@ -197,7 +197,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
 
         unsafe
         {
-            fixed(float* ptr = _vertices)
+            fixed (float* ptr = _vertices)
             {
                 
                 _gl.BufferSubData(

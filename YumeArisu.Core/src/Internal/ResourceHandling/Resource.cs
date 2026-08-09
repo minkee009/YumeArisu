@@ -8,7 +8,7 @@ public abstract class Resource
 
     internal bool Load(byte[] bytes)
     {
-        if(_isLoaded)
+        if (_isLoaded)
             return false;
 
         _isLoaded = OnLoad(bytes);
@@ -18,7 +18,7 @@ public abstract class Resource
 
     internal void Unload()
     {
-        if(!_isLoaded)
+        if (!_isLoaded)
             return;
         
         OnUnload();

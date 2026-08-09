@@ -98,9 +98,9 @@ public static class PakWriter
         Action<string> afterWriteEntry)
     {
         long currentWriteLength = 0;
-        using(var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write))
-        using(var crcStream = new Crc32Stream(fs))
-        using(var bw = new BinaryWriter(crcStream))
+        using (var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write))
+        using (var crcStream = new Crc32Stream(fs))
+        using (var bw = new BinaryWriter(crcStream))
         {
             // Header
             WriteHeader(bw, new Pak.Header
@@ -188,9 +188,9 @@ public static class PakWriter
         Action<string> afterWriteEntry)
     {
         long currentWriteLength = 0;
-        using(var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write))
-        using(var crcStream = new Crc32Stream(fs))
-        using(var bw = new BinaryWriter(crcStream))
+        using (var fs = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write))
+        using (var crcStream = new Crc32Stream(fs))
+        using (var bw = new BinaryWriter(crcStream))
         {
             // Header
             WriteHeader(bw, new Pak.Header

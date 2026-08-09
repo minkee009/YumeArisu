@@ -61,7 +61,7 @@ public class Transform : Component
         get => LocalScale * (Parent?.WorldLossyScale ?? Vector3.One);
         set
         {
-            if(Parent != null)
+            if (Parent != null)
             {
                 var parentScale = Parent.WorldLossyScale;
 
@@ -84,7 +84,7 @@ public class Transform : Component
         get => LocalRotation * (Parent?.WorldRotation ?? Quaternion.Identity); 
         set
         {
-            if(Parent != null)
+            if (Parent != null)
             {
                 var inverse = Quaternion.Inverse(Parent.WorldRotation);
                 LocalRotation = inverse * value;

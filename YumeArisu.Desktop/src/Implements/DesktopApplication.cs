@@ -78,8 +78,8 @@ public sealed class DesktopApplication : IApplicationControl
     public void OnResized(Vector2D<int> newSize)
     {
         // 논리적 : 윈도우 핸들 크기 변경 시 (DPI 있음)
-        // PointerEventSystem.Instance.OnScreenResize(newSize);
-        // TouchSystem.Instance.OnPanelResize(newSize);
+        //PointerEventSystem.Instance.OnScreenResize(newSize);
+        //TouchSystem.Instance.OnPanelResize(newSize);
         //System.Console.WriteLine($"Logical Screen Size : {newSize}");
     }
 
