@@ -224,7 +224,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
     public GL GetGL() => _gl;
 
 
-    unsafe uint CompileShader(GLEnum type, in string source)
+    uint CompileShader(GLEnum type, in string source)
     {
         uint shader = _gl.CreateShader(type);
 
