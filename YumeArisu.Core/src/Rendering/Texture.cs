@@ -3,11 +3,17 @@ using YumeArisu.Core.Internal.ResourceHandling;
 
 namespace YumeArisu.Core.Rendering;
 
-public class Image : Resource
+public class Texture : Resource
 {
     public int Width { get; private set; }
     public int Height { get; private set; }
     public byte[] PixelData { get; private set; }
+    public uint Handle { get; private set; }
+
+    internal void Bind()
+    {
+        
+    }
 
     protected override bool OnLoad(byte[] bytes)
     {
