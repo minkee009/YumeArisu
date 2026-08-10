@@ -21,8 +21,8 @@ public sealed class DesktopApplication : IApplicationControl
     {
         _window = new(title, width, height);
         _window.View.Load += OnLoad;
-        _window.View.FramebufferResize += OnFrameBufferResized;
-        _window.View.Resize += OnResized;
+        _window.View.FramebufferResize += OnFramebufferResize;
+        _window.View.Resize += OnResize;
         _window.View.Update += OnUpdate;
         _window.View.Render += OnRender;
         _window.View.Closing += OnClosing;
@@ -53,6 +53,9 @@ public sealed class DesktopApplication : IApplicationControl
         CoroutineSystem.Instance.StartUp(default);
         SceneSystem.Instance.StartUp(new TestSceneManifest());
 
+        RenderSystem.Instance.OnFramebufferResize(_window.View.FramebufferSize);
+        InputSystem.Instance.OnResize(_window.View.Size);
+        
         SceneSystem.Instance.BeforeSceneChange += CoroutineSystem.Instance.ImmediateStopAllCoroutines;
 #if DEBUG
         _controller = new ImGuiController(
@@ -68,16 +71,17 @@ public sealed class DesktopApplication : IApplicationControl
         );
     }
 
-    public void OnFrameBufferResized(Vector2D<int> newSize)
+    public void OnFramebufferResize(Vector2D<int> newSize)
     {
         // 물리적 : 내부 프레임버퍼 크기 변경 시
         RenderSystem.Instance.OnFramebufferResize(newSize);
         //System.Console.WriteLine($"Physical Screen Size : {newSize}");
     }
 
-    public void OnResized(Vector2D<int> newSize)
+    public void OnResize(Vector2D<int> newSize)
     {
         // 논리적 : 윈도우 핸들 크기 변경 시 (DPI 있음)
+        InputSystem.Instance.OnResize(newSize);
         //PointerEventSystem.Instance.OnScreenResize(newSize);
         //TouchSystem.Instance.OnPanelResize(newSize);
         //System.Console.WriteLine($"Logical Screen Size : {newSize}");

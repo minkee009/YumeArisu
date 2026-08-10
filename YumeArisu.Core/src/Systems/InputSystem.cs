@@ -1,8 +1,10 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Silk.NET.Input;
+using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using YumeArisu.Core.Internal.InputHandling;
+using YumeArisu.Core.Utility;
 
 namespace YumeArisu.Core.Systems;
 
@@ -29,6 +31,11 @@ public class InputSystem : SystemBase<InputSystem, IView>
 
         _input = null;
         _systemKeyCombos = null;
+    }
+
+    public void OnResize(Vector2D<int> size)
+    {
+        _mouseState.ViewSize = size.ToNumerics();
     }
 
     public void DoConnect(IInputDevice device, bool connected)

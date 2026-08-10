@@ -7,12 +7,14 @@ internal class MouseState
 {   
     public Vector2 Position { get; private set; }
     public Vector2 Delta { get; private set; }
-    public Vector2 DeltaAccum { get; private set; }
     public float Scroll { get; private set; }
 
     public int ButtonPressed { get; private set; }
     public int ButtonReleased { get; private set; }
     public int ButtonCurrent { get; private set; }
+
+    internal Vector2 DeltaAccum { get; private set; }
+    internal Vector2 ViewSize { get; set; }
 
     private IMouse _mouse;
     
@@ -61,8 +63,11 @@ internal class MouseState
 
     private void OnMove(IMouse mouse, Vector2 position)
     {
-        DeltaAccum += position - Position;
-        Position = position;
+        var accurateGlPos = position;
+        accurateGlPos.Y = -(accurateGlPos.Y - ViewSize.Y);
+
+        DeltaAccum += accurateGlPos - Position;
+        Position = accurateGlPos;
     }
 
     internal void Reset()

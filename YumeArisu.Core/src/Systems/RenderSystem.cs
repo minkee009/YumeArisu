@@ -4,12 +4,20 @@ using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using YumeArisu.Core.Abstractions;
+using YumeArisu.Core.Rendering;
 
 namespace YumeArisu.Core.Systems;
 
 public class RenderSystem : SystemBase<RenderSystem, IView>
 {
+    public Vector2D<int> FramebufferSize { get; private set; }
+    
+    public float FramebufferAspect => FramebufferSize.X / FramebufferSize.Y;
+    
     private GL _gl;
+
+    private bool _isGLES;   // TODO : Enum으로 바꿔서 internal계층으로 공개시키는게 좋을 듯함. 이름은 ShaderBackend , 요소는 OpenGLCore, OpenGLES
+    
 
     // =============================================================
     //  테스트 코드
@@ -18,8 +26,9 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
     private uint _pixelVAO = 0;
     private uint _pixelVBO = 0;
     private const string _vertexShader = """
-        #version 330 core
-
+        #ifdef GLES
+        precision mediump float;
+        #endif
         layout(location = 0) in vec2 position;
 
         out vec2 vPos; // fragment로 넘길 값
@@ -31,7 +40,9 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
         }
         """;
     private const string _fragmentShader = """
-        #version 330 core
+        #ifdef GLES
+        precision mediump float;
+        #endif
 
         in vec2 vPos;
         out vec4 FragColor;
@@ -57,8 +68,6 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
 
     private uint _program = 0;
     private float[] _vertices;
-    
-    private Vector2D<int> _frameBufferSize;
 
     // =============================================================
 
@@ -74,7 +83,8 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
             return; // Exit가 비동기 콜백 안에서 즉시 안 먹힐 상황 대비한 안전장치
         }
 
-        _frameBufferSize = view.FramebufferSize;
+        string version = _gl.GetStringS(GLEnum.Version);
+        _isGLES = version.Contains("OpenGL ES");
 
         _pixelVAO = _gl.GenVertexArray();
         _pixelVBO = _gl.GenBuffer();
@@ -105,8 +115,8 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
         _gl.BindBuffer(GLEnum.ArrayBuffer, 0);
         _gl.BindVertexArray(0);
 
-        uint vertexShader = CompileShader(GLEnum.VertexShader, _vertexShader);
-        uint fragmentShader = CompileShader(GLEnum.FragmentShader, _fragmentShader);
+        uint vertexShader = CompileShader(GLEnum.VertexShader, BuildShader(_vertexShader));
+        uint fragmentShader = CompileShader(GLEnum.FragmentShader, BuildShader(_fragmentShader));
 
         _program = _gl.CreateProgram();
 
@@ -135,7 +145,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
 
     public void OnFramebufferResize(Vector2D<int> size)
     {
-        _frameBufferSize = size;
+        FramebufferSize = size;
     }
 
     public void BeginFrame()
@@ -154,7 +164,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
         ];
 
         int resLoc = _gl.GetUniformLocation(_program, "iResolution");
-        _gl.Uniform2(resLoc, _frameBufferSize.X, _frameBufferSize.Y);
+        _gl.Uniform2(resLoc, FramebufferSize.X, FramebufferSize.Y);
 
         // var windowSize = WindowControl.Size;
         // float sx = (float)_frameBufferSize.X / windowSize.X;
@@ -164,7 +174,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
         // mouse = new(mouse.X * sx, mouse.Y * sy);
         // mouse.Y = _frameBufferSize.Y - mouse.Y;
         int mouseLoc = _gl.GetUniformLocation(_program, "iMouse");
-        _gl.Uniform2(mouseLoc, mouse.X, _frameBufferSize.Y - mouse.Y);
+        _gl.Uniform2(mouseLoc, mouse.X, FramebufferSize.Y - mouse.Y);
 
         int timeLoc = _gl.GetUniformLocation(_program, "iTime");
         _gl.Uniform1(timeLoc, (float)Time.TotalTime);
@@ -182,7 +192,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
 
         _gl.ClearColor(Color.FromArgb(255, (int) (.45f * 255), (int) (.55f * 255), (int) (.60f * 255)));
         _gl.Clear((uint)ClearBufferMask.ColorBufferBit);
-        _gl.Viewport(_frameBufferSize);
+        _gl.Viewport(FramebufferSize);
 
         // Camera Clear
     }
@@ -218,11 +228,23 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
 
     public void EndFrame()
     {
-        _gl.Viewport(_frameBufferSize);
+        _gl.Viewport(FramebufferSize);
     }
 
     public GL GetGL() => _gl;
 
+    string BuildShader(string src)
+    {
+        string version = _isGLES
+            ? "#version 300 es\n"
+            : "#version 330 core\n";
+
+        string define = _isGLES
+            ? "#define GLES\n"
+            : "#define GLCORE\n";
+
+        return version + define + src;
+    }
 
     uint CompileShader(GLEnum type, in string source)
     {
@@ -239,4 +261,11 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
 
         return shader;
     }
+}
+
+// 문법 설탕용 클래스
+public static class Screen
+{
+    public static Vector2D<int> Resolution => RenderSystem.Instance.FramebufferSize;
+    public static float Aspect => RenderSystem.Instance.FramebufferAspect;
 }

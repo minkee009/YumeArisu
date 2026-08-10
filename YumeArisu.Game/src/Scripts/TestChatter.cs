@@ -11,6 +11,9 @@ public class TestChatter : ScriptBehaviour
     public override void OnUpdate()
     {
         base.OnUpdate();
+
+        System.Console.WriteLine($"마우스 입력 : {Input.GetMousePosition()}");
+
         if (Input.GetKeyDown(Key.Space))
         {
             switch(Dialogue)
