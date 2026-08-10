@@ -5,6 +5,7 @@ using Silk.NET.OpenGL;
 using Silk.NET.Vulkan;
 using Silk.NET.Windowing;
 using YumeArisu.Core.Abstractions;
+using YumeArisu.Core.Internal.RenderPipeline;
 using YumeArisu.Core.Rendering;
 
 namespace YumeArisu.Core.Systems;
@@ -16,8 +17,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
     
     // GL Context
     private GL _gl;
-    private bool _isGLES;   // TODO : Enum으로 바꿔서 internal계층으로 공개시키는게 좋을 듯함. 이름은 ShaderBackend , 요소는 OpenGLCore, OpenGLES
-   
+    private ShaderBackend _shaderBackend;
     private List<Camera> _cameras;
     private bool _needCamDepthSort;
 
@@ -88,7 +88,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
         _cameras = new List<Camera>();
 
         string version = _gl.GetStringS(GLEnum.Version);
-        _isGLES = version.Contains("OpenGL ES");
+        _shaderBackend = version.Contains("OpenGL ES") ? ShaderBackend.OpenGLES : ShaderBackend.OpenGLCore;
 
         _pixelVAO = _gl.GenVertexArray();
         _pixelVBO = _gl.GenBuffer();
@@ -256,11 +256,11 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
 
     string BuildShader(string src)
     {
-        string version = _isGLES
+        string version = (_shaderBackend == ShaderBackend.OpenGLES)
             ? "#version 300 es\n"
             : "#version 330 core\n";
 
-        string define = _isGLES
+        string define = (_shaderBackend == ShaderBackend.OpenGLES)
             ? "#define GLES\n"
             : "#define GLCORE\n";
 
