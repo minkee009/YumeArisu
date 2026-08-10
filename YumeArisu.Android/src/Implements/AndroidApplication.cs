@@ -22,7 +22,7 @@ public sealed class AndroidApplication : IApplicationControl
     public void Run()
     {
         _window.View.Load += OnLoad;
-        _window.View.FramebufferResize += OnFrameBufferResized;
+        _window.View.FramebufferResize += OnFrameBufferResize;
         _window.View.Update += OnUpdate;
         _window.View.Render += OnRender;
         _window.View.Closing += OnClosing;
