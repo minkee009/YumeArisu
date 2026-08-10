@@ -98,7 +98,7 @@ public class Transform : Component
 
     public Transform Parent { get; private set; }
     public ReadOnlyListView<Transform> Children => _children;
-    public Action<Transform> OnWorldMatrixDirty;
+    public Action<Transform> WorldMatrixDirtyChange;
     public int ChildCount => _children.Count;
 
     public Matrix4x4 LocalMatrix
@@ -154,7 +154,7 @@ public class Transform : Component
             return;
 
         _worldMatrixDirty = true;
-        OnWorldMatrixDirty?.Invoke(this);
+        WorldMatrixDirtyChange?.Invoke(this);
 
         foreach (var child in _children)
             child.MarkWorldMatrixDirty();

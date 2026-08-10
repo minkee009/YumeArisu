@@ -2,6 +2,7 @@ using System.Drawing;
 using System.Runtime.CompilerServices;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
+using Silk.NET.Vulkan;
 using Silk.NET.Windowing;
 using YumeArisu.Core.Abstractions;
 using YumeArisu.Core.Rendering;
@@ -11,13 +12,14 @@ namespace YumeArisu.Core.Systems;
 public class RenderSystem : SystemBase<RenderSystem, IView>
 {
     public Vector2D<int> FramebufferSize { get; private set; }
-    
     public float FramebufferAspect => FramebufferSize.X / FramebufferSize.Y;
     
+    // GL Context
     private GL _gl;
-
     private bool _isGLES;   // TODO : Enum으로 바꿔서 internal계층으로 공개시키는게 좋을 듯함. 이름은 ShaderBackend , 요소는 OpenGLCore, OpenGLES
-    
+   
+    private List<Camera> _cameras;
+    private bool _needCamDepthSort;
 
     // =============================================================
     //  테스트 코드
@@ -83,6 +85,8 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
             return; // Exit가 비동기 콜백 안에서 즉시 안 먹힐 상황 대비한 안전장치
         }
 
+        _cameras = new List<Camera>();
+
         string version = _gl.GetStringS(GLEnum.Version);
         _isGLES = version.Contains("OpenGL ES");
 
@@ -137,6 +141,8 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
 
     internal override void OnShutDown()
     {
+        _cameras.Clear();
+        _cameras = null;
         _gl = null;
 
         // 카메라 리스트 해제
@@ -146,6 +152,8 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
     public void OnFramebufferResize(Vector2D<int> size)
     {
         FramebufferSize = size;
+        foreach(var cam in _cameras)
+            cam.MarkProjectionMatrixDirty();
     }
 
     public void BeginFrame()
@@ -194,7 +202,12 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
         _gl.Clear((uint)ClearBufferMask.ColorBufferBit);
         _gl.Viewport(FramebufferSize);
 
-        // Camera Clear
+        // 렌더 오브젝트 정렬
+        if(_needCamDepthSort)
+        {
+            _cameras.Sort((a,b) => a.Depth.CompareTo(b.Depth));
+            _needCamDepthSort = false;
+        }
     }
 
     public void Render()
@@ -230,6 +243,14 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
     {
         _gl.Viewport(FramebufferSize);
     }
+
+    internal void RegisterCamera(Camera camera)
+    {
+        _cameras.Add(camera);
+        _needCamDepthSort = true;
+    } 
+
+    internal void UnregisterCamera(Camera camera) => _cameras.Remove(camera);
 
     public GL GetGL() => _gl;
 

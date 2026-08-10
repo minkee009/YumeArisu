@@ -12,7 +12,7 @@ public class TestChatter : ScriptBehaviour
     {
         base.OnUpdate();
 
-        System.Console.WriteLine($"마우스 입력 : {Input.GetMousePosition()}");
+        //System.Console.WriteLine($"마우스 입력 : {Input.GetMousePosition()}");
 
         if (Input.GetKeyDown(Key.Space))
         {
