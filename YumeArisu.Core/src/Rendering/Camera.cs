@@ -14,7 +14,7 @@ public class Camera : Behaviour
         get => _projectionMode; 
         set
         {
-            if(_projectionMode == value) 
+            if (_projectionMode == value) 
                 return;
            
             _projectionMode = value;

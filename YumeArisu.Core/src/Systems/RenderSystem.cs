@@ -152,7 +152,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
     public void OnFramebufferResize(Vector2D<int> size)
     {
         FramebufferSize = size;
-        foreach(var cam in _cameras)
+        foreach (var cam in _cameras)
             cam.MarkProjectionMatrixDirty();
     }
 
@@ -203,7 +203,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
         _gl.Viewport(FramebufferSize);
 
         // 렌더 오브젝트 정렬
-        if(_needCamDepthSort)
+        if (_needCamDepthSort)
         {
             _cameras.Sort((a,b) => a.Depth.CompareTo(b.Depth));
             _needCamDepthSort = false;
