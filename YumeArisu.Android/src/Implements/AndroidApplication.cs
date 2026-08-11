@@ -22,7 +22,7 @@ public sealed class AndroidApplication : IApplicationControl
     public void Run()
     {
         _window.View.Load += OnLoad;
-        _window.View.FramebufferResize += OnFrameBufferResize;
+        _window.View.FramebufferResize += OnFramebufferResize;
         _window.View.Update += OnUpdate;
         _window.View.Render += OnRender;
         _window.View.Closing += OnClosing;
@@ -46,13 +46,13 @@ public sealed class AndroidApplication : IApplicationControl
         CoroutineSystem.Instance.StartUp(default);
         SceneSystem.Instance.StartUp(new TestSceneManifest());
 
-        RenderSystem.Instance.OnFramebufferResize(_window.View.FramebufferSize);
-        InputSystem.Instance.OnResize(_window.View.Size);
-
         SceneSystem.Instance.BeforeSceneChange += CoroutineSystem.Instance.ImmediateStopAllCoroutines;
+        
+        OnFramebufferResize(_window.View.FramebufferSize);
+        OnResize(_window.View.Size);
     }
 
-    public void OnFrameBufferResize(Vector2D<int> newSize)
+    public void OnFramebufferResize(Vector2D<int> newSize)
     {
         RenderSystem.Instance.OnFramebufferResize(newSize);
     }

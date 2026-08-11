@@ -4,7 +4,7 @@ using YumeArisu.Android.Implements;
 
 namespace YumeArisu.Android;
 
-[Activity(Label = "@string/app_name", MainLauncher = true, ConfigurationChanges = ConfigChangesFlags, ScreenOrientation = ScreenOrientation.Landscape, Exported = true)]
+[Activity(Label = "@string/app_name", MainLauncher = true, ConfigurationChanges = ConfigChangesFlags, ScreenOrientation = ScreenOrientation.UserLandscape, Exported = true)]
 public class MainActivity : SilkActivity
 {
     private AndroidApplication _application;

@@ -175,19 +175,19 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
         _gl.Uniform2(resLoc, FramebufferSize.X, FramebufferSize.Y);
 
         // var windowSize = WindowControl.Size;
-        // float sx = (float)_frameBufferSize.X / windowSize.X;
-        // float sy = (float)_frameBufferSize.Y / windowSize.Y;
+        // float sx = (float)_framebufferSize.X / windowSize.X;
+        // float sy = (float)_framebufferSize.Y / windowSize.Y;
 
         var mouse = Input.GetMousePosition();
         // mouse = new(mouse.X * sx, mouse.Y * sy);
-        // mouse.Y = _frameBufferSize.Y - mouse.Y;
+        // mouse.Y = _framebufferSize.Y - mouse.Y;
         int mouseLoc = _gl.GetUniformLocation(_program, "iMouse");
         _gl.Uniform2(mouseLoc, mouse.X, FramebufferSize.Y - mouse.Y);
 
         int timeLoc = _gl.GetUniformLocation(_program, "iTime");
         _gl.Uniform1(timeLoc, (float)Time.TotalTime);
 
-        // var halfViewSize = (_frameBufferSize / 2);
+        // var halfViewSize = (_framebufferSize / 2);
         // var quaterViewSize = halfViewSize / 2;
         // _gl.Viewport(quaterViewSize, halfViewSize);
 
