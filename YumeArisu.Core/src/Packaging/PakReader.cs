@@ -7,7 +7,7 @@ namespace YumeArisu.Core.Packaging;
 
 public static class PakReader
 {
-    public struct MetaData
+    public struct PakMeta
     {
         public int ChunkOrder;
         public long Offset;
@@ -19,12 +19,12 @@ public static class PakReader
     /// 팩 청크스트림을 모두 읽고 경로해쉬로 정리된 메타데이터 테이블을 추출합니다.
     /// </summary>
     /// <param name="pakChunkStreams">팩 청크 스트림 리스트</param>
-    /// <param name="metaDataTable">메타데이터 테이블</param>
+    /// <param name="pakMetaTable">팩 메타데이터 테이블</param>
     /// <exception cref="InvalidDataException"></exception>
     /// <exception cref="Exception"></exception>
-    public static void ExtractMetaDataTable(ReadOnlyListView<Stream> pakChunkStreams, out Dictionary<ulong, MetaData> metaDataTable)
+    public static void ExtractPakMetaTable(ReadOnlyListView<Stream> pakChunkStreams, out Dictionary<ulong, PakMeta> pakMetaTable)
     {
-        metaDataTable = new();
+        pakMetaTable = new();
 
         for (int i = 0; i < pakChunkStreams.Count; i++)
         {
@@ -74,7 +74,7 @@ public static class PakReader
                         throw new InvalidDataException("잘못된 크기");
 
                     var pathId = entry.PathId;
-                    var metaData = new MetaData
+                    var metaData = new PakMeta
                     {
                         ChunkOrder = i,
                         Offset = entry.Offset,
@@ -82,7 +82,7 @@ public static class PakReader
                         OriginalLength = entry.OriginalLength
                     };
 
-                    metaDataTable.Add(pathId, metaData);
+                    pakMetaTable.Add(pathId, metaData);
                 }
             }
         }
@@ -92,7 +92,7 @@ public static class PakReader
     /// 경로 문자열과 팩 청크스트림 리스트 뷰, 메타데이터 테이블로 팩 청크스트림 내부의 소스 오프셋을 찾아 사용 가능한 바이트배열 형태로 복원하여 반환합니다.
     /// </summary>
     /// <returns></returns>
-    public static byte[] Unpack(string path, ReadOnlyListView<Stream> pakChunkStreams, in Dictionary<ulong, MetaData> metaDataTable)
+    public static byte[] Unpack(string path, ReadOnlyListView<Stream> pakChunkStreams, in Dictionary<ulong, PakMeta> metaDataTable)
     {
         // GC 비용 줄이기 위한 Buffer View
         byte[] compressed = null;

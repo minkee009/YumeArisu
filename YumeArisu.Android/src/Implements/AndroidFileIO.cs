@@ -17,7 +17,7 @@ public sealed class AndroidFileIO : IFileIO
 
     public bool IsOpened { get; private set; } // _disposed 역할 겸비 
     private List<Stream> _pakChunkStreams;
-    private Dictionary<ulong, PakReader.MetaData> _metaDataTable;
+    private Dictionary<ulong, PakReader.MetaData> _pakMetaTable;
 
     public AndroidFileIO(AssetManager assets, Context context)
     {
@@ -104,7 +104,7 @@ public sealed class AndroidFileIO : IFileIO
                 throw new FileNotFoundException($"'{pakName}'에 해당하는 PAK 청크 파일을 찾을 수 없습니다.");
 
             var streamView = new ReadOnlyListView<Stream>(_pakChunkStreams);
-            PakReader.ExtractMetaDataTable(streamView, out _metaDataTable);
+            PakReader.ExtractMetaDataTable(streamView, out _pakMetaTable);
 
             IsOpened = true;
         }
@@ -119,8 +119,8 @@ public sealed class AndroidFileIO : IFileIO
                 _pakChunkStreams = null;
             }
 
-            _metaDataTable?.Clear();
-            _metaDataTable = null;
+            _pakMetaTable?.Clear();
+            _pakMetaTable = null;
 
             throw;
         }
@@ -139,21 +139,21 @@ public sealed class AndroidFileIO : IFileIO
 
         _pakChunkStreams?.Clear();
         _pakChunkStreams = null;
-        _metaDataTable?.Clear();
-        _metaDataTable = null;
+        _pakMetaTable?.Clear();
+        _pakMetaTable = null;
 
         IsOpened = false;
     }
 
     public bool Exists(string path)
     {
-        if (!IsOpened || _metaDataTable is null)
+        if (!IsOpened || _pakMetaTable is null)
             return false;
 
         var relativePath = path.Replace('\\', '/');
         var pathId = Hash.Fnv1a64(Encoding.UTF8.GetBytes(relativePath));
 
-        return _metaDataTable.ContainsKey(pathId);
+        return _pakMetaTable.ContainsKey(pathId);
     }
 
     public byte[] ReadAllBytes(string path)
@@ -161,7 +161,7 @@ public sealed class AndroidFileIO : IFileIO
         if (!IsOpened)
             throw new Exception("아직 FileIO가 열리지 않았습니다!");
 
-        return PakReader.Unpack(path, _pakChunkStreams, _metaDataTable);
+        return PakReader.Unpack(path, _pakChunkStreams, _pakMetaTable);
     }
 
     public string ReadAllString(string path)
