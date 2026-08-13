@@ -40,7 +40,7 @@ public class Transform : Component
         get => WorldMatrix.Translation;
         set
         {
-            if (Parent != null)
+            if (Parent is not null)
             {
                 Matrix4x4.Invert(Parent.WorldMatrix, out var inverse);
                 LocalPosition = Vector3.Transform(value, inverse);
@@ -61,7 +61,7 @@ public class Transform : Component
         get => LocalScale * (Parent?.WorldLossyScale ?? Vector3.One);
         set
         {
-            if (Parent != null)
+            if (Parent is not null)
             {
                 var parentScale = Parent.WorldLossyScale;
 
@@ -84,7 +84,7 @@ public class Transform : Component
         get => LocalRotation * (Parent?.WorldRotation ?? Quaternion.Identity); 
         set
         {
-            if (Parent != null)
+            if (Parent is not null)
             {
                 var inverse = Quaternion.Inverse(Parent.WorldRotation);
                 LocalRotation = inverse * value;
@@ -166,7 +166,7 @@ public class Transform : Component
             throw new InvalidOperationException("자기 자신을 부모로 설정할 수 없습니다.");
 
         Transform current = parent;
-        while (current != null)
+        while (current is not null)
         {
             if (current == this)
                 throw new InvalidOperationException("자신의 하위 계층(자식/손자 등)을 부모로 설정할 수 없습니다.");
@@ -185,7 +185,7 @@ public class Transform : Component
 
         if (worldPositionStays)
         {
-            if (Parent != null)
+            if (Parent is not null)
             {
                 // 부모 기준 상 로컬 행렬
                 var parentPos = parent.WorldPosition;

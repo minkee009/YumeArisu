@@ -54,7 +54,7 @@ public sealed class DesktopFileIO : IFileIO
         catch
         {
             // 오픈 과정 실패 시 열어둔 스트림 정리
-            if (_pakChunkStreams != null)
+            if (_pakChunkStreams is not null)
             {
                 foreach (var stream in _pakChunkStreams)
                     stream.Dispose();
@@ -92,7 +92,7 @@ public sealed class DesktopFileIO : IFileIO
 
     public bool Exists(string path)
     {
-        if (!IsOpened || _metaDataTable == null)
+        if (!IsOpened || _metaDataTable is null)
             return false;
 
         var relativePath = path.Replace('\\', '/');

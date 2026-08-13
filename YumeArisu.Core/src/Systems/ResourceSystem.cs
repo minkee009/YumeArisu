@@ -64,10 +64,10 @@ public class ResourceSystem : SystemBase<ResourceSystem, IFileIO>
     /// <exception cref="Exception"></exception>
     public void ReleaseResource(Resource resource)
     {
-        if (resource == null)
+        if (resource is null)
             throw new Exception("null 리소스를 반납하려 했습니다.");
 
-        if (resource.Path == null || resource.Path == string.Empty)
+        if (resource.Path is null || resource.Path == string.Empty)
             throw new Exception("경로를 알 수 없는 리소스를 반납하려 했습니다.");
 
         if (_resourceTable.TryGetValue(resource.Path, out var cached))
@@ -89,6 +89,26 @@ public class ResourceSystem : SystemBase<ResourceSystem, IFileIO>
             throw new Exception($"등록되지 않은 리소스를 반납하려 했습니다: {resource.Path}");
         }
     }
+
+    /// <summary>
+    /// 리소스가 리소스 테이블에 캐시되어 있는지 검사합니다.
+    /// </summary>
+    /// <param name="resource">검사할 리소스</param>
+    /// <param name="refCount">리소스의 참조 카운트</param>
+    /// <returns>리소스 테이블 내 캐시 여부</returns>
+    public bool CacheCheck(Resource resource, out int refCount)
+    {
+        if (resource is null)
+        {
+            refCount = -1;
+            return false;
+        }
+
+        bool result = _resourceTable.TryGetValue(resource.Path, out var cached);
+        refCount = result ? cached.RefCount : -1;
+
+        return result;
+    }
 }
 
 // 문법 설탕용 클래스
@@ -96,4 +116,5 @@ public static class Resources
 {
     public static T Get<T>(string path) where T : Resource, new() => ResourceSystem.Instance.GetResource<T>(path);
     public static void Release(Resource resource) => ResourceSystem.Instance.ReleaseResource(resource);
+    public static void CacheCheck(Resource resource, out int refCount) => ResourceSystem.Instance.CacheCheck(resource, out refCount);
 }

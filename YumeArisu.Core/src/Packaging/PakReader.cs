@@ -133,8 +133,8 @@ public static class PakReader
         finally
         {
             // 예외가 발생하든 정상 종료되든 빌려온 메모리는 반드시 반납
-            if (compressed != null) ArrayPool<byte>.Shared.Return(compressed);
-            if (original != null) ArrayPool<byte>.Shared.Return(original);
+            if (compressed is not null) ArrayPool<byte>.Shared.Return(compressed);
+            if (original is not null) ArrayPool<byte>.Shared.Return(original);
         }
     }
 

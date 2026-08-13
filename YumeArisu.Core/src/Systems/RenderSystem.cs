@@ -18,6 +18,8 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
     // GL Context
     private GL _gl;
     private ShaderBackend _shaderBackend;
+
+    // Render Pipeline Object
     private List<Camera> _cameras;
     private bool _needCamDepthSort;
 
@@ -244,6 +246,8 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
         _gl.Viewport(FramebufferSize);
     }
 
+    public GL GetGL() => _gl;
+
     internal void RegisterCamera(Camera camera)
     {
         _cameras.Add(camera);
@@ -252,9 +256,9 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
 
     internal void UnregisterCamera(Camera camera) => _cameras.Remove(camera);
 
-    public GL GetGL() => _gl;
+    internal ShaderBackend GetShaderBackend() => _shaderBackend;
 
-    string BuildShader(string src)
+    private string BuildShader(string src)
     {
         string version = (_shaderBackend == ShaderBackend.OpenGLES)
             ? "#version 300 es\n"
@@ -267,7 +271,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
         return version + define + src;
     }
 
-    uint CompileShader(GLEnum type, in string source)
+    private uint CompileShader(GLEnum type, in string source)
     {
         uint shader = _gl.CreateShader(type);
 

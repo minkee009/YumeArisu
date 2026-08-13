@@ -62,7 +62,7 @@ public sealed class GameObject
         _activeInHierarchy = nextActiveInHierarchy;
         ActiveInHierarchyChange?.Invoke(this);
 
-        if (Transform != null)
+        if (Transform is not null)
         {
             foreach (var child in Transform._children)
                 child.GameObject.RefreshActiveInHierarchy();

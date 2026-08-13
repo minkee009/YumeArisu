@@ -110,7 +110,7 @@ public sealed class AndroidFileIO : IFileIO
         }
         catch
         {
-            if (_pakChunkStreams != null)
+            if (_pakChunkStreams is not null)
             {
                 foreach (var stream in _pakChunkStreams)
                     stream.Dispose();
@@ -147,7 +147,7 @@ public sealed class AndroidFileIO : IFileIO
 
     public bool Exists(string path)
     {
-        if (!IsOpened || _metaDataTable == null)
+        if (!IsOpened || _metaDataTable is null)
             return false;
 
         var relativePath = path.Replace('\\', '/');

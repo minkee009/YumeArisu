@@ -46,7 +46,7 @@ public class TestDestroyer : ScriptBehaviour
     public override void OnDestroy()
     {
         System.Console.WriteLine($"{GameObject.Name}{_이가} 파괴됨....");
-        if (OnEnableTarget != null)
+        if (OnEnableTarget is not null)
         {
             System.Console.WriteLine("켤 대상이 있음 -> 접근함, 키겠음....");
             OnEnableTarget.Enabled = true;

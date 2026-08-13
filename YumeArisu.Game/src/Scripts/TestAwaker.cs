@@ -11,12 +11,12 @@ public class TestAwaker : ScriptBehaviour
     public GameObject Target { get; set; } = null;
     public override void OnUpdate()
     {
-        if (Input.GetKeyDown(Key.G) && Target != null)
+        if (Input.GetKeyDown(Key.G) && Target is not null)
         {
             System.Console.WriteLine($"타겟을 깨웁니다!!! -> {Target.Name}");
             Target.SetActive(true);
             var destroyer = Target?.GetComponent<TestDestroyer>() ?? null;
-            if (destroyer != null)
+            if (destroyer is not null)
             {
                 destroyer.Enabled = true;
             }

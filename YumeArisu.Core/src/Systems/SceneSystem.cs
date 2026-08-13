@@ -21,7 +21,7 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
     {
         _nextScene = manifest.DynamicScenes.FirstOrDefault();
 
-        if (_nextScene == null)
+        if (_nextScene is null)
             throw new InvalidOperationException("진입용 Scene이 존재하지 않습니다!");        
 
         _dynamicScenes = new();
@@ -70,7 +70,7 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
         if (!_staticScene?.IsLoaded ?? false)
             _staticScene.Load();
 
-        if (_nextScene == null)
+        if (_nextScene is null)
             return;
 
         _currentScene?.Unload();
@@ -94,11 +94,11 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
     public GameObject FindAnyGameObject(string name)
     {
         var target = _currentScene?.FindGameObject(name);
-        if (target != null) 
+        if (target is not null) 
             return target;
 
         target = _staticScene?.FindGameObject(name);
-        if (target != null)
+        if (target is not null)
             return target;
         return null;
     }
@@ -106,11 +106,11 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
     public GameObject FindAnyGameObjectByTag(string tag)
     {
         var target = _currentScene?.FindGameObjectByTag(tag);
-        if (target != null) 
+        if (target is not null) 
             return target;
 
         target = _staticScene?.FindGameObjectByTag(tag);
-        if (target != null)
+        if (target is not null)
             return target;
 
         return null;
@@ -120,10 +120,10 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
     {
         List<GameObject> matches = new();
 
-        if (_currentScene != null)
+        if (_currentScene is not null)
             matches.AddRange(_currentScene.FindGameObjectsByTag(tag));
 
-        if (_staticScene != null)
+        if (_staticScene is not null)
             matches.AddRange(_staticScene.FindGameObjectsByTag(tag));
 
         return matches;
@@ -132,11 +132,11 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
     public GameObject FindAnyGameObjectByLayer(uint layer)
     {
         var target = _currentScene?.FindGameObjectByLayer(layer);
-        if (target != null) 
+        if (target is not null) 
             return target;
 
         target = _staticScene?.FindGameObjectByLayer(layer);
-        if (target != null)
+        if (target is not null)
             return target;
 
         return null;
@@ -146,10 +146,10 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
     {
         List<GameObject> matches = new();
 
-        if (_currentScene != null)
+        if (_currentScene is not null)
             matches.AddRange(_currentScene.FindGameObjectsByLayer(layer));
 
-        if (_staticScene != null)
+        if (_staticScene is not null)
             matches.AddRange(_staticScene.FindGameObjectsByLayer(layer));
 
         return matches;

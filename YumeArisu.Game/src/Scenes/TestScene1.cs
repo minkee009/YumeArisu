@@ -21,7 +21,7 @@ public class TestScene1 : Scene
 
         var testManager = SceneQuery.Global.FindGameObject("테스트 매니저");
 
-        if (testManager != null)
+        if (testManager is not null)
             System.Console.WriteLine($"{testManager.Name} : 전역 쿼리에서 찾은 결과입니다.");
 
         foreach (var tr in _player.Transform.Children)
@@ -36,6 +36,6 @@ public class TestScene1 : Scene
     protected override void OnUnload()
     {
         base.OnUnload();
-        System.Console.WriteLine($"{_player == null} -> 플레이어 null 상태");
+        System.Console.WriteLine($"{_player is null} -> 플레이어 null 상태");
     }
 }

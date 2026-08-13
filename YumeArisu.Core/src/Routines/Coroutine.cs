@@ -40,7 +40,7 @@ public sealed class Coroutine : YieldInstruction
         WaitOption = result ? Routine.Current as YieldInstruction : null;
         Done = !result;
 
-        if (Done && _waiters != null && _waiters.Count > 0)
+        if (Done && _waiters is not null && _waiters.Count > 0)
         {
             var toWake = _waiters;
             _waiters = null;
@@ -59,7 +59,7 @@ public sealed class Coroutine : YieldInstruction
         Done = true;
 
         // 다 깨워잇
-        if (_waiters != null && _waiters.Count > 0)
+        if (_waiters is not null && _waiters.Count > 0)
         {
             var toWake = _waiters;
             _waiters = null;
