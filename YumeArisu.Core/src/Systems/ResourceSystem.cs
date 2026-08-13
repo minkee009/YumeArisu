@@ -32,9 +32,6 @@ public class ResourceSystem : SystemBase<ResourceSystem, IFileIO>
     /// <exception cref="Exception"></exception>
     public T GetResource<T>(string path) where T : Resource, new()
     {
-        if (typeof(T) == typeof(Resource))
-            throw new Exception("추상 클래스로 리소스를 불러올 수 없습니다.");
-
         if (_resourceTable.TryGetValue(path, out var cached))
         {
             // 이미 있는 캐시가 T 타입이 아닌 경우 -> 에러, 단일 타입 리소스만 처리 가능
@@ -45,12 +42,11 @@ public class ResourceSystem : SystemBase<ResourceSystem, IFileIO>
             return (T)cached.Resource;
         }
 
-        var resource = new T();
+        var resource = new T { FileIO = _fileIO, Path = path };
+
         if (resource.Load(_fileIO.ReadAllBytes(path)))
         {
-            resource.Path = path;
             _resourceTable[path] = new(resource, 1);
-
             return resource;
         }
 
@@ -67,7 +63,7 @@ public class ResourceSystem : SystemBase<ResourceSystem, IFileIO>
         if (resource is null)
             throw new Exception("null 리소스를 반납하려 했습니다.");
 
-        if (resource.Path is null || resource.Path == string.Empty)
+        if (string.IsNullOrEmpty(resource.Path))
             throw new Exception("경로를 알 수 없는 리소스를 반납하려 했습니다.");
 
         if (_resourceTable.TryGetValue(resource.Path, out var cached))
@@ -98,7 +94,7 @@ public class ResourceSystem : SystemBase<ResourceSystem, IFileIO>
     /// <returns>리소스 테이블 내 캐시 여부</returns>
     public bool CacheCheck(Resource resource, out int refCount)
     {
-        if (resource is null)
+        if (resource is null || string.IsNullOrEmpty(resource.Path))
         {
             refCount = -1;
             return false;

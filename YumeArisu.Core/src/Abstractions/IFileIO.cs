@@ -5,6 +5,7 @@ namespace YumeArisu.Core.Abstractions;
 /// </summary>
 public interface IFileIO : IDisposable
 {
+    public bool IsOpened { get; }
     public bool Exists(string path);
     byte[] ReadAllBytes(string path);
     string ReadAllString(string path);

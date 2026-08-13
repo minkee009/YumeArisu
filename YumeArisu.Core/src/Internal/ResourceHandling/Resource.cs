@@ -1,8 +1,12 @@
+using YumeArisu.Core.Abstractions;
+
 namespace YumeArisu.Core.Internal.ResourceHandling;
 
 public abstract class Resource
 {
     public string Path { get; internal set; }
+
+    internal IFileIO FileIO { get; set; }
 
     private bool _isLoaded = false;
 
@@ -27,6 +31,5 @@ public abstract class Resource
     }
 
     protected abstract bool OnLoad(byte[] bytes);
-
     protected abstract void OnUnload();
 }
