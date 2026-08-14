@@ -1,7 +1,6 @@
 using System.Text;
 using YumeArisu.Core.Internal.RenderPipeline;
 using YumeArisu.Core.Internal.ResourceHandling;
-using YumeArisu.Core.Systems;
 using YumeArisu.Core.Utility;
 
 namespace YumeArisu.Core.Rendering;
@@ -9,6 +8,15 @@ namespace YumeArisu.Core.Rendering;
 public class Shader : Resource
 {
     internal uint Handle { get; private set; }
+
+    internal bool ImmediateLoadFromSource(string vertBody, string fragBody)
+    {
+        if(IsLoaded)
+            return false;
+
+        IsLoaded = true;
+        return true;
+    }
 
     protected override bool OnLoad(byte[] bytes)
     {

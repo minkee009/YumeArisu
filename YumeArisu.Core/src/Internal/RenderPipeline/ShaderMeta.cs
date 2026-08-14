@@ -1,13 +1,7 @@
 namespace YumeArisu.Core.Internal.RenderPipeline;
 
-internal struct ShaderMeta
+internal readonly struct ShaderMeta
 {
-    public string VertBodyPath;
-    public string FragBodyPath;
-
-    public ShaderMeta(string vertBodyPath, string fragBodyPath)
-    {
-        VertBodyPath = vertBodyPath;
-        FragBodyPath = fragBodyPath;
-    }
+    public string VertBodyPath { get; init; }
+    public string FragBodyPath { get; init; }
 }

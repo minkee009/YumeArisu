@@ -3,7 +3,7 @@ using System.IO.Hashing;
 
 namespace YumeArisu.Core.Utility;
 
-internal static class ChecksumUtility
+internal static class Checksum
 {
     /// <summary>스트림의 0번 위치부터 length까지 CRC32를 계산합니다. (스트림 포지션 이동됨)</summary>
     public static uint ComputeCrc32(Stream stream, long length, int bufferSize = 81920)

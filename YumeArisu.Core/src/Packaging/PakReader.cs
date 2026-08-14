@@ -7,12 +7,12 @@ namespace YumeArisu.Core.Packaging;
 
 public static class PakReader
 {
-    public struct PakMeta
+    public readonly struct PakMeta
     {
-        public int ChunkOrder;
-        public long Offset;
-        public int CompressedLength;
-        public int OriginalLength;
+        public int ChunkOrder { get; init; }
+        public long Offset { get; init; }
+        public int CompressedLength { get; init; }
+        public int OriginalLength { get; init; }
     }
 
     /// <summary>
@@ -56,7 +56,7 @@ public static class PakReader
 
                 // Checksum 검증
                 long checksumRegionLength = ps.Length - Pak.EndMagicLength - Pak.ChecksumLength;
-                uint computedChecksum = ChecksumUtility.ComputeCrc32(ps, checksumRegionLength);
+                uint computedChecksum = Checksum.ComputeCrc32(ps, checksumRegionLength);
                 if (computedChecksum != footer.Checksum)
                     throw new InvalidDataException("PAK 체크섬 불일치: 파일이 손상되었을 수 있습니다");
 
