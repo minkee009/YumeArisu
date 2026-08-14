@@ -6,7 +6,13 @@ namespace YumeArisu.Core.Internal.RenderPipeline;
 [StructLayout(LayoutKind.Sequential)]
 internal readonly struct VertexData2D
 {
-    public Vector3 Position { get; init; }
-    public Vector2 UV { get; init; }
+    public readonly Vector3 Position;
+    public readonly Vector2 UV;
+
+    public VertexData2D(Vector3 position, Vector2 uv)
+    {
+        Position = position;
+        UV = uv;
+    }
 }
 

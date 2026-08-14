@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Vulkan;
@@ -7,6 +8,8 @@ using Silk.NET.Windowing;
 using YumeArisu.Core.Abstractions;
 using YumeArisu.Core.Internal.RenderPipeline;
 using YumeArisu.Core.Rendering;
+
+using BuiltInShader = YumeArisu.Core.Rendering.Shader;
 
 namespace YumeArisu.Core.Systems;
 
@@ -26,7 +29,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
     // =============================================================
     //  테스트 코드
     //
-    
+    private BuiltInShader _fullScrenQuadShader;
     private uint _pixelVAO = 0;
     private uint _pixelVBO = 0;
     private const string _vertexShader = """
@@ -69,8 +72,6 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
             FragColor = vec4(col, 1.0);
         }
         """;
-
-    private uint _program = 0;
     private float[] _vertices;
 
     // =============================================================
@@ -86,6 +87,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
             Environment.FailFast("GL 컨텍스트를 생성하지 못했습니다.");
             return; // Exit가 비동기 콜백 안에서 즉시 안 먹힐 상황 대비한 안전장치
         }
+
 
         _cameras = new List<Camera>();
 
@@ -121,24 +123,9 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
         _gl.BindBuffer(GLEnum.ArrayBuffer, 0);
         _gl.BindVertexArray(0);
 
-        uint vertexShader = CompileShader(GLEnum.VertexShader, BuildShader(_vertexShader));
-        uint fragmentShader = CompileShader(GLEnum.FragmentShader, BuildShader(_fragmentShader));
+        _fullScrenQuadShader = new();
 
-        _program = _gl.CreateProgram();
-
-        _gl.AttachShader(_program, vertexShader);
-        _gl.AttachShader(_program, fragmentShader);
-
-        _gl.LinkProgram(_program);
-        _gl.GetProgram(_program, GLEnum.LinkStatus, out var status);
-        if (status == 0)
-        {
-            throw new Exception($"Program failed to link with error: {_gl.GetProgramInfoLog(_program)}");
-        }
-        _gl.DetachShader(_program, vertexShader);
-        _gl.DetachShader(_program, fragmentShader);
-        _gl.DeleteShader(vertexShader);
-        _gl.DeleteShader(fragmentShader);
+        _fullScrenQuadShader.ImmediateLoadFromSource(_vertexShader, _fragmentShader);
     }
 
     internal override void OnShutDown()
@@ -173,7 +160,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
             -1f,  1f
         ];
 
-        int resLoc = _gl.GetUniformLocation(_program, "iResolution");
+        int resLoc = _gl.GetUniformLocation(_fullScrenQuadShader.Handle, "iResolution");
         _gl.Uniform2(resLoc, FramebufferSize.X, FramebufferSize.Y);
 
         // var windowSize = WindowControl.Size;
@@ -183,10 +170,10 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
         var mouse = Input.GetMousePosition();
         // mouse = new(mouse.X * sx, mouse.Y * sy);
         // mouse.Y = _framebufferSize.Y - mouse.Y;
-        int mouseLoc = _gl.GetUniformLocation(_program, "iMouse");
+        int mouseLoc = _gl.GetUniformLocation(_fullScrenQuadShader.Handle, "iMouse");
         _gl.Uniform2(mouseLoc, mouse.X, FramebufferSize.Y - mouse.Y);
 
-        int timeLoc = _gl.GetUniformLocation(_program, "iTime");
+        int timeLoc = _gl.GetUniformLocation(_fullScrenQuadShader.Handle, "iTime");
         _gl.Uniform1(timeLoc, (float)Time.TotalTime);
 
         // var halfViewSize = (_framebufferSize / 2);
@@ -214,7 +201,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
 
     public void Render()
     {
-        _gl.UseProgram(_program);
+        _fullScrenQuadShader.Bind();
 
         _gl.BindVertexArray(_pixelVAO);
 
@@ -257,35 +244,6 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
     internal void UnregisterCamera(Camera camera) => _cameras.Remove(camera);
 
     internal ShaderBackend GetShaderBackend() => _shaderBackend;
-
-    private string BuildShader(string src)
-    {
-        string version = (_shaderBackend == ShaderBackend.OpenGLES)
-            ? "#version 300 es\n"
-            : "#version 330 core\n";
-
-        string define = (_shaderBackend == ShaderBackend.OpenGLES)
-            ? "#define GLES\n"
-            : "#define GLCORE\n";
-
-        return version + define + src;
-    }
-
-    private uint CompileShader(GLEnum type, in string source)
-    {
-        uint shader = _gl.CreateShader(type);
-
-        _gl.ShaderSource(shader, source);
-        _gl.CompileShader(shader);
-
-        string infoLog = _gl.GetShaderInfoLog(shader);
-        if (!string.IsNullOrWhiteSpace(infoLog))
-        {
-            throw new Exception($"Error compiling shader of type {type}, failed with error {infoLog}");
-        }
-
-        return shader;
-    }
 }
 
 // 문법 설탕용 클래스
