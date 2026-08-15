@@ -145,7 +145,7 @@ public sealed class GameObject
         component.OnDetach();
     }
 
-    internal void Destroy()
+    internal void OnDestroy()
     {
         if (IsDestroyed)
             return;

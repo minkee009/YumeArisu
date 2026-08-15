@@ -38,7 +38,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
     private List<Behaviour> _scheduledBehaviours = new();
     private Queue<Behaviour> _pendingAwake = new();
     private Queue<Behaviour> _pendingStart = new();
-    private Queue<Behaviour> _pendingDestroy = new();
+    private Queue<Behaviour> _pendingRemove = new();
     private Queue<Behaviour> _pendingOnEnable = new();
     private Queue<Behaviour> _pendingOnDisable = new();
     private HashSet<Behaviour> _markedForScheduleCheck = new();  
@@ -53,7 +53,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         _scheduledBehaviours.Clear();
         _pendingAwake.Clear();
         _pendingStart.Clear();
-        _pendingDestroy.Clear();
+        _pendingRemove.Clear();
         _pendingOnEnable.Clear();
         _pendingOnDisable.Clear();        
         _markedForScheduleCheck.Clear();
@@ -67,7 +67,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         _scheduledBehaviours.Clear();
         _pendingAwake.Clear();
         _pendingStart.Clear();
-        _pendingDestroy.Clear();
+        _pendingRemove.Clear();
         _pendingOnEnable.Clear();
         _pendingOnDisable.Clear();        
         _markedForScheduleCheck.Clear();
@@ -99,8 +99,8 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
         {
             var bh = _unregistrationQueue.Dequeue();
             bh.Enabled = false;
-            bh.IsPendingDestroy = true;
-            _pendingDestroy.Enqueue(bh);
+            bh.IsPendingRemove = true;
+            _pendingRemove.Enqueue(bh);
             _markedForScheduleCheck.Add(bh);
         }
 
@@ -183,7 +183,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
                 bh.OnAwake();
                 bh.ExecutionPhase = ExecutionPhase.Awoken;
             }
-            else if (bh.ExecutionPhase != ExecutionPhase.Awoken && !bh.IsPendingDestroy)
+            else if (bh.ExecutionPhase != ExecutionPhase.Awoken && !bh.IsPendingRemove)
             {
                 _pendingAwake.Enqueue(bh);
             }
@@ -207,7 +207,7 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
                 bh.OnStart();
                 bh.ExecutionPhase = ExecutionPhase.Started;
             }
-            else if (bh.ExecutionPhase != ExecutionPhase.Started && !bh.IsPendingDestroy)
+            else if (bh.ExecutionPhase != ExecutionPhase.Started && !bh.IsPendingRemove)
             {
                 _pendingStart.Enqueue(bh);
             }
@@ -238,16 +238,16 @@ public class BehaviourSystem : SystemBase<BehaviourSystem, NoConfig>
             _pendingOnDisable.Dequeue().OnDisable();
     }
 
-    public void ExecuteOnDestroy()
+    public void ExecuteOnRemove()
     {
-        while (_pendingDestroy.Count > 0)
+        while (_pendingRemove.Count > 0)
         {
-            var bh = _pendingDestroy.Dequeue();
-            if (bh.IsPendingDestroy)
+            var bh = _pendingRemove.Dequeue();
+            if (bh.IsPendingRemove)
             {
                 // Awake가 한 번이라도 실행 된 Behaviour들만 허용
                 if (bh.ExecutionPhase != ExecutionPhase.Created)
-                    bh.OnDestroy();
+                    bh.OnRemove();
                 bh.IsRegistered = false;
                 _behaviours.Remove(bh);
             }

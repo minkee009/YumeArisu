@@ -3,6 +3,8 @@ namespace YumeArisu.Core.Hierarchy;
 public abstract class Component
 {
     public GameObject GameObject { get; internal set; }
+
+    public Transform Transform => GameObject!.Transform;
     
     protected internal virtual void OnAttach() { }
     protected internal virtual void OnDetach() { }

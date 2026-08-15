@@ -24,7 +24,7 @@ public abstract class Behaviour : Component
     public bool IsActiveAndEnabled => Enabled && GameObject.ActiveInHierarchy;
 
     internal ExecutionPhase ExecutionPhase { get; set; } = ExecutionPhase.Created;
-    internal bool IsPendingDestroy { get; set; } = false;
+    internal bool IsPendingRemove { get; set; } = false;
     internal bool IsRegistered { get; set; } = false;
     internal bool IsScheduled { get; set; } = false;
 
@@ -35,7 +35,7 @@ public abstract class Behaviour : Component
     public virtual void OnUpdate() { }
     public virtual void OnLateUpdate() { }
     public virtual void OnDisable() { }
-    public virtual void OnDestroy() { }
+    public virtual void OnRemove() { }
 
     private bool _enabled = true;
 

@@ -43,7 +43,7 @@ public class TestDestroyer : ScriptBehaviour
         System.Console.WriteLine($"{GameObject.Name}{_은는} 꺼졌슴다!");    
     }
 
-    public override void OnDestroy()
+    public override void OnRemove()
     {
         System.Console.WriteLine($"{GameObject.Name}{_이가} 파괴됨....");
         if (OnEnableTarget is not null)

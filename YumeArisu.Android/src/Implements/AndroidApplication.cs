@@ -81,7 +81,7 @@ public sealed class AndroidApplication : IApplicationControl
         BehaviourSystem.Instance.ExecuteOnLateUpdate();
         CoroutineSystem.Instance.YieldUpdate();
         BehaviourSystem.Instance.ExecuteOnDisable();
-        BehaviourSystem.Instance.ExecuteOnDestroy();
+        BehaviourSystem.Instance.ExecuteOnRemove();
         CoroutineSystem.Instance.YieldUntil();
         InputSystem.Instance.EndFrame();
     }

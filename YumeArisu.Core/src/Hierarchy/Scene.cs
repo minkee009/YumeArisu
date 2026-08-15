@@ -34,7 +34,7 @@ public abstract class Scene
         OnUnload();
 
         foreach (var go in _gameObjects)
-            go.Destroy();
+            go.OnDestroy();
             
         _gameObjects.Clear();
 
@@ -73,7 +73,7 @@ public abstract class Scene
         _gameObjects.Remove(go);
 
         // GameObject 내부 정리
-        go.Destroy();
+        go.OnDestroy();
     }
 
     public GameObject FindGameObject(string name)
