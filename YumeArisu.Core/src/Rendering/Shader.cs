@@ -51,16 +51,10 @@ public class Shader : Resource
         Handle = 0;
     }
 
-    internal void Bind()
+    internal void Use()
     {
         var gl = RenderSystem.Instance.GetGL();
         gl.UseProgram(Handle);
-    }
-
-    internal void Unbind()
-    {
-        var gl = RenderSystem.Instance.GetGL();
-        gl.UseProgram(0);
     }
 
     internal static uint LinkShaderProgram(string vertBody, string fragBody)

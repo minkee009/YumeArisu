@@ -201,7 +201,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
 
     public void Render()
     {
-        _fullScrenQuadShader.Bind();
+        _fullScrenQuadShader.Use();
 
         _gl.BindVertexArray(_pixelVAO);
 
