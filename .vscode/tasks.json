@@ -22,6 +22,18 @@
       "type": "shell",
       "command": "dotnet new yascene -n ${input:sceneName} -o ${input:sceneOutputDir}",
       "problemMatcher": []
+    },
+    {
+      "label": "build",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/YumeArisu.Desktop/YumeArisu.Desktop.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile"
     }
   ],
   "inputs": [
