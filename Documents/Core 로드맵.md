@@ -26,8 +26,7 @@ unsafe
             var mode = videoModes[j];
             Console.WriteLine(
                 $"  {mode->Width}x{mode->Height} @ {mode->RefreshRate}Hz " +
-                $"(R{mode->RedBits} G{mode->GreenBits} B{mode->BlueBits})"
-            );
+                $"(R{mode->RedBits} G{mode->GreenBits} B{mode->BlueBits})");
         }
 
         // 현재 사용 중인 해상도만 보고 싶다면

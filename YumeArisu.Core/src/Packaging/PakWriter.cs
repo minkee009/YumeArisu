@@ -67,8 +67,7 @@ public static class PakWriter
                     processedCount++;
                     if (printProgress)
                         ConsoleExtensions.PrintProgress(processedCount, totalCount, fileName);
-                }
-            );
+                });
 
             currentChunkOrder++;
         }
@@ -83,8 +82,7 @@ public static class PakWriter
                     processedCount++;
                     if (printProgress)
                         ConsoleExtensions.PrintProgress(processedCount, totalCount, fileName);
-                }
-            );
+                });
 
             currentChunkOrder++;
         }

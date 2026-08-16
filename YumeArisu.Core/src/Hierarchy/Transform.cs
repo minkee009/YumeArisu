@@ -69,8 +69,7 @@ public class Transform : Component
                 LocalScale = new Vector3(
                     (MathF.Abs(parentScale.X) > epsilon) ? value.X / parentScale.X : value.X,
                     (MathF.Abs(parentScale.Y) > epsilon) ? value.Y / parentScale.Y : value.Y,
-                    (MathF.Abs(parentScale.Z) > epsilon) ? value.Z / parentScale.Z : value.Z
-                );
+                    (MathF.Abs(parentScale.Z) > epsilon) ? value.Z / parentScale.Z : value.Z);
             }
             else
             {
@@ -203,16 +202,14 @@ public class Transform : Component
                 LocalPosition = new Vector3(
                     (MathF.Abs(parentScale.X) > eps) ? stayPosition.X / parentScale.X : stayPosition.X,
                     (MathF.Abs(parentScale.Y) > eps) ? stayPosition.Y / parentScale.Y : stayPosition.Y,
-                    (MathF.Abs(parentScale.Z) > eps) ? stayPosition.Z / parentScale.Z : stayPosition.Z
-                );
+                    (MathF.Abs(parentScale.Z) > eps) ? stayPosition.Z / parentScale.Z : stayPosition.Z);
 
                 // scale
     
                 LocalScale = new Vector3(
                     (MathF.Abs(parentScale.X) > eps) ? worldLossyScaleBefore.X / parentScale.X : worldLossyScaleBefore.X,
                     (MathF.Abs(parentScale.Y) > eps) ? worldLossyScaleBefore.Y / parentScale.Y : worldLossyScaleBefore.Y,
-                    (MathF.Abs(parentScale.Z) > eps) ? worldLossyScaleBefore.Z / parentScale.Z : worldLossyScaleBefore.Z
-                );
+                    (MathF.Abs(parentScale.Z) > eps) ? worldLossyScaleBefore.Z / parentScale.Z : worldLossyScaleBefore.Z);
 
                 // rotation
                 LocalRotation = inverseRot * worldRotationBefore;

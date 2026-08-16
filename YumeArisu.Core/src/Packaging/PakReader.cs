@@ -118,8 +118,7 @@ public static class PakReader
 
             var decodedLength = LZ4Codec.Decode(
                 compressed, 0, metaData.CompressedLength,
-                original, 0, metaData.OriginalLength
-            );
+                original, 0, metaData.OriginalLength);
 
             if (decodedLength != metaData.OriginalLength)
                 throw new InvalidDataException("압축 해제 실패");

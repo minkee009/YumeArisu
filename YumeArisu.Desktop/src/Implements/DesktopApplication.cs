@@ -61,14 +61,12 @@ public sealed class DesktopApplication : IApplicationControl
         _controller = new ImGuiController(
             RenderSystem.Instance.GetGL(), 
             _window.View, 
-            InputSystem.Instance.GetInputContext()
-        );
+            InputSystem.Instance.GetInputContext());
 #endif
         InputSystem.Instance.RegisterSystemKeyCombo(
             [Silk.NET.Input.Key.AltLeft], 
             Silk.NET.Input.Key.Enter, 
-            _window.SwitchDisplayMode
-        );
+            _window.SwitchDisplayMode);
     }
 
     public void OnFramebufferResize(Vector2D<int> newSize)
@@ -100,8 +98,7 @@ public sealed class DesktopApplication : IApplicationControl
             {
                 BehaviourSystem.Instance.ExecuteOnFixedUpdate();
                 CoroutineSystem.Instance.YieldFixedUpdate();
-            }
-        );
+            });
         BehaviourSystem.Instance.ExecuteOnUpdate();
         BehaviourSystem.Instance.ExecuteOnLateUpdate();
         CoroutineSystem.Instance.YieldUpdate();

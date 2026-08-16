@@ -75,8 +75,7 @@ public sealed class AndroidApplication : IApplicationControl
             {
                 BehaviourSystem.Instance.ExecuteOnFixedUpdate();
                 CoroutineSystem.Instance.YieldFixedUpdate();
-            }
-        );
+            });
         BehaviourSystem.Instance.ExecuteOnUpdate();
         BehaviourSystem.Instance.ExecuteOnLateUpdate();
         CoroutineSystem.Instance.YieldUpdate();
