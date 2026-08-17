@@ -24,6 +24,18 @@
       "problemMatcher": []
     },
     {
+      "label": "New Shader",
+      "type": "shell",
+      "command": "dotnet new yashader -n ${input:shaderName} -o ${input:shaderOutputDir}",
+      "problemMatcher": []
+    },
+    {
+      "label": "New Material",
+      "type": "shell",
+      "command": "dotnet new yamaterial -n ${input:materialName} -o ${input:materialOutputDir}",
+      "problemMatcher": []
+    },
+    {
       "label": "build",
       "command": "dotnet",
       "type": "process",
@@ -50,6 +62,18 @@
       "default": "EmptyScene"
     },
     {
+      "id": "shaderName",
+      "type": "promptString",
+      "description": "생성할 Shader 이름",
+      "default": "NewShader"
+    },
+    {
+      "id": "materialName",
+      "type": "promptString",
+      "description": "생성할 Material 이름",
+      "default": "NewMaterial"
+    },
+    {
       "id": "sciprtOutputDir",
       "type": "promptString",
       "description": "출력 폴더 경로",
@@ -60,6 +84,18 @@
       "type": "promptString",
       "description": "출력 폴더 경로",
       "default": "YumeArisu.Game/src/Scenes"
+    },
+    {
+      "id": "shaderOutputDir",
+      "type": "promptString",
+      "description": "Shader 출력 폴더 경로",
+      "default": "Assets/Shader"
+    },
+    {
+      "id": "materialOutputDir",
+      "type": "promptString",
+      "description": "Material 출력 폴더 경로",
+      "default": "Assets/Material"
     }
   ]
 }

@@ -1,4 +1,5 @@
 using BuiltInShader = YumeArisu.Core.Rendering.Shader;
+using BuiltInTexture = YumeArisu.Core.Rendering.Texture;
 
 namespace YumeArisu.Core.Internal.RenderPipeline;
 
@@ -48,6 +49,7 @@ internal static class BuiltInRenderResource
     #endregion
 
     public static BuiltInShader FullScreenQuadShader;
+    public static BuiltInTexture DefaultWhiteTexture;
 
     private static bool _isLoaded;
 
@@ -57,8 +59,10 @@ internal static class BuiltInRenderResource
             return;
         
         FullScreenQuadShader = new();
+        DefaultWhiteTexture = new();
 
         FullScreenQuadShader.ImmediateLoadFromSource(Vertex, Fragment);
+        DefaultWhiteTexture.ImmediateLoadToSolidColor(1.0f,1.0f,1.0f,1.0f);
 
         _isLoaded = true;
     }
@@ -69,8 +73,10 @@ internal static class BuiltInRenderResource
             return;
 
         FullScreenQuadShader.Unload();
+        DefaultWhiteTexture.Unload();
 
         FullScreenQuadShader = null;
+        DefaultWhiteTexture = null;
 
         _isLoaded = false;
     }

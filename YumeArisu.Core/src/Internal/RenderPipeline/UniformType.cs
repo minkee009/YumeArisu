@@ -7,5 +7,5 @@ internal enum UniformType
     Vec3, 
     Vec4, 
     Mat4, 
-    Int 
+    Int
 }

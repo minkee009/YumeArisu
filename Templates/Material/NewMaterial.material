@@ -1,0 +1,6 @@
+{
+  "$schema": "https://yume-arisu.dev/schema/material.schema.json",
+  "ShaderPath": "...",
+  "TexturePaths": {},
+  "Uniforms": {}
+}

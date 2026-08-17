@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/template.json",
+  "author": "YumeArisu",
+  "classifications": [
+    "YumeArisu",
+    "Shader"
+  ],
+  "identity": "YumeArisu.Shader",
+  "name": "YumeArisu Shader",
+  "shortName": "yashader",
+  "sourceName": "NewShader",
+  "preferNameDirectory": false,
+  "tags": {
+    "language": "JSON",
+    "type": "item"
+  }
+}

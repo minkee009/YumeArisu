@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yume-arisu.dev/schema/shader.schema.json",
+  "title": "YumeArisu Shader",
+  "description": "YumeArisu에서 사용하는 셰이더 메타데이터 파일입니다.",
+  "type": "object",
+  "properties": {
+    "VertBodyPath": {
+      "type": "string",
+      "description": "Vertex Shader 소스 파일의 경로입니다."
+    },
+    "FragBodyPath": {
+      "type": "string",
+      "description": "Fragment Shader 소스 파일의 경로입니다."
+    }
+  },
+  "required": [
+    "VertBodyPath",
+    "FragBodyPath"
+  ],
+  "additionalProperties": false
+}

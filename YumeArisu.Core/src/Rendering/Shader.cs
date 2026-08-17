@@ -1,4 +1,5 @@
 using System.Text;
+using System.Numerics;
 using Silk.NET.OpenGL;
 using YumeArisu.Core.Systems;
 using YumeArisu.Core.Internal.RenderPipeline;
@@ -10,6 +11,8 @@ namespace YumeArisu.Core.Rendering;
 public class Shader : Resource
 {
     internal uint Handle { get; private set; }
+
+    private readonly Dictionary<string, int> _uniformLocations = new();
 
     internal bool ImmediateLoadFromSource(string vertBody, string fragBody)
     {
@@ -55,6 +58,86 @@ public class Shader : Resource
     {
         var gl = RenderSystem.Instance.GetGL();
         gl.UseProgram(Handle);
+    }
+
+    internal void SetInt(string name, int value)
+    {
+        var gl = RenderSystem.Instance.GetGL();
+        gl.Uniform1(GetUniformLocation(name), value);
+    }
+
+    internal void SetFloat(string name, float value)
+    {
+        var gl = RenderSystem.Instance.GetGL();
+        gl.Uniform1(GetUniformLocation(name), value);
+    }
+
+    internal void SetVector2(string name, float x, float y)
+    {
+        var gl = RenderSystem.Instance.GetGL();
+        gl.Uniform2(GetUniformLocation(name), x, y);
+    }
+
+    internal void SetVector3(string name, float x, float y, float z)
+    {
+        var gl = RenderSystem.Instance.GetGL();
+        gl.Uniform3(GetUniformLocation(name), x, y, z);
+    }
+
+    internal void SetVector4(string name, float x, float y, float z, float w)
+    {
+        var gl = RenderSystem.Instance.GetGL();
+        gl.Uniform4(GetUniformLocation(name), x, y, z, w);
+    }
+
+    internal unsafe void SetMatrix4(string name, in Matrix4x4 value)
+    {
+        var gl = RenderSystem.Instance.GetGL();
+        fixed (float* ptr = &value.M11)
+        {
+            // Numerics는 row-vector 관례, GLSL은 column-major 기대 -> 경계에서만 transpose
+            gl.UniformMatrix4(GetUniformLocation(name), 1, true, ptr);
+        }
+    }
+
+    /// <summary>
+    /// UniformValue(Material에서 넘어오는 범용 값)를 타입에 맞춰 실제 glUniform 호출로 분기시킵니다.
+    /// </summary>
+    internal void SetUniform(string name, UniformValue value)
+    {
+        switch (value.Type)
+        {
+            case Internal.RenderPipeline.UniformType.Float:
+                SetFloat(name, value.Data[0]);
+                break;
+            case Internal.RenderPipeline.UniformType.Vec2:
+                SetVector2(name, value.Data[0], value.Data[1]);
+                break;
+            case Internal.RenderPipeline.UniformType.Vec3:
+                SetVector3(name, value.Data[0], value.Data[1], value.Data[2]);
+                break;
+            case Internal.RenderPipeline.UniformType.Vec4:
+                SetVector4(name, value.Data[0], value.Data[1], value.Data[2], value.Data[3]);
+                break;
+            case Internal.RenderPipeline.UniformType.Int:
+                SetInt(name, (int)value.Data[0]);
+                break;
+            case Internal.RenderPipeline.UniformType.Mat4:
+                SetMatrix4(name, ToMatrix4x4(value.Data));
+                break;
+        }
+    }
+
+    /// <summary>
+    /// 텍스쳐 슬롯(sampler) uniform 설정 - 실제 텍스쳐 바인딩은 Texture.Bind(unit)에서 처리하고,
+    /// 여기서는 셰이더의 sampler uniform에 유닛 인덱스만 알려줍니다.
+    /// </summary>
+    internal void SetTextureUnit(string name, int unit) => SetInt(name, unit);
+
+    internal void SetTexture(string name, Texture texture, int unit)
+    {
+        texture.Bind((uint)unit);
+        SetTextureUnit(name, unit);
     }
 
     internal static uint LinkShaderProgram(string vertBody, string fragBody)
@@ -122,4 +205,27 @@ public class Shader : Resource
 
         return shader;
     }
+
+    private int GetUniformLocation(string name)
+    {
+        if (_uniformLocations.TryGetValue(name, out int cached))
+            return cached;
+
+        var gl = RenderSystem.Instance.GetGL();
+        int location = gl.GetUniformLocation(Handle, name);
+
+        // -1이어도 캐싱함 (셰이더에 존재하지 않는 이름 -> 매번 재조회하는 낭비 방지)
+        _uniformLocations[name] = location;
+
+        if (location == -1)
+            ConsoleExtensions.WriteLineColored($"'{name}' uniform이 셰이더에 존재하지 않습니다.", ConsoleColor.Yellow);
+
+        return location;
+    }
+
+    private static Matrix4x4 ToMatrix4x4(float[] d) => new(
+        d[0],  d[1],  d[2],  d[3],
+        d[4],  d[5],  d[6],  d[7],
+        d[8],  d[9],  d[10], d[11],
+        d[12], d[13], d[14], d[15]);
 }

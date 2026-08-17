@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/template.json",
+  "author": "YumeArisu",
+  "classifications": [
+    "YumeArisu",
+    "Material"
+  ],
+  "identity": "YumeArisu.Material",
+  "name": "YumeArisu Material",
+  "shortName": "yamaterial",
+  "sourceName": "NewMaterial",
+  "preferNameDirectory": false,
+  "tags": {
+    "language": "JSON",
+    "type": "item"
+  }
+}

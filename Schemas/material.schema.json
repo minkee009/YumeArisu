@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yume-arisu.dev/schema/material.schema.json",
+  "title": "YumeArisu Material",
+  "description": "YumeArisu에서 사용하는 머티리얼 메타데이터 파일입니다.",
+  "type": "object",
+  "properties": {
+    "ShaderPath": {
+      "type": "string",
+      "description": "이 머티리얼에서 사용할 Shader 리소스의 경로입니다."
+    },
+    "TexturePaths": {
+      "type": "object",
+      "description": "Sampler Uniform에서 참조하는 Texture 리소스의 경로입니다.",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "Uniforms": {
+      "type": "object",
+      "description": "이 머티리얼에 설정할 Uniform 값입니다.",
+      "additionalProperties": {
+        "$ref": "#/$defs/UniformValue"
+      }
+    }
+  },
+  "required": [
+    "ShaderPath",
+    "TexturePaths",
+    "Uniforms"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "UniformValue": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Float"
+        },
+        {
+          "$ref": "#/$defs/Vec2"
+        },
+        {
+          "$ref": "#/$defs/Vec3"
+        },
+        {
+          "$ref": "#/$defs/Vec4"
+        },
+        {
+          "$ref": "#/$defs/Mat4"
+        },
+        {
+          "$ref": "#/$defs/Int"
+        }
+      ]
+    },
+    "Float": {
+      "type": "object",
+      "properties": {
+        "Type": {
+          "const": "Float"
+        },
+        "Data": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 1,
+          "maxItems": 1
+        }
+      },
+      "required": [
+        "Type",
+        "Data"
+      ],
+      "additionalProperties": false
+    },
+    "Vec2": {
+      "type": "object",
+      "properties": {
+        "Type": {
+          "const": "Vec2"
+        },
+        "Data": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        }
+      },
+      "required": [
+        "Type",
+        "Data"
+      ],
+      "additionalProperties": false
+    },
+    "Vec3": {
+      "type": "object",
+      "properties": {
+        "Type": {
+          "const": "Vec3"
+        },
+        "Data": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        }
+      },
+      "required": [
+        "Type",
+        "Data"
+      ],
+      "additionalProperties": false
+    },
+    "Vec4": {
+      "type": "object",
+      "properties": {
+        "Type": {
+          "const": "Vec4"
+        },
+        "Data": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 4,
+          "maxItems": 4
+        }
+      },
+      "required": [
+        "Type",
+        "Data"
+      ],
+      "additionalProperties": false
+    },
+    "Mat4": {
+      "type": "object",
+      "properties": {
+        "Type": {
+          "const": "Mat4"
+        },
+        "Data": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 16,
+          "maxItems": 16
+        }
+      },
+      "required": [
+        "Type",
+        "Data"
+      ],
+      "additionalProperties": false
+    },
+    "Int": {
+      "type": "object",
+      "properties": {
+        "Type": {
+          "const": "Int"
+        },
+        "Data": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 1,
+          "maxItems": 1
+        }
+      },
+      "required": [
+        "Type",
+        "Data"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

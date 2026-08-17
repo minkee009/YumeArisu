@@ -43,24 +43,47 @@ public class Texture : Resource
         if (IsLoaded)
             return false;
 
-        UploadToGL(1, 1, new byte[] { r, g, b, a });
+        UploadToGL(1, 1, [r, g, b, a]);
 
         IsLoaded = true;
         return true;
     }
 
+    internal bool ImmediateLoadToSolidColor(System.Drawing.Color color)
+    {
+        return ImmediateLoadToSolidColor(color.R, color.G, color.B, color.A);
+    }
+
+    internal bool ImmediateLoadToSolidColor(int r, int g, int b, int a = 255)
+    {
+        return ImmediateLoadToSolidColor(
+            (byte)Math.Clamp(r, 0, 255),
+            (byte)Math.Clamp(g, 0, 255),
+            (byte)Math.Clamp(b, 0, 255),
+            (byte)Math.Clamp(a, 0, 255)
+        );
+    }
+
+    internal bool ImmediateLoadToSolidColor(float r, float g, float b, float a = 1.0f)
+    {
+        // float -> byte 변환 (반올림 및 Clamp 처리)
+        byte byteR = (byte)(Math.Clamp(r, 0.0f, 1.0f) * 255.0f + 0.5f);
+        byte byteG = (byte)(Math.Clamp(g, 0.0f, 1.0f) * 255.0f + 0.5f);
+        byte byteB = (byte)(Math.Clamp(b, 0.0f, 1.0f) * 255.0f + 0.5f);
+        byte byteA = (byte)(Math.Clamp(a, 0.0f, 1.0f) * 255.0f + 0.5f);
+
+        return ImmediateLoadToSolidColor(byteR, byteG, byteB, byteA);
+    }
+
     /// <summary>
-    /// 인코딩된 이미지 바이트(png, jpg 등)를 즉시 디코딩하여 텍스쳐로 생성합니다.
+    /// 원시 바이트 배열을 GL 컨텍스트에 제출하여 텍스쳐로 생성합니다.
     /// </summary>
-    internal bool ImmediateLoadFromBytes(byte[] bytes)
+    internal bool ImmediateLoadFromBytes(byte[] rawBytes, int width, int height)
     {
         if (IsLoaded)
             return false;
 
-        StbImage.stbi_set_flip_vertically_on_load(1);
-        var image = ImageResult.FromMemory(bytes, ColorComponents.RedGreenBlueAlpha);
-
-        UploadToGL(image.Width, image.Height, image.Data);
+        UploadToGL(width, height, rawBytes);
 
         IsLoaded = true;
         return true;
