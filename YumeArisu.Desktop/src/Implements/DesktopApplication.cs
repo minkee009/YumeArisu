@@ -52,11 +52,10 @@ public sealed class DesktopApplication : IApplicationControl
         BehaviourSystem.Instance.StartUp(default);
         CoroutineSystem.Instance.StartUp(default);
         SceneSystem.Instance.StartUp(new TestSceneManifest());
-
-        RenderSystem.Instance.OnFramebufferResize(_window.View.FramebufferSize);
-        InputSystem.Instance.OnResize(_window.View.Size);
-        
         SceneSystem.Instance.BeforeSceneChange += CoroutineSystem.Instance.ImmediateStopAllCoroutines;
+
+        OnFramebufferResize(_window.View.FramebufferSize);
+        OnResize(_window.View.Size);
 #if DEBUG
         _controller = new ImGuiController(
             RenderSystem.Instance.GetGL(), 
@@ -79,7 +78,7 @@ public sealed class DesktopApplication : IApplicationControl
     public void OnResize(Vector2D<int> newSize)
     {
         // 논리적 : 윈도우 핸들 크기 변경 시 (DPI 있음)
-        InputSystem.Instance.OnResize(newSize);
+        InputSystem.Instance.OnViewResize(newSize);
         //PointerEventSystem.Instance.OnScreenResize(newSize);
         //TouchSystem.Instance.OnPanelResize(newSize);
         //System.Console.WriteLine($"Logical Screen Size : {newSize}");

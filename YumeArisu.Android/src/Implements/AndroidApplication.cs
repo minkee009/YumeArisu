@@ -59,7 +59,7 @@ public sealed class AndroidApplication : IApplicationControl
 
     public void OnResize(Vector2D<int> newSize)
     {
-        InputSystem.Instance.OnResize(newSize);
+        InputSystem.Instance.OnViewResize(newSize);
     }
 
     public void OnUpdate(double deltaTime)

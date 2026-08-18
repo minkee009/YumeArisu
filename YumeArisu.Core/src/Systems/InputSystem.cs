@@ -33,7 +33,7 @@ public class InputSystem : SystemBase<InputSystem, IView>
         _systemKeyCombos = null;
     }
 
-    public void OnResize(Vector2D<int> size)
+    public void OnViewResize(Vector2D<int> size)
     {
         _mouseState.ViewSize = size.ToNumerics();
     }
