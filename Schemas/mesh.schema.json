@@ -5,7 +5,7 @@
   "description": "YumeArisu에서 사용하는 메시 메타데이터 파일입니다.",
   "type": "object",
   "properties": {
-    "layout": {
+    "Layout": {
       "type": "object",
       "description": "메시의 정점 레이아웃입니다.",
       "properties": {
@@ -70,7 +70,7 @@
     }
   },
   "required": [
-    "layout",
+    "Layout",
     "Vertices",
     "Indices"
   ],
