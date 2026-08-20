@@ -120,6 +120,36 @@ public class Material : Resource
         }
     }
 
+    public Vector4 GetVector4(string name)
+    {
+        if (_uniforms.TryGetValue(name, out var value))
+        {
+            if (value.Type == UniformType.Vec4)
+                return value.AsVector4();
+            else
+                throw new Exception("해당하는 값은 Vector4타입이 아닙니다.");
+        }
+        else
+        {
+            throw new Exception("해당하는 값이 존재하지 않습니다.");
+        }
+    }
+
+    public Matrix4x4 GetMatrix4x4(string name)
+    {
+        if (_uniforms.TryGetValue(name, out var value))
+        {
+            if (value.Type == UniformType.Mat4)
+                return value.AsMatrix4x4();
+            else
+                throw new Exception("해당하는 값은 Matrix4x4타입이 아닙니다.");
+        }
+        else
+        {
+            throw new Exception("해당하는 값이 존재하지 않습니다.");
+        }
+    }
+
     public void SetTexture(string name, Texture texture) => _textures[name] = texture;
     public void SetInt(string name, int value) => SetUniform(name, UniformValue.FromInt(value));
     public void SetFloat(string name, float value) => SetUniform(name, UniformValue.FromFloat(value));

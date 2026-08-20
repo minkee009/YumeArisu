@@ -1,3 +1,4 @@
+using YumeArisu.Core.Rendering;
 using BuiltInShader = YumeArisu.Core.Rendering.Shader;
 using BuiltInTexture = YumeArisu.Core.Rendering.Texture;
 
@@ -50,6 +51,8 @@ internal static class BuiltInRenderResource
 
     public static BuiltInShader FullScreenQuadShader;
     public static BuiltInTexture DefaultWhiteTexture;
+    public static Mesh DefaultQuadMesh;
+    public static Material DefaultSpriteMaterial;
 
     private static bool _isLoaded;
 
@@ -60,9 +63,73 @@ internal static class BuiltInRenderResource
         
         FullScreenQuadShader = new();
         DefaultWhiteTexture = new();
+        DefaultQuadMesh = new();
+        DefaultSpriteMaterial = new();
 
-        FullScreenQuadShader.ImmediateLoadFromSource(Vertex, Fragment);
         DefaultWhiteTexture.ImmediateLoadToSolidColor(1.0f,1.0f,1.0f,1.0f);
+
+        VertexLayout layout;
+        float[] vertices;
+        uint[] indices;
+
+        layout = new VertexLayout
+        {
+            Elements =
+            [
+                new VertexElement
+                {
+                    Location = 0,
+                    Name = "position",
+                    Type = VertexElementType.Float2
+                }
+            ]
+        };
+
+
+        FullScreenQuadShader.ImmediateLoadFromSource(
+            layout,
+            Vertex,
+            Fragment);
+
+
+        layout = new VertexLayout
+        {
+            Elements =
+            [
+                new VertexElement
+                {
+                    Location = 0,
+                    Name = "Position",
+                    Type = VertexElementType.Float3
+                },
+                new VertexElement
+                {
+                    Location = 1,
+                    Name = "UV",
+                    Type = VertexElementType.Float2
+                }
+            ]
+        };
+
+        vertices = 
+        [
+            // Position          // UV
+            -0.5f, -0.5f, 0f,    0f, 0f,
+            0.5f, -0.5f, 0f,    1f, 0f,
+            0.5f,  0.5f, 0f,    1f, 1f,
+            -0.5f,  0.5f, 0f,    0f, 1f
+        ];
+
+        indices = 
+        [
+            0, 1, 2,
+            2, 3, 0
+        ];
+
+        DefaultQuadMesh.ImmediatLoadFromReference(
+            layout,
+            vertices,
+            indices);
 
         _isLoaded = true;
     }
@@ -74,6 +141,8 @@ internal static class BuiltInRenderResource
 
         FullScreenQuadShader.Unload();
         DefaultWhiteTexture.Unload();
+        DefaultQuadMesh.Unload();
+        DefaultSpriteMaterial.Unload();
 
         FullScreenQuadShader = null;
         DefaultWhiteTexture = null;

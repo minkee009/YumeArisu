@@ -10,16 +10,18 @@ namespace YumeArisu.Core.Rendering;
 
 public class Shader : Resource
 {
+    internal ulong VertexLayoutID { get; private set; }
     internal uint Handle { get; private set; }
 
     private readonly Dictionary<string, int> _uniformLocations = new();
 
-    internal bool ImmediateLoadFromSource(string vertBody, string fragBody)
+    internal bool ImmediateLoadFromSource(VertexLayout layout, string vertBody, string fragBody)
     {
         if(IsLoaded)
             return false;
 
         Handle = LinkShaderProgram(vertBody, fragBody);
+        VertexLayoutID = layout.GetID();
 
         IsLoaded = true;
         return true;
@@ -43,6 +45,7 @@ public class Shader : Resource
             return false;
 
         Handle = LinkShaderProgram(vertBody, fragBody);
+        VertexLayoutID = meta.VertexLayout.GetID();
 
         return true;
     }

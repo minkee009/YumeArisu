@@ -1,0 +1,13 @@
+namespace YumeArisu.Core.Internal.RenderPipeline;
+
+internal enum VertexElementType
+{
+    Float,
+    Float2,
+    Float3,
+    Float4,
+    Int,
+    Int2,
+    Int3,
+    Int4
+}

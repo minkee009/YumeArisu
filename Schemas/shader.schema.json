@@ -12,11 +12,50 @@
     "FragBodyPath": {
       "type": "string",
       "description": "Fragment Shader 소스 파일의 경로입니다."
+    },
+    "VertexLayout": {
+      "type": "array",
+      "description": "Vertex Shader가 요구하는 정점 데이터 레이아웃입니다.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Location": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Vertex attribute의 location입니다."
+          },
+          "Name": {
+            "type": "string",
+            "description": "Vertex attribute의 이름입니다."
+          },
+          "Type": {
+            "type": "string",
+            "enum": [
+              "Float",
+              "Float2",
+              "Float3",
+              "Float4",
+              "Int",
+              "Int2",
+              "Int3",
+              "Int4"
+            ],
+            "description": "Vertex attribute의 데이터 타입입니다."
+          }
+        },
+        "required": [
+          "Location",
+          "Name",
+          "Type"
+        ],
+        "additionalProperties": false
+      }
     }
   },
   "required": [
     "VertBodyPath",
-    "FragBodyPath"
+    "FragBodyPath",
+    "VertexLayout"
   ],
   "additionalProperties": false
 }

@@ -85,14 +85,14 @@ public class MaterialPropertyOverride
         }
     }
 
-    public Matrix4x4 GetMatrix4(string name)
+    public Matrix4x4 GetMatrix4x4(string name)
     {
         if (_uniformOverrides.TryGetValue(name, out var value))
         {
             if (value.Type == UniformType.Mat4)
                 return value.AsMatrix4x4();
             else
-                throw new Exception("해당하는 값은 Matrix4타입이 아닙니다.");
+                throw new Exception("해당하는 값은 Matrix4x4타입이 아닙니다.");
         }
         else
         {
