@@ -17,7 +17,7 @@ public class Shader : Resource
 
     internal bool ImmediateLoadFromSource(VertexLayout layout, string vertBody, string fragBody)
     {
-        if(IsLoaded)
+        if (IsLoaded)
             return false;
 
         Handle = LinkShaderProgram(vertBody, fragBody);
@@ -41,7 +41,7 @@ public class Shader : Resource
         var vertBody = FileIO.ReadAllString(meta.VertBodyPath);
         var fragBody = FileIO.ReadAllString(meta.FragBodyPath);
 
-        if(string.IsNullOrEmpty(vertBody) || string.IsNullOrEmpty(fragBody))
+        if (string.IsNullOrEmpty(vertBody) || string.IsNullOrEmpty(fragBody))
             return false;
 
         Handle = LinkShaderProgram(vertBody, fragBody);

@@ -136,7 +136,7 @@ internal static class BuiltInRenderResource
 
     public static void Unload()
     {
-        if(!_isLoaded)
+        if (!_isLoaded)
             return;
 
         FullScreenQuadShader.Unload();
