@@ -1,8 +1,6 @@
-using YumeArisu.Core.Internal.RenderPipeline;
+namespace YumeArisu.Core.Internal.RenderPipeline;
 
-namespace YumeArisu.Core.Utility;
-
-internal static class VertexLayoutExtensions
+internal static class VertexElementTypeExtensions
 {
     internal static int GetSize(this VertexElementType type) => type switch
     {
@@ -29,13 +27,4 @@ internal static class VertexLayoutExtensions
         VertexElementType.Int4 => 4,
         _ => throw new ArgumentOutOfRangeException(nameof(type))
     };
-
-    internal static int GetStride(this VertexLayout layout)
-    {
-        int stride = 0;
-        foreach (var element in layout.Elements)
-            stride += element.Type.GetSize();
-
-        return stride;
-    }
 }

@@ -1,10 +1,17 @@
-using YumeArisu.Core.Utility;
-
 namespace YumeArisu.Core.Internal.RenderPipeline;
 
 internal readonly struct VertexLayout
 {
     public VertexElement[] Elements { get; init; }
+
+    internal int GetStride()
+    {
+        int stride = 0;
+        foreach (var element in Elements)
+            stride += element.Type.GetSize();
+
+        return stride;
+    }
 
     internal ulong GetID()
     {
