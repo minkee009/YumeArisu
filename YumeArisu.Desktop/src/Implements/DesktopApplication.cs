@@ -1,5 +1,6 @@
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
+using Silk.NET.Input;
 using Silk.NET.OpenGL.Extensions.ImGui;
 using YumeArisu.Core.Systems;
 using YumeArisu.Core.Abstractions;
@@ -63,8 +64,8 @@ public sealed class DesktopApplication : IApplicationControl
             InputSystem.Instance.GetInputContext());
 #endif
         InputSystem.Instance.RegisterSystemKeyCombo(
-            [Silk.NET.Input.Key.AltLeft], 
-            Silk.NET.Input.Key.Enter, 
+            [Key.AltLeft], 
+            Key.Enter, 
             _window.SwitchDisplayMode);
     }
 
