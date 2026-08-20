@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yume-arisu.dev/schema/mesh.schema.json",
+  "title": "YumeArisu Mesh",
+  "description": "YumeArisu에서 사용하는 메시 메타데이터 파일입니다.",
+  "type": "object",
+  "properties": {
+    "layout": {
+      "type": "object",
+      "description": "메시의 정점 레이아웃입니다.",
+      "properties": {
+        "Elements": {
+          "type": "array",
+          "description": "정점 속성의 목록입니다.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "Location": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Vertex Attribute의 위치입니다."
+              },
+              "Name": {
+                "type": "string",
+                "description": "정점 속성의 이름입니다."
+              },
+              "Type": {
+                "type": "string",
+                "enum": [
+                  "Float",
+                  "Float2",
+                  "Float3",
+                  "Float4",
+                  "Int",
+                  "Int2",
+                  "Int3",
+                  "Int4"
+                ],
+                "description": "정점 속성의 데이터 타입입니다."
+              }
+            },
+            "required": [
+              "Location",
+              "Name",
+              "Type"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "Elements"
+      ],
+      "additionalProperties": false
+    },
+    "Vertices": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "description": "정점 데이터입니다."
+    },
+    "Indices": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "description": "인덱스 버퍼 데이터입니다."
+    }
+  },
+  "required": [
+    "layout",
+    "Vertices",
+    "Indices"
+  ],
+  "additionalProperties": false
+}

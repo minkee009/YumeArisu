@@ -32,7 +32,7 @@ public class Mesh : Resource
         var json = Encoding.UTF8.GetString(bytes);
         var meta = JsonMetaParser.Parse<MeshMeta>(json);
 
-        return InitializeMesh(meta.layout, meta.Vertices, meta.Indices);
+        return InitializeMesh(meta.Layout, meta.Vertices, meta.Indices);
     }
 
     protected override void OnUnload()

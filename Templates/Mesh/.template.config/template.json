@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/template.json",
+  "author": "YumeArisu",
+  "classifications": [
+    "YumeArisu",
+    "Mesh"
+  ],
+  "identity": "YumeArisu.Mesh",
+  "name": "YumeArisu Mesh",
+  "shortName": "yamesh",
+  "sourceName": "NewMesh",
+  "preferNameDirectory": false,
+  "tags": {
+    "language": "JSON",
+    "type": "item"
+  }
+}

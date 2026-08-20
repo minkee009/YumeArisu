@@ -1,0 +1,27 @@
+{
+  "$schema": "https://yume-arisu.dev/schema/mesh.schema.json",
+  "Layout": {
+    "Elements": [
+      {
+        "Location": 0,
+        "Name": "Position",
+        "Type": "Float3"
+      },
+      {
+        "Location": 1,
+        "Name": "UV",
+        "Type": "Float2"
+      }
+    ]
+  },
+  "Vertices": [
+    -0.5, -0.5, 0.0, 0.0, 0.0,
+     0.5, -0.5, 0.0, 1.0, 0.0,
+     0.5,  0.5, 0.0, 1.0, 1.0,
+    -0.5,  0.5, 0.0, 0.0, 1.0
+  ],
+  "Indices": [
+    0, 1, 2,
+    2, 3, 0
+  ]
+}
