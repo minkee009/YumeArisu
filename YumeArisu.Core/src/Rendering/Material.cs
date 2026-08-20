@@ -50,10 +50,15 @@ public class Material : Resource
 
     protected override void OnUnload()
     {
-        Resources.Release(Shader);
-        foreach (var tex in _textures.Values)
-            Resources.Release(tex);
+        if(Shader.IsLoadedBySystem())
+            Resources.Release(Shader);
 
+        foreach (var tex in _textures.Values)
+        {
+            if(tex.IsLoadedBySystem())
+                Resources.Release(tex);
+        }
+            
         _textures.Clear();
         _uniforms = null;
         Shader = null;

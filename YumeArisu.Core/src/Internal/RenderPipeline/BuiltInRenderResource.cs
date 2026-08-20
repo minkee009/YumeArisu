@@ -7,7 +7,7 @@ namespace YumeArisu.Core.Internal.RenderPipeline;
 internal static class BuiltInRenderResource
 {
     #region  ShaderSource
-    public const string Vertex = """
+    public const string TestVertex = """
         #ifdef GLES
         precision mediump float;
         #endif
@@ -22,7 +22,7 @@ internal static class BuiltInRenderResource
             gl_Position = vec4(position, 0.0, 1.0);
         }
         """;
-    public const string Fragment = """
+    public const string TestFragment = """
         #ifdef GLES
         precision mediump float;
         #endif
@@ -48,8 +48,35 @@ internal static class BuiltInRenderResource
             FragColor = vec4(col, 1.0);
         }
         """;
+
+    public const string SpriteVertex = $$"""
+        layout(location = 0) in vec3 position;
+        layout(location = 1) in vec2 uv;
+
+        out vec2 fragUV;
+
+        void main()
+        {
+            fragUV = uv;
+            gl_Position = {{GlobalUniform.Projection}} * {{GlobalUniform.View}} * {{GlobalUniform.Model}} * vec4(position, 1.0);
+        }
+        """;
+
+    public const string SpriteFragment = """
+        in vec2 fragUV;
+
+        uniform sampler2D MainTexture;
+
+        out vec4 FragColor;
+
+        void main()
+        {
+            FragColor = texture(MainTexture, fragUV);
+        }
+        """;
     #endregion
 
+    public static BuiltInShader DefaultSpriteShader;
     public static BuiltInShader FullScreenQuadShader;
     public static BuiltInTexture DefaultWhiteTexture;
     public static Mesh DefaultQuadMesh;
@@ -62,6 +89,7 @@ internal static class BuiltInRenderResource
         if (_isLoaded)
             return;
         
+        DefaultSpriteShader = new();
         FullScreenQuadShader = new();
         DefaultWhiteTexture = new();
         DefaultQuadMesh = new();
@@ -80,7 +108,7 @@ internal static class BuiltInRenderResource
                 new VertexElement
                 {
                     Location = 0,
-                    Name = "position",
+                    Name = "Position",
                     Type = VertexElementType.Float2
                 }
             ]
@@ -89,8 +117,8 @@ internal static class BuiltInRenderResource
 
         FullScreenQuadShader.ImmediateLoadFromSource(
             layout,
-            Vertex,
-            Fragment);
+            TestVertex,
+            TestFragment);
 
 
         layout = new VertexLayout
@@ -132,6 +160,16 @@ internal static class BuiltInRenderResource
             vertices,
             indices);
 
+        
+        DefaultSpriteShader.ImmediateLoadFromSource(layout,SpriteVertex,SpriteFragment);
+
+        DefaultSpriteMaterial.ImmediateLoadFromReference(DefaultSpriteShader, 
+            new()
+            {
+                ["MainTexture"] = DefaultWhiteTexture
+            },
+            new());
+    
         _isLoaded = true;
     }
 
@@ -144,6 +182,7 @@ internal static class BuiltInRenderResource
         DefaultWhiteTexture.Unload();
         DefaultQuadMesh.Unload();
         DefaultSpriteMaterial.Unload();
+        DefaultSpriteShader.Unload();
 
         FullScreenQuadShader = null;
         DefaultWhiteTexture = null;
