@@ -11,6 +11,7 @@ internal static class BuiltInRenderResource
         #ifdef GLES
         precision mediump float;
         #endif
+        
         layout(location = 0) in vec2 position;
 
         out vec2 vPos; // fragment로 넘길 값

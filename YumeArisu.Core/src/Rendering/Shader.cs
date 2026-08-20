@@ -145,8 +145,8 @@ public class Shader : Resource
 
     internal static uint LinkShaderProgram(string vertBody, string fragBody)
     {
-        var vertexShader = CompileShader(GLEnum.VertexShader, BuildShader(vertBody));
-        var fragmentShader = CompileShader(GLEnum.FragmentShader, BuildShader(fragBody));
+        var vertexShader = CompileShader(GLEnum.VertexShader, BuildShader(GLEnum.VertexShader, vertBody));
+        var fragmentShader = CompileShader(GLEnum.FragmentShader, BuildShader(GLEnum.FragmentShader, fragBody));
 
         var gl = RenderSystem.Instance.GetGL();
 
@@ -175,7 +175,7 @@ public class Shader : Resource
         return handle;
     }
 
-    internal static string BuildShader(string src)
+    internal static string BuildShader(GLEnum type, string src)
     {
         var shaderBackend = RenderSystem.Instance.GetShaderBackend();
 
@@ -187,7 +187,14 @@ public class Shader : Resource
             ? "#define GLES\n"
             : "#define GLCORE\n";
 
-        return version + define + src;
+        string global = type switch
+        {
+            GLEnum.VertexShader => GlobalUniform.VertexSource,
+            GLEnum.FragmentShader => GlobalUniform.FragmentSource,
+            _ => string.Empty
+        };
+
+        return version + define + global + '\n' + src;
     }
 
     internal static uint CompileShader(GLEnum type, in string source)
