@@ -1,4 +1,5 @@
 using YumeArisu.Core.Hierarchy;
+using YumeArisu.Core.Rendering;
 using YumeArisu.Game.Scripts;
 
 namespace YumeArisu.Game.Scenes;
@@ -38,6 +39,9 @@ public class TestScene2 : Scene
 
         go.AddComponent<FPSChecker>();
         go.AddComponent<TestCoroutine>();
+        
+        var camera = CreateGameObject("MainCamera");
+        camera.AddComponent<Camera>();
         //go.AddComponent<WindowMover>();
     }
 }

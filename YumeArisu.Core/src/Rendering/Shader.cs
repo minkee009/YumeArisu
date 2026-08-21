@@ -187,6 +187,11 @@ public class Shader : Resource
             ? "#define GLES\n"
             : "#define GLCORE\n";
 
+        // ES 프래그먼트 셰이더는 float 기본 정밀도가 없으므로 global보다 먼저 선언
+        string precision = (shaderBackend == ShaderBackend.OpenGLES && type == GLEnum.FragmentShader)
+            ? "precision mediump float;\nprecision mediump int;\n"
+            : string.Empty;
+
         string global = type switch
         {
             GLEnum.VertexShader => GlobalUniform.VertexSource,
@@ -194,7 +199,7 @@ public class Shader : Resource
             _ => string.Empty
         };
 
-        return version + define + global + '\n' + src;
+        return version + define + precision + global + '\n' + src;
     }
 
     internal static uint CompileShader(GLEnum type, in string source)

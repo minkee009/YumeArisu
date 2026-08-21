@@ -17,7 +17,7 @@ public sealed class AndroidFileIO : IFileIO
 
     public bool IsOpened { get; private set; } // _disposed 역할 겸비 
     private List<Stream> _pakChunkStreams;
-    private Dictionary<ulong, PakReader.MetaData> _pakMetaTable;
+    private Dictionary<ulong, PakReader.PakMeta> _pakMetaTable;
 
     public AndroidFileIO(AssetManager assets, Context context)
     {
@@ -104,7 +104,7 @@ public sealed class AndroidFileIO : IFileIO
                 throw new FileNotFoundException($"'{pakName}'에 해당하는 PAK 청크 파일을 찾을 수 없습니다.");
 
             var streamView = new ReadOnlyListView<Stream>(_pakChunkStreams);
-            PakReader.ExtractMetaDataTable(streamView, out _pakMetaTable);
+            PakReader.ExtractPakMetaTable(streamView, out _pakMetaTable);
 
             IsOpened = true;
         }
