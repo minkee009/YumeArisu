@@ -4,7 +4,11 @@ public abstract class Component
 {
     public GameObject GameObject { get; internal set; }
 
+    /// 문법 설탕용 함수
     public Transform Transform => GameObject!.Transform;
+    public T GetComponent<T>() where T : Component => GameObject!.GetComponent<T>();
+    public T AddComponent<T>() where T : Component, new() => GameObject!.AddComponent<T>();
+    /// --------------
     
     protected internal virtual void OnAttach() { }
     protected internal virtual void OnDetach() { }

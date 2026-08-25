@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/template.json",
+  "author": "YumeArisu",
+  "classifications": [
+    "YumeArisu",
+    "Sprite"
+  ],
+  "identity": "YumeArisu.Sprite",
+  "name": "YumeArisu Sprite",
+  "shortName": "yasprite",
+  "sourceName": "NewSprite",
+  "preferNameDirectory": false,
+  "tags": {
+    "language": "JSON",
+    "type": "item"
+  }
+}

@@ -1,11 +1,14 @@
 using YumeArisu.Core.Hierarchy;
 using YumeArisu.Core.Rendering;
+using YumeArisu.Core.Systems;
 using YumeArisu.Game.Scripts;
 
 namespace YumeArisu.Game.Scenes;
 
 public class TestScene2 : Scene
 {
+    Texture yuukaTex;
+    Sprite yuukaSpr;
     protected override void OnLoad()
     {
         Console.WriteLine("ㅎㅎ ㅋㅋ ㅈㅅ");
@@ -40,8 +43,34 @@ public class TestScene2 : Scene
         go.AddComponent<FPSChecker>();
         go.AddComponent<TestCoroutine>();
         
-        var camera = CreateGameObject("MainCamera");
-        camera.AddComponent<Camera>();
+        var camerago = CreateGameObject("MainCamera");
+        var camera = camerago.AddComponent<Camera>();
+        camerago.AddComponent<CamMover>();
         //go.AddComponent<WindowMover>();
+
+        camera.Size = 5;
+        camera.Transform.LocalPosition = new(0,0,0.0f);
+        camera.FieldOfView = 60;
+        camera.ProjectionMode = ProjectionMode.Perspective;
+        camera.NearPlane = 0.01f;
+        camera.FarPlane = 1000;
+
+
+        yuukaTex = Resources.Get<Texture>("Yuuka.png");
+        yuukaSpr = new Sprite();
+        yuukaSpr.ImmediateLoadFromReference(yuukaTex, new(0.5f,0.5f),new(0,0,yuukaTex.Width,yuukaTex.Height));
+        
+
+        GameObject yugo = CreateGameObject();
+        yugo.Transform.LocalPosition = new(0,0,-5.0f);
+        var renderer = yugo.AddComponent<SpriteRenderer>();
+        renderer.Sprite = yuukaSpr;
+        renderer.Enabled = true;
+    }
+
+    protected override void OnUnload()
+    {
+        base.OnUnload();
+        Resources.Release(yuukaTex);
     }
 }

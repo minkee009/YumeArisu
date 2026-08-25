@@ -14,12 +14,12 @@ public class TestCoroutine : ScriptBehaviour
     
     public override void OnUpdate()
     {
-        if (Input.GetKeyDown(Key.E))
+        if (Input.GetKeyDown(Key.H))
         {
             StartCoroutine(RunCode());
         }
 
-        if (Input.GetKeyDown(Key.M))
+        if (Input.GetKeyDown(Key.J))
         {
             StartCoroutine(Attack());
         }

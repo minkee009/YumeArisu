@@ -25,8 +25,8 @@
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationId>com.yumearisu.android</ApplicationId>
-    <ApplicationVersion>1</ApplicationVersion>
-    <ApplicationDisplayVersion>0.0.1-alpha</ApplicationDisplayVersion>
+    <ApplicationVersion>2</ApplicationVersion>
+    <ApplicationDisplayVersion>0.0.2-alpha</ApplicationDisplayVersion>
     <Configurations>Debug;Release</Configurations>
     <TrimMode>partial</TrimMode>
   </PropertyGroup>

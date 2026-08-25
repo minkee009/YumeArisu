@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yume-arisu.dev/schema/sprite.schema.json",
+  "title": "YumeArisu Sprite",
+  "description": "YumeArisu에서 사용하는 스프라이트 메타데이터 파일입니다.",
+  "type": "object",
+  "properties": {
+    "TexturePath": {
+      "type": "string",
+      "description": "이 스프라이트에서 사용할 Texture 리소스의 경로입니다."
+    },
+    "Pivot": {
+      "$ref": "#/$defs/Vector2",
+      "description": "스프라이트의 피벗 위치입니다."
+    },
+    "Rect": {
+      "$ref": "#/$defs/Rectangle",
+      "description": "Texture에서 사용할 스프라이트 영역입니다. 좌표 원점은 Texture의 좌하단입니다."
+    },
+    "PPU": {
+      "type": "number",
+      "description": "Pixels Per Unit 값입니다."
+    }
+  },
+  "required": [
+    "TexturePath",
+    "Pivot",
+    "Rect",
+    "PPU"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "Vector2": {
+      "type": "object",
+      "properties": {
+        "X": {
+          "type": "number"
+        },
+        "Y": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "X",
+        "Y"
+      ],
+      "additionalProperties": false
+    },
+    "Rectangle": {
+      "type": "object",
+      "description": "Texture의 좌하단을 원점으로 하는 사각형 영역입니다.",
+      "properties": {
+        "X": {
+          "type": "number",
+          "description": "Texture 좌하단으로부터의 X 좌표입니다."
+        },
+        "Y": {
+          "type": "number",
+          "description": "Texture 좌하단으로부터의 Y 좌표입니다."
+        },
+        "Width": {
+          "type": "number",
+          "description": "사각형 영역의 너비입니다."
+        },
+        "Height": {
+          "type": "number",
+          "description": "사각형 영역의 높이입니다."
+        }
+      },
+      "required": [
+        "X",
+        "Y",
+        "Width",
+        "Height"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

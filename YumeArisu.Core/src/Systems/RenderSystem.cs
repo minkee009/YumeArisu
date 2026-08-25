@@ -1,4 +1,4 @@
-using System.Drawing;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Silk.NET.Maths;
@@ -20,16 +20,9 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
 
     // Render Pipeline Object
     private List<Camera> _cameras;
+    private List<Renderer> _renderers;
     private bool _needCamDepthSort;
-
-    // =============================================================
-    //  테스트 코드
-    //
-    private uint _pixelVAO = 0;
-    private uint _pixelVBO = 0;
-    private float[] _vertices;
-
-    // =============================================================
+    private bool _needRenderOrderSort;
 
     internal override void OnStartUp(IView view)
     {
@@ -45,49 +38,22 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
 
 
         _cameras = new List<Camera>();
+        _renderers = new List<Renderer>();
 
         _shaderBackend = view.API.API == ContextAPI.OpenGL ? ShaderBackend.OpenGLCore : ShaderBackend.OpenGLES;
 
-        _pixelVAO = _gl.GenVertexArray();
-        _pixelVBO = _gl.GenBuffer();
-
-        _gl.BindVertexArray(_pixelVAO);
-        _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _pixelVBO);
-
-        unsafe
-        {
-            _gl.BufferData(
-                BufferTargetARB.ArrayBuffer, 
-                sizeof(float) * 12, 
-                null, 
-                BufferUsageARB.DynamicDraw);
-
-            _gl.VertexAttribPointer(
-                0,
-                2,
-                GLEnum.Float,
-                false,
-                sizeof(float) * 2, 
-                null);
-        }
-        _gl.EnableVertexAttribArray(0);
-
-        _gl.BindBuffer(GLEnum.ArrayBuffer, 0);
-        _gl.BindVertexArray(0);
-
-        BuiltInRenderResource.Load();
+        BuiltInRenderResources.Load();
     }
 
     internal override void OnShutDown()
     {
-        BuiltInRenderResource.Unload();
+        BuiltInRenderResources.Unload();
 
         _cameras.Clear();
+        _renderers.Clear();
         _cameras = null;
+        _renderers = null;
         _gl = null;
-
-        // 카메라 리스트 해제
-        // 렌더러 리스트 해제
     }
 
     public void OnFramebufferResize(Vector2D<int> size)
@@ -99,49 +65,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
 
     public void BeginFrame()
     {
-        // TestCode
-
-        _vertices =
-        [
-            -1f, -1f,
-            1f, -1f,
-            1f,  1f,
-
-            -1f, -1f,
-            1f,  1f,
-            -1f,  1f
-        ];
-
-        var mainShaderHandle = BuiltInRenderResource.FullScreenQuadShader.Handle;
-
-        int resLoc = _gl.GetUniformLocation(mainShaderHandle, "iResolution");
-        _gl.Uniform2(resLoc, FramebufferSize.X, FramebufferSize.Y);
-
-        // var windowSize = WindowControl.Size;
-        // float sx = (float)_framebufferSize.X / windowSize.X;
-        // float sy = (float)_framebufferSize.Y / windowSize.Y;
-
-        var mouse = Input.GetMousePosition();
-        // mouse = new(mouse.X * sx, mouse.Y * sy);
-        // mouse.Y = _framebufferSize.Y - mouse.Y;
-        int mouseLoc = _gl.GetUniformLocation(mainShaderHandle, "iMouse");
-        _gl.Uniform2(mouseLoc, mouse.X, FramebufferSize.Y - mouse.Y);
-
-        int timeLoc = _gl.GetUniformLocation(mainShaderHandle, "iTime");
-        _gl.Uniform1(timeLoc, (float)Time.TotalTime);
-
-        // var halfViewSize = (_framebufferSize / 2);
-        // var quaterViewSize = halfViewSize / 2;
-        // _gl.Viewport(quaterViewSize, halfViewSize);
-
-        // _gl.Enable(EnableCap.ScissorTest);
-        // _gl.Scissor(quaterViewSize.X, quaterViewSize.Y, (uint)halfViewSize.X, (uint)halfViewSize.Y); // 여기에 뷰포트와 같은 값을 넣어야 함
-
-        // _gl.ClearColor(Color.FromArgb(255, (int) (.45f * 255), (int) (.55f * 255), (int) (.60f * 255)));
-        // _gl.Clear((uint)ClearBufferMask.ColorBufferBit);
-        // _gl.Disable(EnableCap.ScissorTest); // 이후 그리기에 영향 없도록 꺼줌
-
-        _gl.ClearColor(Color.FromArgb(255, (int) (.45f * 255), (int) (.55f * 255), (int) (.60f * 255)));
+        _gl.ClearColor(0,0,0,1.0f);
         _gl.Clear((uint)ClearBufferMask.ColorBufferBit);
         _gl.Viewport(FramebufferSize);
 
@@ -151,33 +75,37 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
             _cameras.Sort((a,b) => a.Depth.CompareTo(b.Depth));
             _needCamDepthSort = false;
         }
+
+        if (_needRenderOrderSort)
+        {
+            _renderers.Sort((a,b) => a.RenderOrder.CompareTo(b.RenderOrder));
+            _needRenderOrderSort = false;
+        }
     }
 
     public void Render()
     {
-        BuiltInRenderResource.FullScreenQuadShader.Use();
-
-        _gl.BindVertexArray(_pixelVAO);
-
-        _gl.BindBuffer(GLEnum.ArrayBuffer, _pixelVBO);
-
-        unsafe
+        // 활성 카메라 렌더링
+        foreach(var cam in _cameras)
         {
-            fixed (float* ptr = _vertices)
+            if (!cam.IsActiveAndEnabled)
+                continue;
+
+            // 'Draw Sprite' 스테이지
+            var spriteMat = BuiltInRenderResources.DefaultSpriteMaterial;
+            spriteMat.SetVector3($"{GlobalUniform.CameraPosition}", cam.Transform.WorldPosition);
+            spriteMat.SetMatrix4x4($"{GlobalUniform.View}",  cam.ViewMatrix);
+            spriteMat.SetMatrix4x4($"{GlobalUniform.Projection}", cam.ProjectionMatrix);
+
+            foreach(var renderer in _renderers)
             {
-                
-                _gl.BufferSubData(
-                    GLEnum.ArrayBuffer,
-                    0,
-                    (nuint)(_vertices.Length * sizeof(float)),
-                    ptr);
+                if (renderer.Enabled && renderer.GameObject.ActiveInHierarchy)
+                {
+                    spriteMat.SetMatrix4x4($"{GlobalUniform.Model}", renderer.Transform.WorldMatrix);
+                    renderer.Draw();
+                }
             }
         }
-
-        _gl.DrawArrays(
-            GLEnum.Triangles,
-            0,
-            6);
     }
 
     public void EndFrame()
@@ -193,7 +121,15 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
         _needCamDepthSort = true;
     } 
 
+    internal void RegisterRenderer(Renderer renderer)
+    {
+        _renderers.Add(renderer);
+        _needRenderOrderSort = true;
+    } 
+
     internal void UnregisterCamera(Camera camera) => _cameras.Remove(camera);
+
+    internal void UnregisterRenderer(Renderer renderer) => _renderers.Remove(renderer);
 
     internal ShaderBackend GetShaderBackend() => _shaderBackend;
 }

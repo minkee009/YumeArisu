@@ -15,7 +15,7 @@ public class Shader : Resource
 
     private readonly Dictionary<string, int> _uniformLocations = new();
 
-    internal bool ImmediateLoadFromSource(VertexLayout layout, string vertBody, string fragBody)
+    internal bool ImmediateLoadFromReference(VertexLayout layout, string vertBody, string fragBody)
     {
         if (IsLoaded)
             return false;
@@ -93,13 +93,12 @@ public class Shader : Resource
         gl.Uniform4(GetUniformLocation(name), x, y, z, w);
     }
 
-    internal unsafe void SetMatrix4(string name, in Matrix4x4 value)
+    internal unsafe void SetMatrix4x4(string name, in Matrix4x4 value)
     {
         var gl = RenderSystem.Instance.GetGL();
         fixed (float* ptr = &value.M11)
         {
-            // Numerics는 row-vector 관례, GLSL은 column-major 기대 -> 경계에서만 transpose
-            gl.UniformMatrix4(GetUniformLocation(name), 1, true, ptr);
+            gl.UniformMatrix4(GetUniformLocation(name), 1, false, ptr);
         }
     }
 
@@ -126,7 +125,7 @@ public class Shader : Resource
                 SetInt(name, (int)value.Data[0]);
                 break;
             case Internal.RenderPipeline.UniformType.Mat4:
-                SetMatrix4(name, ToMatrix4x4(value.Data));
+                SetMatrix4x4(name, ToMatrix4x4(value.Data));
                 break;
         }
     }
