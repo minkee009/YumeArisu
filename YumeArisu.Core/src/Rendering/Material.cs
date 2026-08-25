@@ -50,12 +50,12 @@ public class Material : Resource
 
     protected override void OnUnload()
     {
-        if(Shader.IsLoadedBySystem)
+        if (Shader.IsLoadedBySystem)
             Resources.Release(Shader);
 
         foreach (var tex in _textures.Values)
         {
-            if(tex.IsLoadedBySystem)
+            if (tex.IsLoadedBySystem)
                 Resources.Release(tex);
         }
             

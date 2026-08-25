@@ -11,7 +11,7 @@ public class SpriteRenderer : Renderer
         get => _sprite; 
         set
         {
-            if(_sprite == value)
+            if (_sprite == value)
                 return;
 
             _sprite = value;
@@ -34,7 +34,7 @@ public class SpriteRenderer : Renderer
         get => _flipX; 
         set
         {
-            if(_flipX == value)
+            if (_flipX == value)
                 return;
 
             _flipX = value;
@@ -47,7 +47,7 @@ public class SpriteRenderer : Renderer
         get => _flipY; 
         set
         {
-            if(_flipY == value)
+            if (_flipY == value)
                 return;
 
             _flipY = value;
@@ -71,10 +71,10 @@ public class SpriteRenderer : Renderer
 
     internal override void Draw()
     {
-        if(Sprite == null) 
+        if (Sprite == null) 
             return;
 
-        if(_materialPropertyDirty)
+        if (_materialPropertyDirty)
         {
             var texture = Sprite.Texture;
             var rect = Sprite.Rect;

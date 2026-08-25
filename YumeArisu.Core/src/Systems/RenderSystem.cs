@@ -86,7 +86,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
     public void Render()
     {
         // 활성 카메라 렌더링
-        foreach(var cam in _cameras)
+        foreach (var cam in _cameras)
         {
             if (!cam.IsActiveAndEnabled)
                 continue;
@@ -97,7 +97,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
             spriteMat.SetMatrix4x4($"{GlobalUniform.View}",  cam.ViewMatrix);
             spriteMat.SetMatrix4x4($"{GlobalUniform.Projection}", cam.ProjectionMatrix);
 
-            foreach(var renderer in _renderers)
+            foreach (var renderer in _renderers)
             {
                 if (renderer.Enabled && renderer.GameObject.ActiveInHierarchy)
                 {
