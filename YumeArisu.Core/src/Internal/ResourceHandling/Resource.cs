@@ -10,7 +10,7 @@ public abstract class Resource
 
     internal IFileIO FileIO { get; set; }
 
-    internal bool IsLoadedBySystem => FileIO != null && !string.IsNullOrEmpty(Path);
+    internal bool IsLoadedBySystem => FileIO is not null && !string.IsNullOrEmpty(Path);
 
     internal bool Load(byte[] bytes)
     {

@@ -67,11 +67,12 @@ public class SpriteRenderer : Renderer
     public SpriteRenderer()
     {
         Material = BuiltInRenderResources.DefaultSpriteMaterial; 
+        Color = Color.White;
     }
 
     internal override void Draw()
     {
-        if (Sprite == null) 
+        if (Sprite is null) 
             return;
 
         if (_materialPropertyDirty)
@@ -94,7 +95,7 @@ public class SpriteRenderer : Renderer
             MaterialOverride.SetTexture("MainTexture", texture);
             MaterialOverride.SetFloat("FlipX", FlipX ? 1 : 0);
             MaterialOverride.SetFloat("FlipY", FlipY ? 1 : 0);
-            MaterialOverride.SetVector4("Color", Color.White.ToVector4());
+            MaterialOverride.SetVector4("Color", _color.ToVector4());
 
             _materialPropertyDirty = false;
         }

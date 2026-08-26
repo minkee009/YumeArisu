@@ -1,3 +1,4 @@
+using System.Numerics;
 using YumeArisu.Core.Hierarchy;
 using YumeArisu.Core.Rendering;
 using YumeArisu.Core.Systems;
@@ -49,7 +50,7 @@ public class TestScene2 : Scene
         //go.AddComponent<WindowMover>();
 
         camera.Size = 5;
-        camera.Transform.LocalPosition = new(0,0,0.0f);
+        camera.Transform.LocalPosition = new(0,0,10.0f);
         camera.FieldOfView = 60;
         camera.ProjectionMode = ProjectionMode.Perspective;
         camera.NearPlane = 0.01f;
@@ -66,6 +67,29 @@ public class TestScene2 : Scene
         var renderer = yugo.AddComponent<SpriteRenderer>();
         renderer.Sprite = yuukaSpr;
         renderer.Enabled = true;
+        yugo.AddComponent<Rotater>().RotateSpeed = 25.0f;
+
+        GameObject yugo2 = CreateGameObject();
+        yugo2.Transform.LocalPosition = Vector3.Zero;
+        var renderer2 = yugo2.AddComponent<SpriteRenderer>();
+        renderer2.Sprite = yuukaSpr;
+        renderer2.Enabled = true;
+        renderer2.Color = Color.Cyan;
+        yugo2.AddComponent<Rotater>().RotateSpeed = 45.0f;
+        yugo2.Transform.SetParent(yugo.Transform, false);
+        yugo2.Transform.LocalPosition += new Vector3(12.0f,0f,0f);
+        yugo2.Transform.LocalScale = new Vector3(0.5f, 0.5f, 0.5f);
+
+        GameObject yugo3 = CreateGameObject();
+        yugo3.Transform.LocalPosition =  new(0,0,5.0f);
+        var renderer3 = yugo3.AddComponent<SpriteRenderer>();
+        renderer3.Sprite = yuukaSpr;
+        renderer3.Enabled = true;
+        renderer3.Color = Color.Magenta;
+        yugo3.AddComponent<Rotater>().RotateSpeed = 60.0f;
+        yugo3.Transform.SetParent(yugo2.Transform, false);
+        yugo3.Transform.LocalPosition += new Vector3(8.0f,0f,0f);
+        yugo3.Transform.LocalScale = new Vector3(0.25f, 0.25f, 0.25f);
     }
 
     protected override void OnUnload()

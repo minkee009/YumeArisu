@@ -172,7 +172,7 @@ public class Material : Resource
         // 이름 기준으로 override가 있으면 override 값 우선 사용
         foreach (var (name, value) in _uniforms)
         {
-            var actual = overrides != null && overrides.UniformOverrides.TryGetValue(name, out var ov)
+            var actual = overrides is not null && overrides.UniformOverrides.TryGetValue(name, out var ov)
                 ? ov
                 : value;
             Shader.SetUniform(name, actual);
@@ -181,13 +181,13 @@ public class Material : Resource
         int unit = 0;
         foreach (var (name, tex) in _textures)
         {
-            var actual = overrides != null && overrides.TextureOverrides.TryGetValue(name, out var ov)
+            var actual = overrides is not null && overrides.TextureOverrides.TryGetValue(name, out var ov)
                 ? ov
                 : tex;
             Shader.SetTexture(name, actual, unit++);
         }
 
-        if (overrides == null)
+        if (overrides is null)
             return;
 
         // base Material에 없던 완전히 새로운 uniform/텍스쳐 이름만 추가로 처리

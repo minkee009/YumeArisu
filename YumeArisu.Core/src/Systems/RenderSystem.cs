@@ -36,6 +36,8 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
             return; // Exit가 비동기 콜백 안에서 즉시 안 먹힐 상황 대비한 안전장치
         }
 
+        _gl.Enable(EnableCap.DepthTest);
+        _gl.DepthFunc(GLEnum.Less); // 표준: 더 작은 Z(더 가까운)가 이김
 
         _cameras = new List<Camera>();
         _renderers = new List<Renderer>();
@@ -66,7 +68,7 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
     public void BeginFrame()
     {
         _gl.ClearColor(0,0,0,1.0f);
-        _gl.Clear((uint)ClearBufferMask.ColorBufferBit);
+        _gl.Clear((uint)(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
         _gl.Viewport(FramebufferSize);
 
         // 렌더 오브젝트 정렬
