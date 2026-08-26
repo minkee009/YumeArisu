@@ -90,6 +90,18 @@ public class TestScene2 : Scene
         yugo3.Transform.SetParent(yugo2.Transform, false);
         yugo3.Transform.LocalPosition += new Vector3(8.0f,0f,0f);
         yugo3.Transform.LocalScale = new Vector3(0.25f, 0.25f, 0.25f);
+
+
+        GameObject yugo4 = CreateGameObject();
+        yugo4.Transform.LocalPosition =  new(0,-24.0f,0.0f);
+        yugo4.Transform.LocalRotation = Quaternion.CreateFromAxisAngle(new(1.0f,0.0f,0.0f), 90.0f /  57.2957795f);
+        yugo4.Transform.LocalScale = new(12,12,1);
+
+        var renderer4 = yugo4.AddComponent<SpriteRenderer>();
+        renderer4.Sprite = yuukaSpr;
+        renderer4.Enabled = true;
+        renderer4.Color = Color.Yellow;
+        renderer4.FlipY = true;
     }
 
     protected override void OnUnload()
