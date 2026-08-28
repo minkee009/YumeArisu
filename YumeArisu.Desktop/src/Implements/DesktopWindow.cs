@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Glfw;
@@ -13,17 +14,20 @@ public sealed class DesktopWindow : IWindowControl
 
     private IWindow _window;
     private DisplayMode _displayMode;
+    private bool _isWindowsOS;
 
     public DesktopWindow(string title, int width, int height)
     {
         GlfwWindowing.Use();
 
+        _isWindowsOS = OperatingSystem.IsWindows();
+
         var options = WindowOptions.Default;
         options.Size = new Vector2D<int>(width, height);
         options.Title = title;
         options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.ForwardCompatible, new APIVersion(3, 3));
-
-        _displayMode = DisplayMode.Windowed;
+        options.ShouldSwapAutomatically = false;
+    
         _window = Window.Create(options);
     }
 
@@ -102,4 +106,15 @@ public sealed class DesktopWindow : IWindowControl
         get => _window.Position; 
         set => _window.Position = value; 
     }
+
+    public void Present()
+    {
+        _window.GLContext.SwapBuffers();
+        
+        if(_isWindowsOS && _window.VSync && _window.WindowState != WindowState.Fullscreen)
+            DwmFlush();  
+    }
+
+    [DllImport("dwmapi.dll", EntryPoint = "DwmFlush")]
+    private static extern int DwmFlush();
 }

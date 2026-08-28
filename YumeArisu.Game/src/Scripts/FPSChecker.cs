@@ -16,7 +16,6 @@ public class FPSChecker : ScriptBehaviour
     public override void OnStart()
     {
         _currentTitle = WindowControl.Title;
-        //ApplicationControl.VSync = false;
     }
 
     public override void OnUpdate()
@@ -32,6 +31,11 @@ public class FPSChecker : ScriptBehaviour
 
             _accumulatedTime = 0f;
             _frameCount = 0;
+        }
+
+        if (Input.GetKeyDown(Key.Space))
+        {
+            ApplicationControl.VSync = !ApplicationControl.VSync;
         }
     }
 }

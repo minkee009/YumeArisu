@@ -1,7 +1,6 @@
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Input;
-using Silk.NET.OpenGL.Extensions.ImGui;
 using YumeArisu.Core.Systems;
 using YumeArisu.Core.Abstractions;
 using YumeArisu.Game.SceneManifests;
@@ -15,7 +14,6 @@ public sealed class DesktopApplication : IApplicationControl
     private DesktopFileIO _fileIO;
 #else
     private DebugFileIO _fileIO;
-    private ImGuiController _controller;
 #endif
 
     public DesktopApplication(string title, int width, int height)
@@ -57,12 +55,7 @@ public sealed class DesktopApplication : IApplicationControl
 
         OnFramebufferResize(_window.View.FramebufferSize);
         OnResize(_window.View.Size);
-#if DEBUG
-        _controller = new ImGuiController(
-            RenderSystem.Instance.GetGL(), 
-            _window.View, 
-            InputSystem.Instance.GetInputContext());
-#endif
+
         InputSystem.Instance.RegisterSystemKeyCombo(
             [Key.AltLeft], 
             Key.Enter, 
@@ -110,16 +103,10 @@ public sealed class DesktopApplication : IApplicationControl
 
     public void OnRender(double deltaTime)
     {
-#if DEBUG
-        _controller.Update((float)deltaTime);
-#endif
         RenderSystem.Instance.BeginFrame();
         RenderSystem.Instance.Render();
         RenderSystem.Instance.EndFrame();
-#if DEBUG
-        ImGuiNET.ImGui.ShowDemoWindow();
-        _controller.Render();
-#endif
+        _window.Present();
     }
 
     public void OnClosing()

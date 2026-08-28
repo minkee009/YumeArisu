@@ -50,7 +50,7 @@ public class TestScene2 : Scene
         //go.AddComponent<WindowMover>();
 
         camera.Size = 5;
-        camera.Transform.LocalPosition = new(0,0,10.0f);
+        camera.Transform.LocalPosition = new(0, 0, 10.0f);
         camera.FieldOfView = 60;
         camera.ProjectionMode = ProjectionMode.Perspective;
         camera.NearPlane = 0.01f;
