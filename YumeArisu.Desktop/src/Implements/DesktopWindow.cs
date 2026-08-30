@@ -14,6 +14,7 @@ public sealed class DesktopWindow : IWindowControl
 
     private IWindow _window;
     private DisplayMode _displayMode;
+    private DisplayMode _trueDisplayMode;
     private bool _isWindowsOS;
 
     public DesktopWindow(string title, int width, int height)
@@ -39,10 +40,6 @@ public sealed class DesktopWindow : IWindowControl
         {
             int cachedMonitorIndex = _window.Monitor.Index;
 
-            // GLFW 안정성을 위해 최대화인 경우 경계없는 창으로 변환 후 전체화면으로
-            if (_window.WindowState == WindowState.Maximized)
-                DisplayMode = DisplayMode.BorderlessWindow;
-
             DisplayMode = DisplayMode.BorderlessFullscreen;
             
             var targetMonitor = WindowingMonitor.GetMonitors(_window)
@@ -57,35 +54,53 @@ public sealed class DesktopWindow : IWindowControl
         }
     }
 
+    public void ApplyDisplayMode()
+    {
+        if(_displayMode == _trueDisplayMode)
+            return;
+
+        var isFullScreenMode = _displayMode == DisplayMode.Fullscreen || _displayMode == DisplayMode.BorderlessFullscreen;
+        var wasWindowedMode =  _displayMode == DisplayMode.Windowed || _displayMode == DisplayMode.BorderlessWindow;
+
+        // GLFW 안정성을 위해 최대화인 경우 경계없는 창으로 변환 후 전체화면으로
+        if(isFullScreenMode && wasWindowedMode)
+        {
+            if (_window.WindowState == WindowState.Maximized)
+            {
+                _window.WindowState = WindowState.Normal;
+                _window.WindowBorder = WindowBorder.Hidden;
+            }
+        }
+
+        switch (_displayMode)
+        {
+            case DisplayMode.Windowed:
+                _window.WindowBorder = WindowBorder.Resizable;
+                _window.WindowState = WindowState.Normal;
+                _window.WindowBorder = WindowBorder.Resizable;
+                _window.WindowBorder = WindowBorder.Hidden;
+                _window.WindowBorder = WindowBorder.Resizable;
+                break;
+        
+            case DisplayMode.Fullscreen:
+            case DisplayMode.BorderlessFullscreen:
+                _window.WindowState = WindowState.Fullscreen;
+                _window.WindowBorder = WindowBorder.Hidden;
+                break;
+
+            case DisplayMode.BorderlessWindow:
+                _window.WindowState = WindowState.Normal;
+                _window.WindowBorder = WindowBorder.Hidden;
+                break;
+        }
+
+        _trueDisplayMode = _displayMode;
+    }
+
     public DisplayMode DisplayMode
     {
         get => _displayMode;
-        set
-        {
-            if (_displayMode == value)
-                return;
-
-            switch (value)
-            {
-                case DisplayMode.Windowed:
-                    _window.WindowState = WindowState.Normal;
-                    _window.WindowBorder = WindowBorder.Resizable;
-                    break;
-            
-                case DisplayMode.Fullscreen:
-                case DisplayMode.BorderlessFullscreen:
-                    _window.WindowState = WindowState.Fullscreen;
-                    _window.WindowBorder = WindowBorder.Hidden;
-                    break;
-
-                case DisplayMode.BorderlessWindow:
-                    _window.WindowState = WindowState.Normal;
-                    _window.WindowBorder = WindowBorder.Hidden;
-                    break;
-            }
-
-            _displayMode = value;
-        }
+        set => _displayMode = value;
     }
 
     public string Title

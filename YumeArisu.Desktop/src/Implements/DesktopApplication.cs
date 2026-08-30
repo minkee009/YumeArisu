@@ -19,6 +19,7 @@ public sealed class DesktopApplication : IApplicationControl
     private DebugFileIO _fileIO;
     private DebuggingUI _debuggingUI;
 #endif
+    private bool _requestQuit;
 
     public DesktopApplication(string title, int width, int height)
     {
@@ -72,6 +73,11 @@ public sealed class DesktopApplication : IApplicationControl
             RenderSystem.Instance.GetGL(),
             _window.View,
             _input.GetInputContext());
+
+        InputSystem.Instance.RegisterSystemKeyCombo(
+            [Key.ShiftLeft], 
+            Key.F1, 
+            _debuggingUI.ToggleShowMainMenuBar);
 #endif
     }
 
@@ -93,6 +99,15 @@ public sealed class DesktopApplication : IApplicationControl
 
     public void OnUpdate(double deltaTime)
     {
+        _window.ApplyDisplayMode();
+
+        if(_requestQuit)
+        {
+            _window.View.Close();
+            _requestQuit = false;
+            return;
+        }
+
         TimeSystem.Instance.BeginFrame(deltaTime);
         InputSystem.Instance.BeginFrame();
         SceneSystem.Instance.BeginFrame();
@@ -113,8 +128,6 @@ public sealed class DesktopApplication : IApplicationControl
         BehaviourSystem.Instance.ExecuteOnRemove();
         CoroutineSystem.Instance.YieldUntil();
         InputSystem.Instance.EndFrame();
-
-
     }
 
     public void OnRender(double deltaTime)
@@ -169,5 +182,5 @@ public sealed class DesktopApplication : IApplicationControl
 
     public bool IsRunning() => !_window.View.IsClosing;
 
-    public void RequestClose() => _window.View.Close();
+    public void RequestClose() => _requestQuit = true;
 }

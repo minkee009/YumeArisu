@@ -1,21 +1,22 @@
 using System.Numerics;
 using ImGuiNET;
 using Silk.NET.Input;
+using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.OpenGL.Extensions.ImGui;
 using Silk.NET.Windowing;
 using YumeArisu.Core.Abstractions;
 using YumeArisu.Core.Hierarchy;
 using YumeArisu.Core.Systems;
-using YumeArisu.Core.Utility;
 
 namespace YumeArisu.Desktop.ImGuiExtension;
 
 public class DebuggingUI
 {
-    DebuggingUIRegistry _registry;
-    ImGuiController _controller;
-    List<IImGuiWindow> _windows;
+    private DebuggingUIRegistry _registry;
+    private ImGuiController _controller;
+    private List<IImGuiWindow> _windows;
+    private bool _showMenuBar;
 
     public DebuggingUI(GL gl, IView view, IInputContext ctx)
     {
@@ -28,7 +29,7 @@ public class DebuggingUI
         InitializeStyle();
 
         _registry = new DebuggingUIRegistry();
-
+        _showMenuBar = true;
         _windows = [new HierarchyWindow(), new InspectorWindow(), new TimeWindow()];
 
         foreach (var window in _windows)
@@ -69,7 +70,8 @@ public class DebuggingUI
 
     public void Render()
     {
-        DrawMainMenuBar();
+        if(_showMenuBar)
+            DrawMainMenuBar();
 
         foreach (var window in _windows)
             window.Render();
@@ -77,9 +79,12 @@ public class DebuggingUI
         HandleDeselectClick();
         
         DrawSelectionOutline();
+        DrawDebuggingUIStatus();
 
         _controller.Render();
     }
+
+    public void ToggleShowMainMenuBar() => _showMenuBar = !_showMenuBar;
 
     private void HandleDeselectClick()
     {
@@ -90,6 +95,30 @@ public class DebuggingUI
 
         if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
             _registry.ClearData(DebuggingUIKeys.SelectedGameObject);
+    }
+
+    private void DrawDebuggingUIStatus()
+    {
+        var io = ImGui.GetIO();
+        var displaySize = io.DisplaySize;
+
+        const string label = "Debugging UI : ON";
+        const float padding = 10f;
+
+        Vector2 textSize = ImGui.CalcTextSize(label);
+        Vector2 textPos = new Vector2(
+            displaySize.X - textSize.X - padding,
+            displaySize.Y - textSize.Y - padding
+        );
+
+        var drawList = ImGui.GetForegroundDrawList();
+
+        // 가독성을 위한 그림자(외곽선) 효과
+        uint shadowColor = ImGui.GetColorU32(new Vector4(0f, 0f, 0f, 0.8f));
+        drawList.AddText(textPos + new Vector2(1, 1), shadowColor, label);
+
+        uint textColor = ImGui.GetColorU32(new Vector4(1f, 1f, 1f, 1f)); 
+        drawList.AddText(textPos, textColor, label);
     }
 
     private void DrawSelectionOutline()
@@ -133,7 +162,7 @@ public class DebuggingUI
     private void DrawMainMenuBar()
     {
         ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
-        ImGui.PushStyleColor(ImGuiCol.MenuBarBg, new System.Numerics.Vector4(0.1f, 0.1f, 0.1f, 0.0f));
+        ImGui.PushStyleColor(ImGuiCol.MenuBarBg, new Vector4(0.1f, 0.1f, 0.1f, 0.0f));
 
         if (ImGui.BeginMainMenuBar())
         {
@@ -243,7 +272,7 @@ public class DebuggingUI
         {
             candidates = new[]
             {
-                "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",
+                "/usr/share/fonts/naver-nanum-gothic-fonts/NanumGothic.ttf",
                 "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
                 "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc",
             };

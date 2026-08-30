@@ -2,9 +2,9 @@ namespace YumeArisu.Desktop.ImGuiExtension;
 
 internal interface IImGuiWindow
 {
-    string DisplayName { get; }
-    bool IsOpen { get; set; }
+    internal string DisplayName { get; }
+    internal bool IsOpen { get; set; }
 
-    void Initialize(DebuggingUIRegistry registry);
-    void Render();
+    internal void Initialize(DebuggingUIRegistry registry);
+    internal void Render();
 }
