@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using Silk.NET.GLFW;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Glfw;
@@ -29,6 +30,20 @@ public sealed class DesktopWindow : IWindowControl
         options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.ForwardCompatible, new APIVersion(3, 3));
     
         _window = Window.Create(options);
+
+        if(OperatingSystem.IsLinux())
+        {
+            _window.Load += 
+                () =>
+                {
+                    unsafe
+                    {
+                        GlfwCallbacks.WindowRefreshCallback noOpRefreshCallback = _ => { };
+                        Glfw.GetApi().SetWindowRefreshCallback((WindowHandle*)_window.Handle, noOpRefreshCallback);
+                    }
+                };
+        }
+        
     }
 
     /// <summary>
