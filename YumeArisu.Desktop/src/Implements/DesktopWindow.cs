@@ -53,15 +53,7 @@ public sealed class DesktopWindow : IWindowControl
     {
         if (_displayMode == DisplayMode.Windowed)
         {
-            int cachedMonitorIndex = _window.Monitor.Index;
-
             DisplayMode = DisplayMode.BorderlessFullscreen;
-            
-            var targetMonitor = WindowingMonitor.GetMonitors(_window)
-                .FirstOrDefault(m => m.Index == cachedMonitorIndex)
-                ?? WindowingMonitor.GetMainMonitor(_window);
-        
-            _window.Monitor = targetMonitor;   
         }
         else
         {
@@ -75,11 +67,15 @@ public sealed class DesktopWindow : IWindowControl
             return;
 
         var isFullScreenMode = _displayMode == DisplayMode.Fullscreen || _displayMode == DisplayMode.BorderlessFullscreen;
-        var wasWindowedMode =  _displayMode == DisplayMode.Windowed || _displayMode == DisplayMode.BorderlessWindow;
+        var wasWindowedMode =  _trueDisplayMode == DisplayMode.Windowed || _trueDisplayMode == DisplayMode.BorderlessWindow;
+
+        int cachedMonitorIndex = -1;
 
         // GLFW 안정성을 위해 최대화인 경우 경계없는 창으로 변환 후 전체화면으로
         if(isFullScreenMode && wasWindowedMode)
         {
+            cachedMonitorIndex = _window.Monitor.Index;
+  
             if (_window.WindowState == WindowState.Maximized)
             {
                 _window.WindowState = WindowState.Normal;
@@ -92,15 +88,21 @@ public sealed class DesktopWindow : IWindowControl
             case DisplayMode.Windowed:
                 _window.WindowBorder = WindowBorder.Resizable;
                 _window.WindowState = WindowState.Normal;
-                _window.WindowBorder = WindowBorder.Resizable;
-                _window.WindowBorder = WindowBorder.Hidden;
-                _window.WindowBorder = WindowBorder.Resizable;
                 break;
         
             case DisplayMode.Fullscreen:
             case DisplayMode.BorderlessFullscreen:
                 _window.WindowState = WindowState.Fullscreen;
                 _window.WindowBorder = WindowBorder.Hidden;
+
+                if(cachedMonitorIndex != -1)
+                {
+                    var targetMonitor = WindowingMonitor.GetMonitors(_window)
+                    .FirstOrDefault(m => m.Index == cachedMonitorIndex)
+                    ?? WindowingMonitor.GetMainMonitor(_window);
+        
+                    _window.Monitor = targetMonitor; 
+                }
                 break;
 
             case DisplayMode.BorderlessWindow:
