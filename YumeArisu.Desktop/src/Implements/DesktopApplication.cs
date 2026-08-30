@@ -2,12 +2,9 @@ using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Input;
 using Silk.NET.OpenGL;
-using Silk.NET.OpenGL.Extensions.ImGui;
-using ImGuiNET;
 using YumeArisu.Core.Systems;
 using YumeArisu.Core.Abstractions;
 using YumeArisu.Game.SceneManifests;
-using System.Text;
 using YumeArisu.Desktop.ImGuiExtension;
 
 namespace YumeArisu.Desktop.Implements;
