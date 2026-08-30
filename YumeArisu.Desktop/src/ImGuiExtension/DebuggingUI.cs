@@ -3,13 +3,14 @@ using Silk.NET.Input;
 using Silk.NET.OpenGL;
 using Silk.NET.OpenGL.Extensions.ImGui;
 using Silk.NET.Windowing;
-using YumeArisu.Core.Systems;
 
 namespace YumeArisu.Desktop.ImGuiExtension;
 
 public class DebuggingUI
 {
+    DebuggingUIRegistry _registry;
     ImGuiController _controller;
+    List<IImGuiWindow> _windows;
 
     public DebuggingUI(GL gl, IView view, IInputContext ctx)
     {
@@ -17,23 +18,37 @@ public class DebuggingUI
         gl,
         view,
         ctx,
-        onConfigureIO: () =>
+        onConfigureIO: InitializeFont);
+
+        InitializeStyle();
+
+        _registry = new DebuggingUIRegistry();
+
+        _windows = [new HierarchyWindow(), new InspectorWindow()];
+
+        foreach (var window in _windows)
+            window.Initialize(_registry);
+    }
+
+    private void InitializeFont()
+    {
+        var io = ImGui.GetIO();
+        string fontPath = FindKoreanFontPath();
+
+        if (File.Exists(fontPath))
         {
-            var io = ImGui.GetIO();
-            string fontPath = FindKoreanFontPath();
+            IntPtr glyphRanges = io.Fonts.GetGlyphRangesKorean();
+            io.Fonts.AddFontFromFileTTF(fontPath, 18.0f, null, glyphRanges);
+            System.Console.WriteLine("한글 폰트 불러오기 성공!");
+        }
+        else
+        {
+            io.Fonts.AddFontDefault();
+        }
+    }
 
-            if (File.Exists(fontPath))
-            {
-                IntPtr glyphRanges = io.Fonts.GetGlyphRangesKorean();
-                io.Fonts.AddFontFromFileTTF(fontPath, 18.0f, null, glyphRanges);
-                System.Console.WriteLine("한글 폰트 불러오기 성공!");
-            }
-            else
-            {
-                io.Fonts.AddFontDefault();
-            }
-        });
-
+    private void InitializeStyle()
+    {
         var style = ImGui.GetStyle();
         style.FrameRounding = 6.0f;
         style.WindowRounding = 6.0f;
@@ -48,15 +63,9 @@ public class DebuggingUI
 
     public void Render()
     {
-        ImGui.Begin($"SceneInfo : \"{SceneControl.CurrentScene.GetType().Name}\"");
+        foreach(var window in _windows)
+            window.Render();
 
-        foreach (var go in SceneControl.CurrentScene.GameObjects)
-        {
-            ImGui.Text(go.Name);
-        }
-
-        ImGui.End();
-        
         _controller.Render();
     }
 

@@ -29,7 +29,7 @@ public class CamMover : ScriptBehaviour
         float zInput = (Input.GetKey(Key.S) ? 1 : 0) + (Input.GetKey(Key.W) ? -1 : 0);
         float yInput = (Input.GetKey(Key.E) ? 1 : 0) + (Input.GetKey(Key.Q) ? -1 : 0);
 
-        if (Input.GetMouseButton(MouseButton.Left))
+        if (Input.GetMouseButton(MouseButton.Right))
         {
             var delta = Input.GetMouseDelta();
             if (delta != Vector2.Zero)
