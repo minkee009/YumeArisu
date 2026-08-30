@@ -1,6 +1,8 @@
 using Android.Content;
 using Android.Content.Res;
 using Silk.NET.Maths;
+using Silk.NET.OpenGL;
+using Silk.NET.OpenGLES;
 using Silk.NET.Windowing;
 using YumeArisu.Core.Abstractions;
 using YumeArisu.Core.Systems;
@@ -39,8 +41,8 @@ public sealed class AndroidApplication : IApplicationControl
         ApplicationSystem.Instance.StartUp(this);
         WindowSystem.Instance.StartUp(_window);
         TimeSystem.Instance.StartUp(default);
-        InputSystem.Instance.StartUp(_window.View);
-        RenderSystem.Instance.StartUp(_window.View);
+        InputSystem.Instance.StartUp(new AndroidInputDevice(_window.View));
+        RenderSystem.Instance.StartUp(_window.View.CreateOpenGL());
         ResourceSystem.Instance.StartUp(_fileIO);
         BehaviourSystem.Instance.StartUp(default);
         CoroutineSystem.Instance.StartUp(default);
