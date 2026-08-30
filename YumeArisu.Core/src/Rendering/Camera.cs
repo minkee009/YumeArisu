@@ -185,16 +185,20 @@ public class Camera : Behaviour
         float ndcY = clipPos.Y / clipPos.W;
 
         // 이 카메라가 실제로 그려지는 뷰포트 영역 (프레임버퍼 기준 픽셀)
-        var fb = RenderSystem.Instance.FramebufferSize;
-        float viewportX = fb.X * ViewRect.Origin.X;
-        float viewportY = fb.Y * ViewRect.Origin.Y;
-        float viewportWidth = fb.X * ViewRect.Size.X;
-        float viewportHeight = fb.Y * ViewRect.Size.Y;
+        var window = WindowControl.Size;
 
-        // NDC -> 뷰포트 내 픽셀 좌표
-        // Y는 화면 좌표계가 위쪽이 0이므로 뒤집고, ViewRect가 좌하단(0,0) 기준이므로 Y축도 뒤집어서 보정
-        float screenX = viewportX + (ndcX * 0.5f + 0.5f) * viewportWidth;
-        float screenY = (fb.Y - viewportY - viewportHeight) + (1f - (ndcY * 0.5f + 0.5f)) * viewportHeight;
+        float viewportX = window.X * ViewRect.Origin.X;
+        float viewportY = window.Y * ViewRect.Origin.Y;
+        float viewportWidth = window.X * ViewRect.Size.X;
+        float viewportHeight = window.Y * ViewRect.Size.Y;
+
+        float screenX =
+            viewportX +
+            (ndcX * 0.5f + 0.5f) * viewportWidth;
+
+        float screenY =
+            (window.Y - viewportY - viewportHeight) +
+            (1f - (ndcY * 0.5f + 0.5f)) * viewportHeight;
 
         return new Vector2(screenX, screenY);
     }
