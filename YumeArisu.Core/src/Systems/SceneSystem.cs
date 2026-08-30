@@ -159,7 +159,8 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
         return matches;
     }
 
-    public ISceneManifest GetSceneManifest() => _cachedManifest;
+    public IEnumerable<string> DynamicSceneNames => _dynamicScenes.Keys;
+    public string StaticSceneName => _staticScene.GetType().Name;
 }
 
 // 문법 설탕용 클래스 (씬 변경)

@@ -197,14 +197,13 @@ public class DebuggingUI
     {
         if (ImGui.BeginMenu("Scene"))
         {
-            var sceneManifest = SceneSystem.Instance.GetSceneManifest();
+            var dynamicSceneNames = SceneSystem.Instance.DynamicSceneNames;
             ImGui.TextDisabled($"Current : {SceneControl.CurrentScene?.GetType().Name ?? "None"}");
             ImGui.Separator();
 
-            foreach(var scene in sceneManifest.DynamicScenes)
+            foreach(var scene in dynamicSceneNames)
             {
-                var sceneName = scene.GetType().Name;
-                if (ImGui.MenuItem(sceneName)) SceneControl.ChangeScene(sceneName);
+                if (ImGui.MenuItem(scene)) SceneControl.ChangeScene(scene);
             }
 
             ImGui.EndMenu();
