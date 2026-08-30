@@ -4,6 +4,7 @@ using Silk.NET.Input;
 using YumeArisu.Core.Systems;
 using YumeArisu.Core.Abstractions;
 using YumeArisu.Game.SceneManifests;
+using Silk.NET.OpenGL;
 
 namespace YumeArisu.Desktop.Implements;
 
@@ -41,13 +42,12 @@ public sealed class DesktopApplication : IApplicationControl
         _fileIO.Open("./Data", "dat");
 #else
         _fileIO.SetRootFolder("./Assets");
-#endif
-
+#endif  
         ApplicationSystem.Instance.StartUp(this);
         WindowSystem.Instance.StartUp(_window);
         TimeSystem.Instance.StartUp(default);
-        InputSystem.Instance.StartUp(_window.View);
-        RenderSystem.Instance.StartUp(_window.View);
+        InputSystem.Instance.StartUp(new DesktopInputDevice(_window.View));
+        RenderSystem.Instance.StartUp(_window.View.CreateOpenGL());
         ResourceSystem.Instance.StartUp(_fileIO);
         BehaviourSystem.Instance.StartUp(default);
         CoroutineSystem.Instance.StartUp(default);
@@ -82,6 +82,7 @@ public sealed class DesktopApplication : IApplicationControl
     public void OnUpdate(double deltaTime)
     {
         TimeSystem.Instance.BeginFrame(deltaTime);
+        InputSystem.Instance.BeginFrame();
         SceneSystem.Instance.BeginFrame();
         BehaviourSystem.Instance.BeginFrame();
         BehaviourSystem.Instance.ExecuteOnAwake();
@@ -107,7 +108,7 @@ public sealed class DesktopApplication : IApplicationControl
         RenderSystem.Instance.BeginFrame();
         RenderSystem.Instance.Render();
         RenderSystem.Instance.EndFrame();
-        
+
         _window.Present();
     }
 

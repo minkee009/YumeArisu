@@ -3,111 +3,51 @@ using System.Runtime.CompilerServices;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
-using YumeArisu.Core.Internal.InputHandling;
 using YumeArisu.Core.Utility;
+using YumeArisu.Core.Abstractions;
 
 namespace YumeArisu.Core.Systems;
 
-public class InputSystem : SystemBase<InputSystem, IView>
+public class InputSystem : SystemBase<InputSystem, IInputSource>
 {
-    private KeyboardState _keyboardState;
-    private MouseState _mouseState;
-    private IInputContext _input;
-    private List<(List<Key> alternativeKeys, Key triggerKey, Action action)> _systemKeyCombos;
+    private IInputSource _input;
 
-    internal override void OnStartUp(IView view)
-    {
-        _input = view.CreateInput();
-        _keyboardState = new KeyboardState(_input.Keyboards[0]);
-        _mouseState = new MouseState(_input.Mice[0]);
-        _input.ConnectionChanged += DoConnect;
-        _systemKeyCombos = new();
-    }
+    internal override void OnStartUp(IInputSource inputSource) => _input = inputSource;
 
     internal override void OnShutDown()
     {
         _input?.Dispose();
-        _systemKeyCombos?.Clear();
-
         _input = null;
-        _systemKeyCombos = null;
     }
 
-    public void OnViewResize(Vector2D<int> size)
+    public void OnViewResize(Vector2D<int> size) => _input.OnViewResize(size);
+
+    public void BeginFrame()
     {
-        _mouseState.ViewSize = size.ToNumerics();
-    }
-
-    public void DoConnect(IInputDevice device, bool connected)
-    {
-        switch (device)
-        {
-            case IKeyboard:
-                if (_input.Keyboards.Count > 0)
-                    _keyboardState.ConnectionChanged(_input.Keyboards[0]);  
-                else
-                    _keyboardState.Reset();
-
-                RefreshSystemKeyCombos();
-                break;
-
-            case IMouse:
-                if (_input.Mice.Count > 0)
-                    _mouseState.ConnectionChanged(_input.Mice[0]);
-                else
-                    _mouseState.Reset();
-                break;
-        }
+        if(!_input.UpdateMustEndOfFrame)
+            _input.Update();
     }
 
     public void EndFrame()
     {
-        _keyboardState?.EndFrame();
-        _mouseState?.EndFrame();
+        if(_input.UpdateMustEndOfFrame)
+            _input.Update();
     }
 
-    public bool GetKey(Key key) => (_keyboardState.Current[(int)key >> 6] & (1UL << ((int)key & 63))) != 0;
-    public bool GetKeyDown(Key key) => (_keyboardState.Pressed[(int)key >> 6] & (1UL << ((int)key & 63))) != 0;
-    public bool GetKeyUp(Key key) => (_keyboardState.Released[(int)key >> 6] & (1UL << ((int)key & 63))) != 0;
+    public bool GetKey(Key key) => _input.GetKey(key);
+    public bool GetKeyDown(Key key) => _input.GetKeyDown(key);
+    public bool GetKeyUp(Key key) => _input.GetKeyUp(key);
 
-    public Vector2 GetMousePosition() => _mouseState.Position;
-    public Vector2 GetMouseDelta() => _mouseState.Delta;
-    public bool GetMouseButton(MouseButton button) => (_mouseState!.ButtonCurrent & (1 << (int)button)) != 0;
-    public bool GetMouseButtonDown(MouseButton button) => (_mouseState!.ButtonPressed & (1 << (int)button)) != 0;
-    public bool GetMouseButtonUp(MouseButton button) => (_mouseState!.ButtonReleased & (1 << (int)button)) != 0;
-
-    public IInputContext GetInputContext() => _input;
+    public Vector2 GetMousePosition() => _input.GetMousePosition();
+    public Vector2 GetMouseDelta() => _input.GetMouseDelta();
+    public bool GetMouseButton(MouseButton button) => _input.GetMouseButton(button);
+    public bool GetMouseButtonDown(MouseButton button) => _input.GetMouseButtonDown(button);
+    public bool GetMouseButtonUp(MouseButton button) => _input.GetMouseButtonUp(button);
 
     /// <summary>
     /// holdKeys가 모두 눌린 상태에서 triggerKey가 눌리는 순간 action을 실행합니다.
     /// </summary>
-    public void RegisterSystemKeyCombo(List<Key> holdKeys, Key triggerKey, Action action)
-    {
-        _systemKeyCombos.Add((holdKeys, triggerKey, action));
-        RefreshSystemKeyCombos();
-    }
-
-    /// <summary>
-    /// 키보드 이벤트에서 시스템 키콤보에 대해 구독을 갱신합니다. (키보드 연결/해제 시 호출)
-    /// </summary>
-    private void RefreshSystemKeyCombos()
-    {
-        if (_input.Keyboards.Count == 0)
-            return;
-
-        var keyboard = _input.Keyboards[0];
-        keyboard.KeyDown -= OnSystemKeyComboKeyDown; // 이미 구독돼 있으면 먼저 제거 (중복 방지)
-        keyboard.KeyDown += OnSystemKeyComboKeyDown;
-    }
-
-    private void OnSystemKeyComboKeyDown(IKeyboard keyboard, Key key, int scancode)
-    {
-        foreach (var (holdKeys, triggerKey, action) in _systemKeyCombos)
-        {
-            if (key == triggerKey && holdKeys.All(k => keyboard.IsKeyPressed(k)))
-                action();
-        }
-    }
+    public void RegisterSystemKeyCombo(List<Key> holdKeys, Key triggerKey, Action action) => _input.RegisterSystemKeyCombo(holdKeys,triggerKey,action);
 }
 
 // 문법 설탕용 클래스

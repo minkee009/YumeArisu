@@ -9,7 +9,7 @@ using YumeArisu.Core.Rendering;
 
 namespace YumeArisu.Core.Systems;
 
-public class RenderSystem : SystemBase<RenderSystem, IView>
+public class RenderSystem : SystemBase<RenderSystem, GL>
 {
     public Vector2D<int> FramebufferSize { get; private set; }
     public float FramebufferAspect => FramebufferSize.X / FramebufferSize.Y;
@@ -24,17 +24,9 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
     private bool _needCamDepthSort;
     private bool _needRenderOrderSort;
 
-    internal override void OnStartUp(IView view)
+    internal override void OnStartUp(GL gl)
     {
-        try
-        {
-            _gl = view.CreateOpenGL();
-        }
-        catch
-        {
-            Environment.FailFast("GL 컨텍스트를 생성하지 못했습니다.");
-            return; // Exit가 비동기 콜백 안에서 즉시 안 먹힐 상황 대비한 안전장치
-        }
+        _gl = gl;
 
         _gl.Enable(EnableCap.DepthTest);
         _gl.DepthFunc(GLEnum.Less); // 표준: 더 작은 Z(더 가까운)가 이김
@@ -42,8 +34,8 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
         _cameras = new List<Camera>();
         _renderers = new List<Renderer>();
 
-        _shaderBackend = view.API.API == ContextAPI.OpenGL ? ShaderBackend.OpenGLCore : ShaderBackend.OpenGLES;
-
+        _shaderBackend = DetectShaderBackend(_gl);
+        
         BuiltInRenderResources.Load();
     }
 
@@ -134,6 +126,12 @@ public class RenderSystem : SystemBase<RenderSystem, IView>
     internal void UnregisterRenderer(Renderer renderer) => _renderers.Remove(renderer);
 
     internal ShaderBackend GetShaderBackend() => _shaderBackend;
+
+    private static ShaderBackend DetectShaderBackend(GL gl)
+    {
+        string version = gl.GetStringS(StringName.Version);
+        return version.Contains("OpenGL ES") ? ShaderBackend.OpenGLES : ShaderBackend.OpenGLCore;
+    }
 }
 
 // 문법 설탕용 클래스

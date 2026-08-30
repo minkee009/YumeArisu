@@ -1,6 +1,6 @@
 using Silk.NET.Input;
 
-namespace YumeArisu.Core.Internal.InputHandling;
+namespace YumeArisu.Desktop.Internal;
 
 internal class KeyboardState
 {

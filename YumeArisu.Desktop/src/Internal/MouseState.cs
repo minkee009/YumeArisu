@@ -1,7 +1,7 @@
 using Silk.NET.Input;
 using System.Numerics;
 
-namespace YumeArisu.Core.Internal.InputHandling;
+namespace YumeArisu.Desktop.Internal;
 
 internal class MouseState
 {   
