@@ -61,6 +61,18 @@ public class DebuggingUI
         style.GrabRounding = 6.0f;
         style.ScrollbarRounding = 6.0f;
         style.PopupRounding = 6.0f;
+
+        RangeAccessor<Vector4> colors = style.Colors;
+
+        colors[(int)ImGuiCol.WindowBg]           = new Vector4(0.10f, 0.10f, 0.12f, 0.95f);
+        colors[(int)ImGuiCol.Header]             = new Vector4(0.18f, 0.20f, 0.25f, 1.00f);
+        colors[(int)ImGuiCol.HeaderHovered]      = new Vector4(0.24f, 0.27f, 0.34f, 1.00f);
+        colors[(int)ImGuiCol.HeaderActive]       = new Vector4(0.00f, 0.58f, 0.80f, 1.00f); // 클릭/선택 색상
+
+        colors[(int)ImGuiCol.FrameBg]            = new Vector4(0.15f, 0.16f, 0.19f, 1.00f);
+        colors[(int)ImGuiCol.FrameBgHovered]     = new Vector4(0.20f, 0.22f, 0.27f, 1.00f);
+        colors[(int)ImGuiCol.Button]             = new Vector4(0.18f, 0.20f, 0.25f, 1.00f);
+        colors[(int)ImGuiCol.ButtonHovered]      = new Vector4(0.00f, 0.58f, 0.80f, 1.00f);
     }
 
     public void Update(float deltaTime)
