@@ -132,6 +132,18 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
         string version = gl.GetStringS(StringName.Version);
         return version.Contains("OpenGL ES") ? ShaderBackend.OpenGLES : ShaderBackend.OpenGLCore;
     }
+
+    public List<Camera> GetActiveCameras()
+    {
+        List<Camera> activeCameras = new();
+        foreach(var cam in _cameras)
+        {
+            if(cam.IsActiveAndEnabled)
+                activeCameras.Add(cam);
+        }
+
+        return activeCameras;
+    }
 }
 
 // 문법 설탕용 클래스

@@ -168,4 +168,34 @@ public class Camera : Behaviour
     internal void MarkViewMatrixDirty() => _viewMatrixDirty = true;
 
     internal void MarkProjectionMatrixDirty() => _projMatrixDirty = true;
+
+    /// <summary>
+    /// 월드 좌표를 화면(픽셀) 좌표로 변환합니다. 카메라 뒤쪽(화면에 표시 불가)이면 null을 반환합니다.
+    /// </summary>
+    public Vector2? WorldToScreenPoint(Vector3 worldPos)
+    {
+        var clipPos = Vector4.Transform(new Vector4(worldPos, 1f), ViewMatrix * ProjectionMatrix);
+
+        // 카메라 뒤쪽에 있으면 화면에 표시 불가
+        if (clipPos.W <= 0f)
+            return null;
+
+        // NDC로 정규화 (-1 ~ 1)
+        float ndcX = clipPos.X / clipPos.W;
+        float ndcY = clipPos.Y / clipPos.W;
+
+        // 이 카메라가 실제로 그려지는 뷰포트 영역 (프레임버퍼 기준 픽셀)
+        var fb = RenderSystem.Instance.FramebufferSize;
+        float viewportX = fb.X * ViewRect.Origin.X;
+        float viewportY = fb.Y * ViewRect.Origin.Y;
+        float viewportWidth = fb.X * ViewRect.Size.X;
+        float viewportHeight = fb.Y * ViewRect.Size.Y;
+
+        // NDC -> 뷰포트 내 픽셀 좌표
+        // Y는 화면 좌표계가 위쪽이 0이므로 뒤집고, ViewRect가 좌하단(0,0) 기준이므로 Y축도 뒤집어서 보정
+        float screenX = viewportX + (ndcX * 0.5f + 0.5f) * viewportWidth;
+        float screenY = (fb.Y - viewportY - viewportHeight) + (1f - (ndcY * 0.5f + 0.5f)) * viewportHeight;
+
+        return new Vector2(screenX, screenY);
+    }
 }

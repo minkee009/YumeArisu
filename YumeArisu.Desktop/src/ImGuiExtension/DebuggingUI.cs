@@ -1,10 +1,13 @@
+using System.Numerics;
 using ImGuiNET;
 using Silk.NET.Input;
 using Silk.NET.OpenGL;
 using Silk.NET.OpenGL.Extensions.ImGui;
 using Silk.NET.Windowing;
 using YumeArisu.Core.Abstractions;
+using YumeArisu.Core.Hierarchy;
 using YumeArisu.Core.Systems;
+using YumeArisu.Core.Utility;
 
 namespace YumeArisu.Desktop.ImGuiExtension;
 
@@ -56,6 +59,7 @@ public class DebuggingUI
         style.WindowRounding = 6.0f;
         style.GrabRounding = 6.0f;
         style.ScrollbarRounding = 6.0f;
+        style.PopupRounding = 6.0f;
     }
 
     public void Update(float deltaTime)
@@ -70,7 +74,60 @@ public class DebuggingUI
         foreach (var window in _windows)
             window.Render();
 
+        HandleDeselectClick();
+        
+        DrawSelectionOutline();
+
         _controller.Render();
+    }
+
+    private void HandleDeselectClick()
+    {
+        var io = ImGui.GetIO();
+
+        if (io.WantCaptureMouse)
+            return;
+
+        if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+            _registry.ClearData(DebuggingUIKeys.SelectedGameObject);
+    }
+
+    private void DrawSelectionOutline()
+    {
+        var selected = _registry.GetData<GameObject>(DebuggingUIKeys.SelectedGameObject);
+        if (selected is null || selected.IsDestroyed)
+            return;
+
+        var cameras = RenderSystem.Instance.GetActiveCameras();
+        if (cameras.Count == 0)
+            return;
+
+        var camera = cameras.OrderByDescending(c => c.Depth).First();
+
+        var screenPos = camera.WorldToScreenPoint(selected.Transform.WorldPosition);
+        if (screenPos is not Vector2 sp)
+            return;
+
+        const float radius = 30f;
+        var drawList = ImGui.GetBackgroundDrawList();
+
+        // 0~1 사이를 부드럽게 오가는 값 (사인파, 주기 약 2초)
+        float t = (MathF.Sin(Time.TotalTime * MathF.PI) + 1f) * 0.5f;
+
+        var colorA = new Vector4(1f, 0.85f, 0.2f, 1f);   // 기존 노란색
+        var colorB = new Vector4(0.6f, 1f, 0.6f, 1f);    // 연한 연두색
+        var lerped = Vector4.Lerp(colorA, colorB, t);
+
+        uint outlineColor = ImGui.GetColorU32(lerped);
+        uint textColor = ImGui.GetColorU32(new Vector4(1f, 1f, 1f, 1f));
+
+        drawList.AddCircle(sp, radius, outlineColor, 0, 2f);
+
+        string label = selected.Name;
+        Vector2 textSize = ImGui.CalcTextSize(label);
+        Vector2 textPos = new Vector2(sp.X - textSize.X * 0.5f, sp.Y + radius + 4f);
+
+        drawList.AddText(textPos, textColor, label);
     }
 
     private void DrawMainMenuBar()

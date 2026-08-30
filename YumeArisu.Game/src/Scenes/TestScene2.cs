@@ -41,7 +41,7 @@ public class TestScene2 : Scene
         childB.Transform.SetParent(go3.Transform);
         childC.Transform.SetParent(go3.Transform);
 
-        go.AddComponent<FPSChecker>();
+        //go.AddComponent<FPSChecker>();
         go.AddComponent<TestCoroutine>();
         
         var camerago = CreateGameObject("MainCamera");
