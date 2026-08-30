@@ -1,5 +1,6 @@
 using Android.Content;
 using Android.Content.Res;
+using Android.Views;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.OpenGLES;
@@ -13,11 +14,14 @@ namespace YumeArisu.Android.Implements;
 public sealed class AndroidApplication : IApplicationControl
 {
     private AndroidWindow _window;
+    private AndroidInputDevice _inputDevice;
     private AndroidFileIO _fileIO;
+    private bool _requestQuit;
 
     public AndroidApplication(AssetManager assets, Context context)
     {
         _window = new();
+        _inputDevice = new();
         _fileIO = new(assets, context);
     }
 
@@ -37,11 +41,12 @@ public sealed class AndroidApplication : IApplicationControl
     public void OnLoad()
     {
         _fileIO.Open("Data", "dat");
+        _inputDevice.Initialize(_window.View);
 
         ApplicationSystem.Instance.StartUp(this);
         WindowSystem.Instance.StartUp(_window);
         TimeSystem.Instance.StartUp(default);
-        InputSystem.Instance.StartUp(new AndroidInputDevice(_window.View));
+        InputSystem.Instance.StartUp(_inputDevice);
         RenderSystem.Instance.StartUp(_window.View.CreateOpenGL());
         ResourceSystem.Instance.StartUp(_fileIO);
         BehaviourSystem.Instance.StartUp(default);
@@ -66,6 +71,13 @@ public sealed class AndroidApplication : IApplicationControl
 
     public void OnUpdate(double deltaTime)
     {
+        if(_requestQuit)
+        {
+            _window.View.Close();
+            _requestQuit = false;
+            return;
+        }
+
         TimeSystem.Instance.BeginFrame(deltaTime);
         SceneSystem.Instance.BeginFrame();
         BehaviourSystem.Instance.BeginFrame();
@@ -114,7 +126,11 @@ public sealed class AndroidApplication : IApplicationControl
     public int TargetFrameRate
     {
         get => (int)_window.View.FramesPerSecond;
-        set => _window.View.FramesPerSecond = Math.Max(0, value);
+        set
+        {
+            _window.View.FramesPerSecond = Math.Max(0, value);
+            _window.View.UpdatesPerSecond = Math.Max(0, value);
+        }
     }
 
     public bool VSync
@@ -125,5 +141,5 @@ public sealed class AndroidApplication : IApplicationControl
 
     public bool IsRunning() => !_window.View.IsClosing;
 
-    public void RequestClose() => _window.View.Close();
+    public void RequestClose() => _requestQuit = true;
 }

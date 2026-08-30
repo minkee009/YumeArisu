@@ -22,10 +22,9 @@ public class DesktopInputDevice : IInputSource
 
     public bool UpdateMustEndOfFrame => true;
 
-    public DesktopInputDevice(IView view)
+    public void Initialize(IView view)
     {
         _systemKeyCombos = new();
-
         _input = view.CreateInput();
         _input.ConnectionChanged += DoConnect;
         _keyboard = new DesktopKeyboard(_input.Keyboards[0]);

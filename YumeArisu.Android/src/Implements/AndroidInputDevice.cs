@@ -20,7 +20,7 @@ public class AndroidInputDevice : IInputSource
 
     public bool UpdateMustEndOfFrame => true;
 
-    public AndroidInputDevice(IView view)
+    public void Initialize(IView view)
     {
         _systemKeyCombos = new();
 
