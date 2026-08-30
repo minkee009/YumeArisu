@@ -1,20 +1,26 @@
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Input;
+using Silk.NET.OpenGL;
+using Silk.NET.OpenGL.Extensions.ImGui;
+using ImGuiNET;
 using YumeArisu.Core.Systems;
 using YumeArisu.Core.Abstractions;
 using YumeArisu.Game.SceneManifests;
-using Silk.NET.OpenGL;
+using System.Text;
+using YumeArisu.Desktop.ImGuiExtension;
 
 namespace YumeArisu.Desktop.Implements;
 
 public sealed class DesktopApplication : IApplicationControl
 {
     private DesktopWindow _window;
+    private DesktopInputDevice _input;
 #if !DEBUG
     private DesktopFileIO _fileIO;
 #else
     private DebugFileIO _fileIO;
+    private DebuggingUI _debuggingUI;
 #endif
 
     public DesktopApplication(string title, int width, int height)
@@ -43,10 +49,12 @@ public sealed class DesktopApplication : IApplicationControl
 #else
         _fileIO.SetRootFolder("./Assets");
 #endif  
+        _input = new(_window.View);
+
         ApplicationSystem.Instance.StartUp(this);
         WindowSystem.Instance.StartUp(_window);
         TimeSystem.Instance.StartUp(default);
-        InputSystem.Instance.StartUp(new DesktopInputDevice(_window.View));
+        InputSystem.Instance.StartUp(_input);
         RenderSystem.Instance.StartUp(_window.View.CreateOpenGL());
         ResourceSystem.Instance.StartUp(_fileIO);
         BehaviourSystem.Instance.StartUp(default);
@@ -61,6 +69,13 @@ public sealed class DesktopApplication : IApplicationControl
             [Key.AltLeft], 
             Key.Enter, 
             _window.SwitchDisplayMode);
+
+ #if DEBUG
+        _debuggingUI = new(
+            RenderSystem.Instance.GetGL(),
+            _window.View,
+            _input.GetInputContext());
+#endif
     }
 
     public void OnFramebufferResize(Vector2D<int> newSize)
@@ -101,13 +116,21 @@ public sealed class DesktopApplication : IApplicationControl
         BehaviourSystem.Instance.ExecuteOnRemove();
         CoroutineSystem.Instance.YieldUntil();
         InputSystem.Instance.EndFrame();
+
+
     }
 
     public void OnRender(double deltaTime)
     {
+#if DEBUG
+        _debuggingUI.Update((float)deltaTime);
+#endif
         RenderSystem.Instance.BeginFrame();
         RenderSystem.Instance.Render();
         RenderSystem.Instance.EndFrame();
+#if DEBUG
+        _debuggingUI.Render();
+#endif
 
         _window.Present();
     }

@@ -1,6 +1,4 @@
 using YumeArisu.Core.Rendering;
-using BuiltInShader = YumeArisu.Core.Rendering.Shader;
-using BuiltInTexture = YumeArisu.Core.Rendering.Texture;
 
 namespace YumeArisu.Core.Internal.RenderPipeline;
 
@@ -47,8 +45,8 @@ public static class BuiltInRenderResources
         """;
     #endregion
 
-    public static BuiltInShader DefaultSpriteShader;
-    public static BuiltInTexture DefaultWhiteTexture;
+    public static Shader DefaultSpriteShader;
+    public static Texture DefaultWhiteTexture;
     public static Mesh DefaultQuadMesh;
     public static Material DefaultSpriteMaterial;
 

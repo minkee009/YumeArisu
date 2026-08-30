@@ -3,11 +3,12 @@ using Silk.NET.Input;
 using Silk.NET.Windowing;
 using Silk.NET.Maths;
 using YumeArisu.Core.Abstractions;
-using AndroidKeyboard = YumeArisu.Android.Internal.KeyboardState;
-using AndroidMouse = YumeArisu.Android.Internal.MouseState;
 using YumeArisu.Core.Utility;
 
 namespace YumeArisu.Android.Implements;
+
+using AndroidKeyboard = Internal.KeyboardState;
+using AndroidMouse = Internal.MouseState;
 
 public class AndroidInputDevice : IInputSource
 {

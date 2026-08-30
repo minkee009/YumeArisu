@@ -3,9 +3,10 @@ using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Glfw;
 using YumeArisu.Core.Abstractions;
-using WindowingMonitor = Silk.NET.Windowing.Monitor;
 
 namespace YumeArisu.Desktop.Implements;
+
+using WindowingMonitor = Silk.NET.Windowing.Monitor;
 
 public sealed class DesktopWindow : IWindowControl
 {
