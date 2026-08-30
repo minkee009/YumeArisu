@@ -6,6 +6,9 @@ namespace YumeArisu.Desktop.ImGuiExtension;
 
 internal class HierarchyWindow : IImGuiWindow
 {
+    public string DisplayName => "Hierarchy";
+    public bool IsOpen { get; set; } = true;
+
     private DebuggingUIRegistry _registry;
 
     public void Initialize(DebuggingUIRegistry registry)
@@ -15,7 +18,12 @@ internal class HierarchyWindow : IImGuiWindow
 
     public void Render()
     {
-        ImGui.Begin($"SceneInfo : \"{SceneControl.CurrentScene.GetType().Name}\"###SceneInfoWindow");
+        if (!IsOpen)
+            return;
+
+        bool isOpen = IsOpen;
+        ImGui.Begin($"Hierarchy : \"{SceneControl.CurrentScene.GetType().Name}\"###SceneInfoWindow", ref isOpen);
+        IsOpen = isOpen;
 
         foreach (var go in SceneControl.CurrentScene.GameObjects)
         {

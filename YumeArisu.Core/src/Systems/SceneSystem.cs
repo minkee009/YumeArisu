@@ -17,8 +17,11 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
     private Scene _currentScene;
     private Scene _nextScene;
 
+    private ISceneManifest _cachedManifest;
+
     internal override void OnStartUp(ISceneManifest manifest)
     {
+        _cachedManifest = manifest;
         _nextScene = manifest.DynamicScenes.FirstOrDefault();
 
         if (_nextScene is null)
@@ -47,6 +50,7 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
         _staticScene = null;
         _currentScene = null;
         _nextScene = null;
+        _cachedManifest = null;
     }
 
     public void ChangeScene(string sceneName)
@@ -154,6 +158,8 @@ public class SceneSystem : SystemBase<SceneSystem, ISceneManifest>
 
         return matches;
     }
+
+    public ISceneManifest GetSceneManifest() => _cachedManifest;
 }
 
 // 문법 설탕용 클래스 (씬 변경)

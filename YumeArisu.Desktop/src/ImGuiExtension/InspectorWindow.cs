@@ -6,6 +6,9 @@ namespace YumeArisu.Desktop.ImGuiExtension;
 
 internal class InspectorWindow : IImGuiWindow
 {
+    public string DisplayName => "Inspector";
+    public bool IsOpen { get; set; } = true;
+
     private DebuggingUIRegistry _registry;
 
     public void Initialize(DebuggingUIRegistry registry)
@@ -15,7 +18,12 @@ internal class InspectorWindow : IImGuiWindow
 
     public void Render()
     {
-        ImGui.Begin("Inspector###InspectorWindow");
+        if (!IsOpen)
+            return;
+
+        bool isOpen = IsOpen;
+        ImGui.Begin("Inspector###InspectorWindow", ref isOpen);
+        IsOpen = isOpen;
 
         var selected = _registry.GetData<GameObject>(DebuggingUIKeys.SelectedGameObject);
 

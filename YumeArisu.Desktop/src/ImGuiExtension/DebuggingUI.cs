@@ -3,6 +3,8 @@ using Silk.NET.Input;
 using Silk.NET.OpenGL;
 using Silk.NET.OpenGL.Extensions.ImGui;
 using Silk.NET.Windowing;
+using YumeArisu.Core.Abstractions;
+using YumeArisu.Core.Systems;
 
 namespace YumeArisu.Desktop.ImGuiExtension;
 
@@ -24,7 +26,7 @@ public class DebuggingUI
 
         _registry = new DebuggingUIRegistry();
 
-        _windows = [new HierarchyWindow(), new InspectorWindow()];
+        _windows = [new HierarchyWindow(), new InspectorWindow(), new TimeWindow()];
 
         foreach (var window in _windows)
             window.Initialize(_registry);
@@ -63,10 +65,101 @@ public class DebuggingUI
 
     public void Render()
     {
-        foreach(var window in _windows)
+        DrawMainMenuBar();
+
+        foreach (var window in _windows)
             window.Render();
 
         _controller.Render();
+    }
+
+    private void DrawMainMenuBar()
+    {
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
+        ImGui.PushStyleColor(ImGuiCol.MenuBarBg, new System.Numerics.Vector4(0.1f, 0.1f, 0.1f, 0.0f));
+
+        if (ImGui.BeginMainMenuBar())
+        {
+            DrawWindowMenu();
+            DrawSceneMenu();
+            DrawDisplayMenu();
+            DrawDebugMenu();
+
+            ImGui.EndMainMenuBar();
+        }
+
+        ImGui.PopStyleColor();
+        ImGui.PopStyleVar();
+    }
+
+    private void DrawWindowMenu()
+    {
+        if (ImGui.BeginMenu("Windows"))
+        {
+            foreach (var window in _windows)
+            {
+                bool isOpen = window.IsOpen;
+                if (ImGui.MenuItem(window.DisplayName, null, isOpen))
+                    window.IsOpen = !isOpen;
+            }
+
+            ImGui.EndMenu();
+        }
+    }
+
+    private void DrawSceneMenu()
+    {
+        if (ImGui.BeginMenu("Scene"))
+        {
+            var sceneManifest = SceneSystem.Instance.GetSceneManifest();
+            ImGui.TextDisabled($"Current : {SceneControl.CurrentScene?.GetType().Name ?? "None"}");
+            ImGui.Separator();
+
+            foreach(var scene in sceneManifest.DynamicScenes)
+            {
+                var sceneName = scene.GetType().Name;
+                if (ImGui.MenuItem(sceneName)) SceneControl.ChangeScene(sceneName);
+            }
+
+            ImGui.EndMenu();
+        }
+    }
+
+    private void DrawDisplayMenu()
+    {
+        if (ImGui.BeginMenu("Display"))
+        {
+            bool vsync = ApplicationControl.VSync;
+            if (ImGui.Checkbox("VSync", ref vsync))
+                ApplicationControl.VSync = vsync;
+
+            ImGui.Separator();
+
+            foreach (DisplayMode mode in Enum.GetValues<DisplayMode>())
+            {
+                bool selected = WindowControl.DisplayMode == mode;
+                if (ImGui.MenuItem(mode.ToString(), null, selected))
+                    WindowControl.DisplayMode = mode;
+            }
+
+            ImGui.EndMenu();
+        }
+    }
+
+    private void DrawDebugMenu()
+    {
+        if (ImGui.BeginMenu("Debug"))
+        {
+            if (ImGui.MenuItem("Force GC.Collect"))
+                GC.Collect(2, GCCollectionMode.Forced, blocking: true);
+
+            ImGui.Separator();
+
+            if (ImGui.MenuItem("Quit"))
+                ApplicationControl.RequestClose();
+
+            ImGui.EndMenu();
+        }
     }
 
     private static string FindKoreanFontPath()
