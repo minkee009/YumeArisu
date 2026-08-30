@@ -1,3 +1,19 @@
+# DXGI를 통한 프립핑 모델 차용 계획
+
+## 1. 결정 사항
+- Desktop Application -> Universal / DXGI Application으로 이름을 변경하고 그에 따른 구현을 만든다.
+- DXGI는 OperatingSystem 런타임 분기에서 Windows인 경우 처리한다.
+- ShaderBackend를 없애고 RenderBackend를 추가한 뒤 각각 알맞는 구현을 만든다.
+
+
+# DX11.1 + OpenGL 4.1 + OpenGLES 3.0 렌더 백엔드 세분화 계획
+
+## 1. 결정 사항
+- Desktop Application -> OpenGL / D3D11 Application으로 이름을 변경하고 그에 따른 구현을 만든다.
+- Android Application은 유지
+- 단 ShaderBackend를 없애고 RenderBackend를 추가한 뒤 각각 알맞는 구현을 만든다.
+
+
 # Vulkan 1.3 렌더링 전환 계획
 
 ## 1. 결정 사항

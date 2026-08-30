@@ -25,6 +25,7 @@ public sealed class DesktopApplication : IApplicationControl
         _window.View.Update += OnUpdate;
         _window.View.Render += OnRender;
         _window.View.Closing += OnClosing;
+        _window.View.ShouldSwapAutomatically = false;
 
         _fileIO = new();
     }
@@ -106,6 +107,7 @@ public sealed class DesktopApplication : IApplicationControl
         RenderSystem.Instance.BeginFrame();
         RenderSystem.Instance.Render();
         RenderSystem.Instance.EndFrame();
+        
         _window.Present();
     }
 
@@ -131,7 +133,11 @@ public sealed class DesktopApplication : IApplicationControl
     public int TargetFrameRate
     {
         get => (int)_window.View.FramesPerSecond;
-        set => _window.View.FramesPerSecond = Math.Max(0, value);
+        set
+        {
+            _window.View.FramesPerSecond = Math.Max(0, value);
+            _window.View.UpdatesPerSecond = Math.Max(0, value);
+        }
     }
 
     public bool VSync

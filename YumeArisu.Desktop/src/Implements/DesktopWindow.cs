@@ -26,7 +26,6 @@ public sealed class DesktopWindow : IWindowControl
         options.Size = new Vector2D<int>(width, height);
         options.Title = title;
         options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.ForwardCompatible, new APIVersion(3, 3));
-        options.ShouldSwapAutomatically = false;
     
         _window = Window.Create(options);
     }
