@@ -31,10 +31,10 @@ public static class BuiltInRenderResources
         """;
 
     public const string SpriteFragment = """
-        in vec2 fragUV;
-
         uniform sampler2D MainTexture;
         uniform vec4 Color;
+
+        in vec2 fragUV;
 
         out vec4 FragColor;
 

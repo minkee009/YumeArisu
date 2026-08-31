@@ -35,13 +35,15 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
         _renderers = new List<Renderer>();
 
         _shaderBackend = DetectShaderBackend(_gl);
-        
+
+        GlobalUniform.Initialize();
         BuiltInRenderResources.Load();
     }
 
     internal override void OnShutDown()
     {
         BuiltInRenderResources.Unload();
+        GlobalUniform.Release();
 
         _cameras.Clear();
         _renderers.Clear();
@@ -86,16 +88,13 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
                 continue;
 
             // 'Draw Sprite' 스테이지
-            var spriteMat = BuiltInRenderResources.DefaultSpriteMaterial;
-            spriteMat.SetVector3($"{GlobalUniform.CameraPosition}", cam.Transform.WorldPosition);
-            spriteMat.SetMatrix4x4($"{GlobalUniform.View}",  cam.ViewMatrix);
-            spriteMat.SetMatrix4x4($"{GlobalUniform.Projection}", cam.ProjectionMatrix);
+            GlobalUniform.UpdateCamera(cam.ViewMatrix, cam.ProjectionMatrix, cam.Transform.WorldPosition);
 
             foreach (var renderer in _renderers)
             {
                 if (renderer.Enabled && renderer.GameObject.ActiveInHierarchy)
                 {
-                    spriteMat.SetMatrix4x4($"{GlobalUniform.Model}", renderer.Transform.WorldMatrix);
+                    GlobalUniform.UpdateModel(renderer.Transform.WorldMatrix);
                     renderer.Draw();
                 }
             }
