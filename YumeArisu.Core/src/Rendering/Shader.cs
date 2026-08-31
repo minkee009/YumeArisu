@@ -191,9 +191,14 @@ public class Shader : Resource
             ? "precision mediump float;\nprecision mediump int;\n"
             : string.Empty;
 
-        string global = GlobalUniform.Source;
+        string global = type switch
+        {
+            GLEnum.VertexShader => GlobalUniform.VertexSource,
+            GLEnum.FragmentShader => GlobalUniform.FragmentSource,
+            _ => string.Empty
+        };
 
-        return version + global + '\n' + define + precision + src;
+        return version + define + precision + global + GlobalUniform.CameraBlockSourc + src;
     }
 
     internal static uint CompileShader(GLEnum type, in string source)
