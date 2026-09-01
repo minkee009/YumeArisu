@@ -51,7 +51,7 @@ public sealed class DesktopWindow : IWindowControl
     /// </summary>
     internal void SwitchDisplayMode()
     {
-        if (_displayMode == DisplayMode.Windowed)
+        if (_displayMode == DisplayMode.Windowed || _displayMode == DisplayMode.BorderlessWindow)
         {
             DisplayMode = DisplayMode.BorderlessFullscreen;
         }
@@ -86,8 +86,8 @@ public sealed class DesktopWindow : IWindowControl
         switch (_displayMode)
         {
             case DisplayMode.Windowed:
-                _window.WindowBorder = WindowBorder.Resizable;
                 _window.WindowState = WindowState.Normal;
+                _window.WindowBorder = WindowBorder.Resizable;
                 break;
         
             case DisplayMode.Fullscreen:
