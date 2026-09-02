@@ -50,6 +50,8 @@ public sealed class DesktopApplication : IApplicationControl
 #else
         _fileIO.SetRootFolder("./Assets");
 #endif  
+        _window.SetWindowIcon(_fileIO.ReadAllBytes("app.png"), 256, 256);
+
         _inputDevice.Initialize(_window.View);
 
         ApplicationSystem.Instance.StartUp(this);

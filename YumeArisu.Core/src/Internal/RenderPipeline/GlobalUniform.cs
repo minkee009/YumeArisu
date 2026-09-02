@@ -9,7 +9,6 @@ namespace YumeArisu.Core.Internal.RenderPipeline;
 internal static class GlobalUniform
 {
     internal static uint Handle { get; private set; }
-    internal const string Model = "uModel";
     internal const string View = "uView";
     internal const string Projection = "uProjection";
     internal const string CameraPosition = "uCameraPosition";
@@ -27,7 +26,6 @@ internal static class GlobalUniform
     """;
 
     internal const string VertexSource = $$"""
-        uniform mat4 {{Model}};
 
         """;
 

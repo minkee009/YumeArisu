@@ -22,16 +22,31 @@ internal class HierarchyWindow : IImGuiWindow
             return;
 
         bool isOpen = IsOpen;
-        ImGui.Begin($"Hierarchy : \"{SceneControl.CurrentScene.GetType().Name}\"###SceneInfoWindow", ref isOpen);
+        ImGui.Begin("Hierarchy###SceneInfoWindow", ref isOpen);
         IsOpen = isOpen;
 
-        foreach (var go in SceneControl.CurrentScene.GameObjects)
+        var currentScene = SceneControl.CurrentScene;
+        if (currentScene != null && ImGui.CollapsingHeader(currentScene.GetType().Name, ImGuiTreeNodeFlags.DefaultOpen))
+        {
+            DrawSceneGameObjects(currentScene);
+        }
+
+        var staticScene = SceneSystem.Instance.StaticScene;
+        if (staticScene != null && ImGui.CollapsingHeader(staticScene.GetType().Name, ImGuiTreeNodeFlags.DefaultOpen))
+        {
+            DrawSceneGameObjects(staticScene);
+        }
+
+        ImGui.End();
+    }
+
+    private void DrawSceneGameObjects(Scene scene)
+    {
+        foreach (var go in scene.GameObjects)
         {
             if (go.Transform.Parent is null)
                 DrawGameObjectNode(go);
         }
-
-        ImGui.End();
     }
 
     private void DrawGameObjectNode(GameObject go)
@@ -66,4 +81,3 @@ internal class HierarchyWindow : IImGuiWindow
         }
     }
 }
-

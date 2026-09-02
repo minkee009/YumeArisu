@@ -11,6 +11,7 @@ public static class BuiltInRenderResources
         uniform vec4 UVRect;
         uniform float FlipX;
         uniform float FlipY;
+        uniform mat4 Model;
 
         layout(location = 0) in vec3 position;
         layout(location = 1) in vec2 uv;
@@ -26,7 +27,7 @@ public static class BuiltInRenderResources
             if (FlipY != 0.0) flippedUV.y = 1.0 - flippedUV.y;
             fragUV = UVRect.xy + flippedUV * UVRect.zw;
 
-            gl_Position = {{GlobalUniform.Projection}} * {{GlobalUniform.View}} * {{GlobalUniform.Model}} * vec4(local, position.z, 1.0);
+            gl_Position = {{GlobalUniform.Projection}} * {{GlobalUniform.View}} * Model * vec4(local, position.z, 1.0);
         }
         """;
 

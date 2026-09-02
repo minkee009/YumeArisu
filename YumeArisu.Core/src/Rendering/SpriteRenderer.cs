@@ -101,6 +101,7 @@ public class SpriteRenderer : Renderer
         }
 
         Material.Apply(_materialOverride);
+        Material.Shader.SetMatrix4x4("Model", Transform.WorldMatrix);
 
         var gl = RenderSystem.Instance.GetGL();
 

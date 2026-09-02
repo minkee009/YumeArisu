@@ -94,7 +94,6 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
             {
                 if (renderer.Enabled && renderer.GameObject.ActiveInHierarchy)
                 {
-                    renderer.Material.SetMatrix4x4(GlobalUniform.Model, renderer.Transform.WorldMatrix);
                     renderer.Draw();
                 }
             }

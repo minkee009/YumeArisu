@@ -1,8 +1,10 @@
 using System.Runtime.InteropServices;
+using Silk.NET.Core;
 using Silk.NET.GLFW;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Glfw;
+using StbImageSharp;
 using YumeArisu.Core.Abstractions;
 
 namespace YumeArisu.Desktop.Implements;
@@ -43,7 +45,15 @@ public sealed class DesktopWindow : IWindowControl
                     }
                 };
         }
-        
+    }
+
+    public void SetWindowIcon(byte[] iconData, int width, int height)
+    {
+        StbImage.stbi_set_flip_vertically_on_load(0);
+        ImageResult image = ImageResult.FromMemory(iconData, ColorComponents.RedGreenBlueAlpha);
+
+        var rawImage = new RawImage(width, height, new Memory<byte>(image.Data));
+        _window.SetWindowIcon(new[] { rawImage });
     }
 
     /// <summary>
