@@ -198,7 +198,7 @@ public class Shader : Resource
             _ => string.Empty
         };
 
-        return version + define + precision + global + GlobalUniform.CameraBlockSourc + src;
+        return version + define + precision + global + GlobalUniform.CameraBlockSource + src;
     }
 
     internal static uint CompileShader(GLEnum type, in string source)

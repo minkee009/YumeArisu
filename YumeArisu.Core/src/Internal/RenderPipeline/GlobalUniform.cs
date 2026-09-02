@@ -16,7 +16,7 @@ internal static class GlobalUniform
 
     private static CameraBlock _cameraBlock;
 
-    internal const string CameraBlockSourc = $$"""
+    internal const string CameraBlockSource = $$"""
         layout(std140) uniform CameraBlock
         {
             mat4 {{View}};
