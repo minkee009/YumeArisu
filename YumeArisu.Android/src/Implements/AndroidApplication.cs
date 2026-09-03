@@ -14,14 +14,14 @@ namespace YumeArisu.Android.Implements;
 public sealed class AndroidApplication : IApplicationControl
 {
     private AndroidWindow _window;
-    private AndroidInputDevice _inputDevice;
+    private AndroidInputSource _inputSource;
     private AndroidFileIO _fileIO;
     private bool _requestQuit;
 
     public AndroidApplication(AssetManager assets, Context context)
     {
         _window = new();
-        _inputDevice = new();
+        _inputSource = new();
         _fileIO = new(assets, context);
     }
 
@@ -41,12 +41,12 @@ public sealed class AndroidApplication : IApplicationControl
     public void OnLoad()
     {
         _fileIO.Open("Data", "dat");
-        _inputDevice.Initialize(_window.View);
+        _inputSource.Initialize(_window.View);
 
         ApplicationSystem.Instance.StartUp(this);
         WindowSystem.Instance.StartUp(_window);
         TimeSystem.Instance.StartUp(default);
-        InputSystem.Instance.StartUp(_inputDevice);
+        InputSystem.Instance.StartUp(_inputSource);
         RenderSystem.Instance.StartUp(_window.View.CreateOpenGL());
         ResourceSystem.Instance.StartUp(_fileIO);
         BehaviourSystem.Instance.StartUp(default);

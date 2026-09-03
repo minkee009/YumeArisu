@@ -7,14 +7,11 @@ using YumeArisu.Core.Utility;
 
 namespace YumeArisu.Android.Implements;
 
-using AndroidKeyboard = Internal.KeyboardState;
-using AndroidMouse = Internal.MouseState;
-
-public class AndroidInputDevice : IInputSource
+public class AndroidInputSource : IInputSource
 {
     private IInputContext _input;
-    private AndroidKeyboard _keyboardState;
-    private AndroidMouse _mouseState;
+    private KeyboardState _keyboardState;
+    private MouseState _mouseState;
 
     private List<(List<Key> alternativeKeys, Key triggerKey, Action action)> _systemKeyCombos;
 
@@ -26,8 +23,8 @@ public class AndroidInputDevice : IInputSource
 
         _input = view.CreateInput();
         _input.ConnectionChanged += DoConnect;
-        _keyboardState = new AndroidKeyboard(_input.Keyboards[0]);
-        _mouseState = new AndroidMouse(_input.Mice[0]);
+        _keyboardState = new KeyboardState(_input.Keyboards[0]);
+        _mouseState = new MouseState(_input.Mice[0]);
     }
 
     public void DoConnect(IInputDevice device, bool connected)

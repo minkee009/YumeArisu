@@ -1,9 +1,9 @@
 using Silk.NET.Input;
 using System.Numerics;
 
-namespace YumeArisu.Desktop.Internal;
+namespace YumeArisu.Core.Utility;
 
-internal class MouseState
+public class MouseState
 {   
     public Vector2 Position { get; private set; }
     public Vector2 Delta { get; private set; }
@@ -13,8 +13,8 @@ internal class MouseState
     public int ButtonReleased { get; private set; }
     public int ButtonCurrent { get; private set; }
 
+    public Vector2 ViewSize { get; set; }
     internal Vector2 DeltaAccum { get; private set; }
-    internal Vector2 ViewSize { get; set; }
 
     private IMouse _mouse;
     
@@ -70,7 +70,7 @@ internal class MouseState
         Position = accurateGlPos;
     }
 
-    internal void Reset()
+    public void Reset()
     {
         ButtonPressed = 0;
         ButtonReleased = 0;

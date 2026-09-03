@@ -7,16 +7,13 @@ using YumeArisu.Core.Utility;
 
 namespace YumeArisu.Desktop.Implements;
 
-using DesktopKeyboard = Internal.KeyboardState;
-using DesktopMouse = Internal.MouseState;
-
-public class DesktopInputDevice : IInputSource
+public class DesktopInputSource : IInputSource
 {
     public IInputContext GetInputContext() => _input;
 
     private IInputContext _input;
-    private DesktopKeyboard _keyboard;
-    private DesktopMouse _mouse;
+    private KeyboardState _keyboard;
+    private MouseState _mouse;
 
     private List<(List<Key> alternativeKeys, Key triggerKey, Action action)> _systemKeyCombos;
 
@@ -27,8 +24,8 @@ public class DesktopInputDevice : IInputSource
         _systemKeyCombos = new();
         _input = view.CreateInput();
         _input.ConnectionChanged += DoConnect;
-        _keyboard = new DesktopKeyboard(_input.Keyboards[0]);
-        _mouse = new DesktopMouse(_input.Mice[0]);
+        _keyboard = new KeyboardState(_input.Keyboards[0]);
+        _mouse = new MouseState(_input.Mice[0]);
     }
 
     public void DoConnect(IInputDevice device, bool connected)

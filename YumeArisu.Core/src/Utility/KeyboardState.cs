@@ -1,8 +1,8 @@
 using Silk.NET.Input;
 
-namespace YumeArisu.Android.Internal;
+namespace YumeArisu.Core.Utility;
 
-internal class KeyboardState
+public class KeyboardState
 {
     public readonly ulong[] Pressed = new ulong[WordCount];
     public readonly ulong[] Released = new ulong[WordCount];
@@ -49,7 +49,7 @@ internal class KeyboardState
         Current[k >> 6] &= ~(1UL << (k & 63));
     }
 
-    internal void Reset()
+    public void Reset()
     {
         Array.Clear(Pressed, 0, WordCount);
         Array.Clear(Released, 0, WordCount);

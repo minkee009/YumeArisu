@@ -12,7 +12,7 @@ namespace YumeArisu.Desktop.Implements;
 public sealed class DesktopApplication : IApplicationControl
 {
     private DesktopWindow _window;
-    private DesktopInputDevice _inputDevice;
+    private DesktopInputSource _inputSource;
 #if !DEBUG
     private DesktopFileIO _fileIO;
 #else
@@ -33,7 +33,7 @@ public sealed class DesktopApplication : IApplicationControl
         _window.View.Closing += OnClosing;
         _window.View.ShouldSwapAutomatically = false;
 
-        _inputDevice = new();
+        _inputSource = new();
 
         _fileIO = new();
     }
@@ -52,12 +52,12 @@ public sealed class DesktopApplication : IApplicationControl
 #endif  
         _window.SetWindowIcon(_fileIO.ReadAllBytes("app.png"), 256, 256);
 
-        _inputDevice.Initialize(_window.View);
+        _inputSource.Initialize(_window.View);
 
         ApplicationSystem.Instance.StartUp(this);
         WindowSystem.Instance.StartUp(_window);
         TimeSystem.Instance.StartUp(default);
-        InputSystem.Instance.StartUp(_inputDevice);
+        InputSystem.Instance.StartUp(_inputSource);
         RenderSystem.Instance.StartUp(_window.View.CreateOpenGL());
         ResourceSystem.Instance.StartUp(_fileIO);
         BehaviourSystem.Instance.StartUp(default);
@@ -77,7 +77,7 @@ public sealed class DesktopApplication : IApplicationControl
         _debuggingUI = new(
             RenderSystem.Instance.GetGL(),
             _window.View,
-            _inputDevice.GetInputContext());
+            _inputSource.GetInputContext());
 
         InputSystem.Instance.RegisterSystemKeyCombo(
             [Key.ShiftLeft], 
