@@ -42,7 +42,7 @@ public class ResourceSystem : SystemBase<ResourceSystem, IFileIO>
             return (T)cached.Resource;
         }
 
-        var resource = new T { FileIO = _fileIO, Path = path };
+        var resource = new T { Path = path };
 
         if (resource.Load(_fileIO.ReadAllBytes(path)))
         {
@@ -105,6 +105,13 @@ public class ResourceSystem : SystemBase<ResourceSystem, IFileIO>
 
         return result;
     }
+
+    /// <summary>
+    /// 리소스 시스템의 파일 입출력 인터페이스를 통해 텍스트 파일을 읽어옵니다.
+    /// </summary>
+    /// <param name="path">읽어올 텍스트 파일의 경로</param>
+    /// <returns>파일 내용</returns>
+    public string ReadText(string path) => _fileIO.ReadAllString(path);
 }
 
 // 문법 설탕용 클래스
@@ -113,4 +120,5 @@ public static class Resources
     public static T Get<T>(string path) where T : Resource, new() => ResourceSystem.Instance.GetResource<T>(path);
     public static void Release(Resource resource) => ResourceSystem.Instance.ReleaseResource(resource);
     public static void CacheCheck(Resource resource, out int refCount) => ResourceSystem.Instance.CacheCheck(resource, out refCount);
+    public static string ReadText(string path) => ResourceSystem.Instance.ReadText(path);
 }

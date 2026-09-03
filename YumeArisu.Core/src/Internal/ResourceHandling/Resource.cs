@@ -8,9 +8,7 @@ public abstract class Resource
     
     protected bool IsLoaded { get; set; }
 
-    internal IFileIO FileIO { get; set; }
-
-    internal bool IsLoadedBySystem => FileIO is not null && !string.IsNullOrEmpty(Path);
+    internal bool IsLoadedBySystem => !string.IsNullOrEmpty(Path);
 
     internal bool Load(byte[] bytes)
     {

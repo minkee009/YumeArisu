@@ -26,13 +26,13 @@ internal class HierarchyWindow : IImGuiWindow
         IsOpen = isOpen;
 
         var currentScene = SceneControl.CurrentScene;
-        if (currentScene != null && ImGui.CollapsingHeader(currentScene.GetType().Name, ImGuiTreeNodeFlags.DefaultOpen))
+        if (currentScene is not null && ImGui.CollapsingHeader(currentScene.GetType().Name, ImGuiTreeNodeFlags.DefaultOpen))
         {
             DrawSceneGameObjects(currentScene);
         }
 
         var staticScene = SceneSystem.Instance.StaticScene;
-        if (staticScene != null && ImGui.CollapsingHeader(staticScene.GetType().Name, ImGuiTreeNodeFlags.DefaultOpen))
+        if (staticScene is not null && ImGui.CollapsingHeader(staticScene.GetType().Name, ImGuiTreeNodeFlags.DefaultOpen))
         {
             DrawSceneGameObjects(staticScene);
         }

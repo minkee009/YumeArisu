@@ -4,6 +4,7 @@ using Silk.NET.OpenGL;
 using YumeArisu.Core.Systems;
 using YumeArisu.Core.Internal.RenderPipeline;
 using YumeArisu.Core.Internal.ResourceHandling;
+using YumeArisu.Core.Common;
 using YumeArisu.Core.Utility;
 
 namespace YumeArisu.Core.Rendering;
@@ -38,8 +39,8 @@ public class Shader : Resource
         var meta = JsonMetaParser.Parse<ShaderMeta>(json);
 
         // 각 부분을 추가로 로딩
-        var vertBody = FileIO.ReadAllString(meta.VertBodyPath);
-        var fragBody = FileIO.ReadAllString(meta.FragBodyPath);
+        var vertBody = Resources.ReadText(meta.VertBodyPath);
+        var fragBody = Resources.ReadText(meta.FragBodyPath);
 
         if (string.IsNullOrEmpty(vertBody) || string.IsNullOrEmpty(fragBody))
             return false;
