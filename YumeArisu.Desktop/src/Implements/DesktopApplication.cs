@@ -20,7 +20,7 @@ public sealed class DesktopApplication : IApplicationControl
     private DebuggingUI _debuggingUI;
 #endif
 
-    private bool _requestQuit;
+    private bool _requestClose;
 
     public DesktopApplication(string title, int width, int height)
     {
@@ -106,10 +106,10 @@ public sealed class DesktopApplication : IApplicationControl
     {
         _window.ApplyDisplayMode();
 
-        if(_requestQuit)
+        if(_requestClose)
         {
             _window.View.Close();
-            _requestQuit = false;
+            _requestClose = false;
             return;
         }
 
@@ -187,5 +187,5 @@ public sealed class DesktopApplication : IApplicationControl
 
     public bool IsRunning() => !_window.View.IsClosing;
 
-    public void RequestClose() => _requestQuit = true;
+    public void RequestClose() => _requestClose = true;
 }
