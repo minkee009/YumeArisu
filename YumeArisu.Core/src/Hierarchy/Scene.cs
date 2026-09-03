@@ -1,4 +1,5 @@
 using YumeArisu.Core.Utility;
+using YumeArisu.Core.Common;
 
 namespace YumeArisu.Core.Hierarchy;
 

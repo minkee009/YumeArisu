@@ -3,7 +3,6 @@ using Silk.NET.Maths;
 using YumeArisu.Core.Routines;
 using YumeArisu.Core.Hierarchy;
 using YumeArisu.Core.Systems;
-using Silk.NET.Vulkan;
 
 namespace YumeArisu.Core.Rendering;
 

@@ -1,4 +1,5 @@
 using Silk.NET.Maths;
+using YumeArisu.Core.Common;
 
 namespace YumeArisu.Core.Abstractions;
 

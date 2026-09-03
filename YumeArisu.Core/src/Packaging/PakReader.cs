@@ -1,4 +1,5 @@
 using YumeArisu.Core.Utility;
+using YumeArisu.Core.Common;
 using K4os.Compression.LZ4;
 using System.Buffers;
 using System.Text;

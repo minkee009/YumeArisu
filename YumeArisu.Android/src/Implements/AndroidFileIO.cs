@@ -4,6 +4,7 @@ using Android.Content.Res;
 using YumeArisu.Core.Abstractions;
 using YumeArisu.Core.Packaging;
 using YumeArisu.Core.Utility;
+using YumeArisu.Core.Common;
 
 namespace YumeArisu.Android.Implements;
 

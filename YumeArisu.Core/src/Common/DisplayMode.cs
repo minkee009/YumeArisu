@@ -1,4 +1,4 @@
-namespace YumeArisu.Core.Abstractions;
+namespace YumeArisu.Core.Common;
 
 public enum DisplayMode
 {

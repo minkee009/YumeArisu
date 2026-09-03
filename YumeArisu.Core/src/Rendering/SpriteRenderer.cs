@@ -1,6 +1,7 @@
 using Silk.NET.OpenGL;
 using YumeArisu.Core.Internal.RenderPipeline;
 using YumeArisu.Core.Systems;
+using YumeArisu.Core.Common;
 
 namespace YumeArisu.Core.Rendering;
 
@@ -57,6 +58,8 @@ public class SpriteRenderer : Renderer
 
     public MaterialPropertyOverride MaterialOverride => _materialOverride;
 
+    internal SpriteBatcher Batcher { get; set; }
+
     private readonly MaterialPropertyOverride _materialOverride = new();
     private bool _materialPropertyDirty = true;
     private Sprite _sprite;
@@ -70,9 +73,68 @@ public class SpriteRenderer : Renderer
         Color = Color.White;
     }
 
-    internal override void Draw()
+    protected internal override void OnAttach()
+    {
+        RenderSystem.Instance.RegisterSpriteRenderer(this);
+    }
+
+    protected internal override void OnDetach()
+    {
+        RenderSystem.Instance.UnregisterSpriteRenderer(this);
+    }
+
+    internal void Submit()
     {
         if (Sprite is null) 
+            return;
+
+        if (_materialPropertyDirty)
+        {
+            var texture = Sprite.Texture;
+            var rect = Sprite.Rect;
+            var pivot = Sprite.Pivot;
+
+            float u0 = rect.Origin.X / texture.Width;
+            float v0 = rect.Origin.Y / texture.Height;
+            float uw = rect.Size.X / texture.Width;
+            float vh = rect.Size.Y / texture.Height;
+
+            float sizeX = rect.Size.X / Sprite.PPU;
+            float sizeY = rect.Size.Y / Sprite.PPU;
+
+            MaterialOverride.SetVector2("SpriteSize", new(sizeX, sizeY));
+            MaterialOverride.SetVector2("SpritePivot", new(pivot.X, pivot.Y));
+            MaterialOverride.SetVector4("UVRect", new(u0, v0, uw, vh));
+            MaterialOverride.SetTexture("MainTexture", texture);
+            MaterialOverride.SetFloat("FlipX", FlipX ? 1 : 0);
+            MaterialOverride.SetFloat("FlipY", FlipY ? 1 : 0);
+            MaterialOverride.SetVector4("Color", _color.ToVector4());
+
+            _materialPropertyDirty = false;
+        }
+
+        if (Material.Shader == BuiltInRenderResources.DefaultSpriteShader)
+        {
+            Batcher.Submit(
+                Sprite.Texture,
+                Transform.WorldMatrix,
+                MaterialOverride.GetVector2("SpriteSize"),
+                MaterialOverride.GetVector2("SpritePivot"),
+                MaterialOverride.GetVector4("UVRect"),
+                MaterialOverride.GetFloat("FlipX"),
+                MaterialOverride.GetFloat("FlipY"),
+                MaterialOverride.GetVector4("Color"));
+            return;
+        }
+
+        DrawImmediate();
+    }
+
+    internal override void Draw() => DrawImmediate();
+
+    private void DrawImmediate()
+    {
+        if (Sprite is null)
             return;
 
         if (_materialPropertyDirty)

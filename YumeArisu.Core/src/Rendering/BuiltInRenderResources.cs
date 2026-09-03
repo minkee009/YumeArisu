@@ -6,17 +6,18 @@ public static class BuiltInRenderResources
 {
     #region  ShaderSource
     public const string SpriteVertex = $$"""
-        uniform vec2 SpriteSize;
-        uniform vec2 SpritePivot;
-        uniform vec4 UVRect;
-        uniform float FlipX;
-        uniform float FlipY;
-        uniform mat4 Model;
-
         layout(location = 0) in vec3 position;
         layout(location = 1) in vec2 uv;
+        layout(location = 2) in mat4 Model;
+        layout(location = 6) in vec2 SpriteSize;
+        layout(location = 7) in vec2 SpritePivot;
+        layout(location = 8) in vec4 UVRect;
+        layout(location = 9) in float FlipX;
+        layout(location = 10) in float FlipY;
+        layout(location = 11) in vec4 Color;
 
         out vec2 fragUV;
+        out vec4 fragColor;
 
         void main()
         {
@@ -26,6 +27,7 @@ public static class BuiltInRenderResources
             if (FlipX != 0.0) flippedUV.x = 1.0 - flippedUV.x;
             if (FlipY != 0.0) flippedUV.y = 1.0 - flippedUV.y;
             fragUV = UVRect.xy + flippedUV * UVRect.zw;
+            fragColor = Color;
 
             gl_Position = {{GlobalUniform.Projection}} * {{GlobalUniform.View}} * Model * vec4(local, position.z, 1.0);
         }
@@ -33,15 +35,15 @@ public static class BuiltInRenderResources
 
     public const string SpriteFragment = """
         uniform sampler2D MainTexture;
-        uniform vec4 Color;
 
         in vec2 fragUV;
+        in vec4 fragColor;
 
         out vec4 FragColor;
 
         void main()
         {
-            FragColor = texture(MainTexture, fragUV) * Color;
+            FragColor = texture(MainTexture, fragUV) * fragColor;
         }
         """;
     #endregion

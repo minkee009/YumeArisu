@@ -20,7 +20,8 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
 
     // Render Pipeline Object
     private List<Camera> _cameras;
-    private List<Renderer> _renderers;
+    private List<SpriteRenderer> _spriteRenderers;
+    private SpriteBatcher _spriteBatcher;
     private bool _needCamDepthSort;
     private bool _needRenderOrderSort;
 
@@ -32,12 +33,13 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
         _gl.DepthFunc(GLEnum.Less); // 표준: 더 작은 Z(더 가까운)가 이김
 
         _cameras = new List<Camera>();
-        _renderers = new List<Renderer>();
+        _spriteRenderers = new List<SpriteRenderer>();
 
         _shaderBackend = DetectShaderBackend(_gl);
 
         GlobalUniform.Initialize();
         BuiltInRenderResources.Load();
+        _spriteBatcher = new SpriteBatcher();
     }
 
     internal override void OnShutDown()
@@ -45,10 +47,12 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
         BuiltInRenderResources.Unload();
         GlobalUniform.Release();
 
+        _spriteBatcher?.Dispose();
+
         _cameras.Clear();
-        _renderers.Clear();
+        _spriteRenderers.Clear();
         _cameras = null;
-        _renderers = null;
+        _spriteRenderers = null;
         _gl = null;
     }
 
@@ -74,7 +78,7 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
 
         if (_needRenderOrderSort)
         {
-            _renderers.Sort((a,b) => a.RenderOrder.CompareTo(b.RenderOrder));
+            _spriteRenderers.Sort((a,b) => a.RenderOrder.CompareTo(b.RenderOrder));
             _needRenderOrderSort = false;
         }
     }
@@ -87,16 +91,28 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
             if (!cam.IsActiveAndEnabled)
                 continue;
 
-            // 'Draw Sprite' 스테이지
-            GlobalUniform.UpdateCamera(cam.ViewMatrix, cam.ProjectionMatrix, cam.Transform.WorldPosition);
+            var viewportX = (int)(FramebufferSize.X * cam.ViewRect.Origin.X);
+            var viewportY = (int)(FramebufferSize.Y * cam.ViewRect.Origin.Y);
+            var viewportWidth = (uint)(FramebufferSize.X * cam.ViewRect.Size.X);
+            var viewportHeight = (uint)(FramebufferSize.Y * cam.ViewRect.Size.Y);
 
-            foreach (var renderer in _renderers)
+            _gl.Viewport(viewportX, viewportY, viewportWidth, viewportHeight);
+            _gl.Clear((uint)ClearBufferMask.DepthBufferBit);
+
+            // 'Draw Sprite' 스테이지
             {
-                if (renderer.Enabled && renderer.GameObject.ActiveInHierarchy)
+                GlobalUniform.UpdateCamera(cam.ViewMatrix, cam.ProjectionMatrix, cam.Transform.WorldPosition);
+
+                foreach (var renderer in _spriteRenderers)
                 {
-                    renderer.Draw();
+                    if (renderer.Enabled && renderer.GameObject.ActiveInHierarchy)
+                        renderer.Submit();
                 }
+
+                _spriteBatcher.Flush();
             }
+
+            
         }
     }
 
@@ -113,15 +129,16 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
         _needCamDepthSort = true;
     } 
 
-    internal void RegisterRenderer(Renderer renderer)
+    internal void RegisterSpriteRenderer(SpriteRenderer renderer)
     {
-        _renderers.Add(renderer);
+        renderer.Batcher = _spriteBatcher;
+        _spriteRenderers.Add(renderer);
         _needRenderOrderSort = true;
     } 
 
-    internal void UnregisterCamera(Camera camera) => _cameras.Remove(camera);
+    internal void UnregisterSpriteRenderer(SpriteRenderer renderer) => _spriteRenderers.Remove(renderer);
 
-    internal void UnregisterRenderer(Renderer renderer) => _renderers.Remove(renderer);
+    internal void UnregisterCamera(Camera camera) => _cameras.Remove(camera);
 
     internal ShaderBackend GetShaderBackend() => _shaderBackend;
 

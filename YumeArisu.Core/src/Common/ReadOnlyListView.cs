@@ -1,4 +1,4 @@
-namespace YumeArisu.Core.Utility;
+namespace YumeArisu.Core.Common;
 
 public readonly struct ReadOnlyListView<T>
 {

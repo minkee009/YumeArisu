@@ -1,5 +1,6 @@
 using System.Text;
 using YumeArisu.Core.Abstractions;
+using YumeArisu.Core.Common;
 using YumeArisu.Core.Utility;
 using YumeArisu.Core.Packaging;
 

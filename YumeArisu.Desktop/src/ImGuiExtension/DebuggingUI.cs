@@ -1,11 +1,10 @@
 using System.Numerics;
 using ImGuiNET;
 using Silk.NET.Input;
-using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.OpenGL.Extensions.ImGui;
 using Silk.NET.Windowing;
-using YumeArisu.Core.Abstractions;
+using YumeArisu.Core.Common;
 using YumeArisu.Core.Hierarchy;
 using YumeArisu.Core.Systems;
 
