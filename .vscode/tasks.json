@@ -36,6 +36,18 @@
       "problemMatcher": []
     },
     {
+      "label": "New Mesh",
+      "type": "shell",
+      "command": "dotnet new yamesh -n ${input:meshName} -o ${input:meshOutputDir}",
+      "problemMatcher": []
+    },
+    {
+      "label": "New Sprite",
+      "type": "shell",
+      "command": "dotnet new yasprite -n ${input:spriteName} -o ${input:spriteOutputDir}",
+      "problemMatcher": []
+    },
+    {
       "label": "build",
       "command": "dotnet",
       "type": "process",
@@ -74,6 +86,18 @@
       "default": "NewMaterial"
     },
     {
+      "id": "meshName",
+      "type": "promptString",
+      "description": "생성할 Mesh 이름",
+      "default": "NewMesh"
+    },
+    {
+      "id": "spriteName",
+      "type": "promptString",
+      "description": "생성할 Sprite 이름",
+      "default": "NewSprite"
+    },
+    {
       "id": "sciprtOutputDir",
       "type": "promptString",
       "description": "출력 폴더 경로",
@@ -96,6 +120,18 @@
       "type": "promptString",
       "description": "Material 출력 폴더 경로",
       "default": "Assets/Material"
+    },
+    {
+      "id": "meshOutputDir",
+      "type": "promptString",
+      "description": "Mesh 출력 폴더 경로",
+      "default": "Assets/Mesh"
+    },
+    {
+      "id": "spriteOutputDir",
+      "type": "promptString",
+      "description": "Sprite 출력 폴더 경로",
+      "default": "Assets/Sprite"
     }
   ]
 }

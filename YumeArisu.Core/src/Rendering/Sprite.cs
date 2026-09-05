@@ -15,8 +15,7 @@ public class Sprite : Resource
     public Rectangle<float> Rect { get; set; }
     public float PPU { get; set; }
 
-    // TODO : test 이후 internal로 전환
-    public bool ImmediateLoadFromReference(Texture texture, Vector2 pivot, Rectangle<float> rect, float ppu = 100)
+    internal bool ImmediateLoadFromReference(Texture texture, Vector2 pivot, Rectangle<float> rect, float ppu = 100)
     {
         if (IsLoaded)
             return false;

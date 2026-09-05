@@ -56,11 +56,7 @@ public class TestScene2 : Scene
         camera.NearPlane = 0.01f;
         camera.FarPlane = 1000;
 
-
-        yuukaTex = Resources.Get<Texture>("Yuuka.png");
-        yuukaSpr = new Sprite();
-        yuukaSpr.ImmediateLoadFromReference(yuukaTex, new(0.5f,0.5f),new(0,0,yuukaTex.Width,yuukaTex.Height));
-        
+        yuukaSpr = Resources.Get<Sprite>("Sprite/Yuuka.sprite");
 
         GameObject yugo = CreateGameObject();
         yugo.Transform.LocalPosition = new(0,0,-5.0f);

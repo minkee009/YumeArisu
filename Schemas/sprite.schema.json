@@ -46,32 +46,38 @@
       ],
       "additionalProperties": false
     },
-    "Rectangle": {
+    "Vector2D": {
       "type": "object",
-      "description": "Texture의 좌하단을 원점으로 하는 사각형 영역입니다.",
       "properties": {
         "X": {
-          "type": "number",
-          "description": "Texture 좌하단으로부터의 X 좌표입니다."
+          "type": "number"
         },
         "Y": {
-          "type": "number",
-          "description": "Texture 좌하단으로부터의 Y 좌표입니다."
-        },
-        "Width": {
-          "type": "number",
-          "description": "사각형 영역의 너비입니다."
-        },
-        "Height": {
-          "type": "number",
-          "description": "사각형 영역의 높이입니다."
+          "type": "number"
         }
       },
       "required": [
         "X",
-        "Y",
-        "Width",
-        "Height"
+        "Y"
+      ],
+      "additionalProperties": false
+    },
+    "Rectangle": {
+      "type": "object",
+      "description": "Texture의 좌하단을 원점으로 하는 사각형 영역입니다.",
+      "properties": {
+        "Origin": {
+          "$ref": "#/$defs/Vector2D",
+          "description": "사각형 영역의 원점입니다."
+        },
+        "Size": {
+          "$ref": "#/$defs/Vector2D",
+          "description": "사각형 영역의 크기입니다."
+        }
+      },
+      "required": [
+        "Origin",
+        "Size"
       ],
       "additionalProperties": false
     }
