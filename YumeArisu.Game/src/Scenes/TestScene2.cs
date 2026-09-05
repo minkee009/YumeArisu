@@ -8,7 +8,6 @@ namespace YumeArisu.Game.Scenes;
 
 public class TestScene2 : Scene
 {
-    Texture yuukaTex;
     Sprite yuukaSpr;
     protected override void OnLoad()
     {
@@ -103,6 +102,6 @@ public class TestScene2 : Scene
     protected override void OnUnload()
     {
         base.OnUnload();
-        Resources.Release(yuukaTex);
+        Resources.Release(yuukaSpr);
     }
 }
