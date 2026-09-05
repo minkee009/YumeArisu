@@ -12,21 +12,17 @@ public static class BuiltInRenderResources
         layout(location = 6) in vec2 SpriteSize;
         layout(location = 7) in vec2 SpritePivot;
         layout(location = 8) in vec4 UVRect;
-        layout(location = 9) in float FlipX;
-        layout(location = 10) in float FlipY;
-        layout(location = 11) in vec4 Color;
+        layout(location = 9) in vec4 Color;
 
         out vec2 fragUV;
         out vec4 fragColor;
 
         void main()
         {
+            // position.xy가 [0, 1] 기준일 때의 정점 오프셋 연산
             vec2 local = (position.xy - SpritePivot) * SpriteSize;
 
-            vec2 flippedUV = uv;
-            if (FlipX != 0.0) flippedUV.x = 1.0 - flippedUV.x;
-            if (FlipY != 0.0) flippedUV.y = 1.0 - flippedUV.y;
-            fragUV = UVRect.xy + flippedUV * UVRect.zw;
+            fragUV = UVRect.xy + uv * UVRect.zw;
             fragColor = Color;
 
             gl_Position = {{GlobalUniform.Projection}} * {{GlobalUniform.View}} * Model * vec4(local, position.z, 1.0);

@@ -88,30 +88,7 @@ public class SpriteRenderer : Renderer
         if (Sprite is null) 
             return;
 
-        if (_materialPropertyDirty)
-        {
-            var texture = Sprite.Texture;
-            var rect = Sprite.Rect;
-            var pivot = Sprite.Pivot;
-
-            float u0 = rect.Origin.X / texture.Width;
-            float v0 = rect.Origin.Y / texture.Height;
-            float uw = rect.Size.X / texture.Width;
-            float vh = rect.Size.Y / texture.Height;
-
-            float sizeX = rect.Size.X / Sprite.PPU;
-            float sizeY = rect.Size.Y / Sprite.PPU;
-
-            MaterialOverride.SetVector2("SpriteSize", new(sizeX, sizeY));
-            MaterialOverride.SetVector2("SpritePivot", new(pivot.X, pivot.Y));
-            MaterialOverride.SetVector4("UVRect", new(u0, v0, uw, vh));
-            MaterialOverride.SetTexture("MainTexture", texture);
-            MaterialOverride.SetFloat("FlipX", FlipX ? 1 : 0);
-            MaterialOverride.SetFloat("FlipY", FlipY ? 1 : 0);
-            MaterialOverride.SetVector4("Color", _color.ToVector4());
-
-            _materialPropertyDirty = false;
-        }
+        UpdateMaterialProperties();
 
         if (Material.Shader == BuiltInRenderResources.DefaultSpriteShader)
         {
@@ -121,8 +98,6 @@ public class SpriteRenderer : Renderer
                 MaterialOverride.GetVector2("SpriteSize"),
                 MaterialOverride.GetVector2("SpritePivot"),
                 MaterialOverride.GetVector4("UVRect"),
-                MaterialOverride.GetFloat("FlipX"),
-                MaterialOverride.GetFloat("FlipY"),
                 MaterialOverride.GetVector4("Color"));
             return;
         }
@@ -135,30 +110,7 @@ public class SpriteRenderer : Renderer
         if (Sprite is null)
             return;
 
-        if (_materialPropertyDirty)
-        {
-            var texture = Sprite.Texture;
-            var rect = Sprite.Rect;
-            var pivot = Sprite.Pivot;
-
-            float u0 = rect.Origin.X / texture.Width;
-            float v0 = rect.Origin.Y / texture.Height;
-            float uw = rect.Size.X / texture.Width;
-            float vh = rect.Size.Y / texture.Height;
-
-            float sizeX = rect.Size.X / Sprite.PPU;
-            float sizeY = rect.Size.Y / Sprite.PPU;
-
-            MaterialOverride.SetVector2("SpriteSize", new(sizeX, sizeY));
-            MaterialOverride.SetVector2("SpritePivot", new(pivot.X, pivot.Y));
-            MaterialOverride.SetVector4("UVRect", new(u0, v0, uw, vh));
-            MaterialOverride.SetTexture("MainTexture", texture);
-            MaterialOverride.SetFloat("FlipX", FlipX ? 1 : 0);
-            MaterialOverride.SetFloat("FlipY", FlipY ? 1 : 0);
-            MaterialOverride.SetVector4("Color", _color.ToVector4());
-
-            _materialPropertyDirty = false;
-        }
+        UpdateMaterialProperties();
 
         Material.Apply(_materialOverride);
         Material.Shader.SetMatrix4x4("Model", Transform.WorldMatrix);
@@ -172,11 +124,52 @@ public class SpriteRenderer : Renderer
         unsafe
         {
             gl.DrawElements(GLEnum.Triangles, quad.IndexCount, DrawElementsType.UnsignedInt, null);
+
+#if DEBUG
             var err = gl.GetError();
             if (err != GLEnum.NoError)
                 Console.WriteLine($"GL Error: {err}");
+#endif
         }
 
         gl.BindVertexArray(0);
+    }
+
+    private void UpdateMaterialProperties()
+    {
+        if (!_materialPropertyDirty) return;
+
+        var texture = Sprite.Texture;
+        var rect = Sprite.Rect;
+        var pivot = Sprite.Pivot;
+
+        float u0 = rect.Origin.X / texture.Width;
+        float v0 = rect.Origin.Y / texture.Height;
+        float uw = rect.Size.X / texture.Width;
+        float vh = rect.Size.Y / texture.Height;
+
+        if (FlipX)
+        {
+            u0 += uw;
+            uw = -uw;
+        }
+        if (FlipY)
+        {
+            v0 += vh;
+            vh = -vh;
+        }
+
+        float sizeX = rect.Size.X / Sprite.PPU;
+        float sizeY = rect.Size.Y / Sprite.PPU;
+
+        MaterialOverride.SetVector2("SpriteSize", new(sizeX, sizeY));
+        MaterialOverride.SetVector2("SpritePivot", new(pivot.X, pivot.Y));
+        MaterialOverride.SetVector4("UVRect", new(u0, v0, uw, vh));
+        MaterialOverride.SetTexture("MainTexture", texture);
+        MaterialOverride.SetFloat("FlipX", FlipX ? 1 : 0);
+        MaterialOverride.SetFloat("FlipY", FlipY ? 1 : 0);
+        MaterialOverride.SetVector4("Color", _color.ToVector4());
+
+        _materialPropertyDirty = false;
     }
 }
