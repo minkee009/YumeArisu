@@ -53,6 +53,23 @@
       ],
       "additionalProperties": false
     },
+    "Bounds": {
+      "type": "object",
+      "description": "메시의 로컬 공간 바운딩 박스입니다.",
+      "properties": {
+        "Min": {
+          "$ref": "#/$defs/Vector3"
+        },
+        "Max": {
+          "$ref": "#/$defs/Vector3"
+        }
+      },
+      "required": [
+        "Min",
+        "Max"
+      ],
+      "additionalProperties": false
+    },
     "Vertices": {
       "type": "array",
       "items": {
@@ -69,8 +86,31 @@
       "description": "인덱스 버퍼 데이터입니다."
     }
   },
+  "$defs": {
+    "Vector3": {
+      "type": "object",
+      "properties": {
+        "X": {
+          "type": "number"
+        },
+        "Y": {
+          "type": "number"
+        },
+        "Z": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "X",
+        "Y",
+        "Z"
+      ],
+      "additionalProperties": false
+    }
+  },
   "required": [
     "Layout",
+    "Bounds",
     "Vertices",
     "Indices"
   ],
