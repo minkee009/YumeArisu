@@ -10,12 +10,16 @@ namespace YumeArisu.Core.Rendering;
 public class Material : Resource
 {
     public Shader Shader { get; private set; }
+    public BlendMode BlendMode { get; set; } = BlendMode.Opaque;
+    public int RenderQueue { get; set; } = Rendering.RenderQueue.Geometry;
     private Dictionary<string, Texture> _textures = new();
     private Dictionary<string, UniformValue> _uniforms = new();
 
     internal bool ImmediateLoadFromReference(Shader shader, 
         Dictionary<string, Texture> textures, 
-        Dictionary<string, UniformValue> uniforms)
+        Dictionary<string, UniformValue> uniforms,
+        BlendMode blendMode = BlendMode.Opaque,
+        int renderQueue = Rendering.RenderQueue.Geometry)
     {
         if (IsLoaded)
             return false;
@@ -23,6 +27,8 @@ public class Material : Resource
         Shader = shader;
         _textures = textures;
         _uniforms = uniforms;
+        BlendMode = blendMode;
+        RenderQueue = renderQueue;
 
         IsLoaded = true;
         return true;
@@ -44,6 +50,8 @@ public class Material : Resource
             _textures[name] = Resources.Get<Texture>(path);
 
         _uniforms = meta.Uniforms;
+        BlendMode = meta.BlendMode ?? BlendMode.Opaque;
+        RenderQueue = meta.RenderQueue ?? Rendering.RenderQueue.Geometry;
 
         return true;
     }

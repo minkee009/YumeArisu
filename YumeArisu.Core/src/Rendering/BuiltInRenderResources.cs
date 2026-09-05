@@ -114,7 +114,9 @@ public static class BuiltInRenderResources
             {
                 ["MainTexture"] = DefaultWhiteTexture
             },
-            new());
+            new(),
+            BlendMode.Alpha,
+            RenderQueue.Transparent);
     
         _isLoaded = true;
     }

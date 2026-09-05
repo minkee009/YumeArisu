@@ -9,6 +9,19 @@
       "type": "string",
       "description": "이 머티리얼에서 사용할 Shader 리소스의 경로입니다."
     },
+    "BlendMode": {
+      "type": "string",
+      "enum": [
+        "Opaque",
+        "Alpha",
+        "Additive"
+      ],
+      "description": "머티리얼의 색상 블렌딩 모드입니다."
+    },
+    "RenderQueue": {
+      "type": "integer",
+      "description": "머티리얼의 렌더링 순서입니다. 값이 작을수록 먼저 렌더링됩니다."
+    },
     "TexturePaths": {
       "type": "object",
       "description": "Sampler Uniform에서 참조하는 Texture 리소스의 경로입니다.",
