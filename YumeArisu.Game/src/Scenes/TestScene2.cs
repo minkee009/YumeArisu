@@ -43,7 +43,7 @@ public class TestScene2 : Scene
         //go.AddComponent<FPSChecker>();
         go.AddComponent<TestCoroutine>();
         
-        var camerago = CreateGameObject("MainCamera");
+        var camerago = CreateGameObject("RightViewCam");
         var camera = camerago.AddComponent<Camera>();
         camerago.AddComponent<CamMover>();
         //go.AddComponent<WindowMover>();
@@ -56,7 +56,7 @@ public class TestScene2 : Scene
         camera.FarPlane = 1000;
         camera.ViewRect = new(0.5f, 0.0f, 0.5f, 1.0f);
 
-        var camera2 = CreateGameObject("MainCamera").AddComponent<CamMover>().AddComponent<Camera>();
+        var camera2 = CreateGameObject("LeftViewCam").AddComponent<CamMover>().AddComponent<Camera>();
 
         camera2.Size = 25;
         camera2.Transform.LocalPosition = new(0, 0, 10.0f);
