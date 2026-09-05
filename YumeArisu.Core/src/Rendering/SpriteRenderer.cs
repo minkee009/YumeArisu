@@ -83,7 +83,7 @@ public class SpriteRenderer : Renderer
         RenderSystem.Instance.UnregisterSpriteRenderer(this);
     }
 
-    internal void Submit()
+    internal override void Draw()
     {
         if (Sprite is null) 
             return;
@@ -129,8 +129,6 @@ public class SpriteRenderer : Renderer
 
         DrawImmediate();
     }
-
-    internal override void Draw() => DrawImmediate();
 
     private void DrawImmediate()
     {

@@ -139,6 +139,8 @@ public class Camera : Behaviour
         }
     }
 
+    public Matrix4x4 ViewProjectionMatrix => ViewMatrix * ProjectionMatrix;
+
     private ProjectionMode _projectionMode = ProjectionMode.Orthogonal;
     private Rectangle<float> _viewRect = new(0, 0, 1, 1);
     private float _near = -10.0f;

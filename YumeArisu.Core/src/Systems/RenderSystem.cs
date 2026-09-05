@@ -106,7 +106,7 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
                 foreach (var renderer in _spriteRenderers)
                 {
                     if (renderer.Enabled && renderer.GameObject.ActiveInHierarchy)
-                        renderer.Submit();
+                        renderer.Draw();
                 }
 
                 _spriteBatcher.Flush();
