@@ -54,6 +54,16 @@ public class TestScene2 : Scene
         camera.ProjectionMode = ProjectionMode.Perspective;
         camera.NearPlane = 0.01f;
         camera.FarPlane = 1000;
+        camera.ViewRect = new(0.5f, 0.0f, 0.5f, 1.0f);
+
+        var camera2 = CreateGameObject("MainCamera").AddComponent<CamMover>().AddComponent<Camera>();
+
+        camera2.Size = 25;
+        camera2.Transform.LocalPosition = new(0, 0, 10.0f);
+        camera2.ViewRect = new(0.0f, 0.0f, 0.5f, 1.0f);
+
+        camera2.NearPlane = -1.0f;
+        camera2.FarPlane = 100;
 
         yuukaSpr = Resources.Get<Sprite>("Sprite/Yuuka.sprite");
 
