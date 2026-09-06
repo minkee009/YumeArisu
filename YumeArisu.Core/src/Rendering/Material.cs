@@ -4,6 +4,8 @@ using YumeArisu.Core.Utility;
 using YumeArisu.Core.Internal.ResourceHandling;
 using YumeArisu.Core.Internal.RenderPipeline;
 using System.Numerics;
+using EnableCap = Silk.NET.OpenGL.EnableCap;
+using BlendingFactor = Silk.NET.OpenGL.BlendingFactor;
 
 namespace YumeArisu.Core.Rendering;
 
@@ -172,6 +174,32 @@ public class Material : Resource
     public void SetMatrix4x4(string name, Matrix4x4 value) => SetUniform(name, UniformValue.FromMatrix4x4(value));
 
     internal void SetUniform(string name, UniformValue value) => _uniforms[name] = value;
+
+    internal void ApplyRenderState()
+        => ApplyRenderState(BlendMode);
+
+    internal void ApplyRenderState(BlendMode blendMode)
+    {
+        var gl = RenderSystem.Instance.GetGL();
+
+        switch (blendMode)
+        {
+            case BlendMode.Opaque:
+                gl.Disable(EnableCap.Blend);
+                gl.DepthMask(true);
+                break;
+            case BlendMode.Alpha:
+                gl.Enable(EnableCap.Blend);
+                gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+                gl.DepthMask(false);
+                break;
+            case BlendMode.Additive:
+                gl.Enable(EnableCap.Blend);
+                gl.BlendFunc(BlendingFactor.One, BlendingFactor.One);
+                gl.DepthMask(false);
+                break;
+        }
+    }
 
     public void Apply(MaterialPropertyOverride overrides = null)
     {

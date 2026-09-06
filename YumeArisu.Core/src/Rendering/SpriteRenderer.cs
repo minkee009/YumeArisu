@@ -59,6 +59,8 @@ public class SpriteRenderer : Renderer
     public MaterialPropertyOverride MaterialOverride => _materialOverride;
 
     internal SpriteBatcher Batcher { get; set; }
+    internal bool UsesImmediateDraw => Material?.Shader != BuiltInRenderResources.DefaultSpriteShader;
+    internal BlendMode RenderBlendMode => Material.BlendMode;
 
     private readonly MaterialPropertyOverride _materialOverride = new();
     private bool _materialPropertyDirty = true;
@@ -98,7 +100,8 @@ public class SpriteRenderer : Renderer
                 MaterialOverride.GetVector2("SpriteSize"),
                 MaterialOverride.GetVector2("SpritePivot"),
                 MaterialOverride.GetVector4("UVRect"),
-                MaterialOverride.GetVector4("Color"));
+                MaterialOverride.GetVector4("Color"),
+                RenderBlendMode);
             return;
         }
 
@@ -112,6 +115,7 @@ public class SpriteRenderer : Renderer
 
         UpdateMaterialProperties();
 
+        Material.ApplyRenderState();
         Material.Apply(_materialOverride);
         Material.Shader.SetMatrix4x4("Model", Transform.WorldMatrix);
 

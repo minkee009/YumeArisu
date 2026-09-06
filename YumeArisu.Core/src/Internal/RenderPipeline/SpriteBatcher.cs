@@ -12,14 +12,27 @@ internal sealed class SpriteBatcher : IDisposable
     [StructLayout(LayoutKind.Sequential)]
     private struct SpriteInstance
     {
-        public Matrix4x4 Model;   // Location 2, 3, 4, 5 (64 Bytes)
-        public Vector2 Size;      // Location 6 (8 Bytes)
-        public Vector2 Pivot;     // Location 7 (8 Bytes)
-        public Vector4 UVRect;    // Location 8 (16 Bytes)
-        public Vector4 Color;     // Location 9 (16 Bytes)
+        public Matrix4x4 Model;
+        public Vector2 Size;
+        public Vector2 Pivot;
+        public Vector4 UVRect;
+        public Vector4 Color;
     }
 
-    private readonly Dictionary<SpriteTexture, List<SpriteInstance>> _batches = new();
+    private sealed class SpriteBatch
+    {
+        internal SpriteTexture Texture { get; }
+        internal BlendMode BlendMode { get; }
+        internal List<SpriteInstance> Instances { get; } = new();
+
+        internal SpriteBatch(SpriteTexture texture, BlendMode blendMode)
+        {
+            Texture = texture;
+            BlendMode = blendMode;
+        }
+    }
+
+    private readonly List<SpriteBatch> _batches = new();
     private uint _instanceBuffer;
     private uint _vao;
     private uint _allocatedBufferSize;
@@ -40,25 +53,22 @@ internal sealed class SpriteBatcher : IDisposable
         {
             gl.EnableVertexAttribArray(0);
             gl.VertexAttribPointer(0, 3, GLEnum.Float, false, 20, (void*)0);
-            
+
             gl.EnableVertexAttribArray(1);
             gl.VertexAttribPointer(1, 2, GLEnum.Float, false, 20, (void*)12);
 
-            // Instance VBO Attributes
             gl.BindBuffer(GLEnum.ArrayBuffer, _instanceBuffer);
-            uint stride = (uint)Marshal.SizeOf<SpriteInstance>(); // Total: 112 Bytes
+            uint stride = (uint)Marshal.SizeOf<SpriteInstance>();
 
-            // Matrix4x4 (Location 2 ~ 5)
             ConfigureMatrixAttribute(2, stride, 0);
             ConfigureMatrixAttribute(3, stride, 16);
             ConfigureMatrixAttribute(4, stride, 32);
             ConfigureMatrixAttribute(5, stride, 48);
 
-            // Instance Attributes
-            ConfigureAttribute(6, 2, stride, 64);  // Size
-            ConfigureAttribute(7, 2, stride, 72);  // Pivot
-            ConfigureAttribute(8, 4, stride, 80);  // UVRect
-            ConfigureAttribute(9, 4, stride, 96);  // Color
+            ConfigureAttribute(6, 2, stride, 64);
+            ConfigureAttribute(7, 2, stride, 72);
+            ConfigureAttribute(8, 4, stride, 80);
+            ConfigureAttribute(9, 4, stride, 96);
         }
 
         gl.BindVertexArray(0);
@@ -66,15 +76,18 @@ internal sealed class SpriteBatcher : IDisposable
     }
 
     internal void Submit(SpriteTexture texture, Matrix4x4 model, Vector2 size, Vector2 pivot,
-        Vector4 uvRect, Vector4 color)
+        Vector4 uvRect, Vector4 color, BlendMode blendMode)
     {
-        if (!_batches.TryGetValue(texture, out var batch))
+        SpriteBatch batch;
+        if (_batches.Count == 0 || _batches[^1].Texture != texture || _batches[^1].BlendMode != blendMode)
         {
-            batch = new List<SpriteInstance>();
-            _batches.Add(texture, batch);
+            batch = new SpriteBatch(texture, blendMode);
+            _batches.Add(batch);
         }
+        else
+            batch = _batches[^1];
 
-        batch.Add(new SpriteInstance
+        batch.Instances.Add(new SpriteInstance
         {
             Model = model,
             Size = size,
@@ -92,20 +105,23 @@ internal sealed class SpriteBatcher : IDisposable
         var gl = RenderSystem.Instance.GetGL();
         var shader = BuiltInRenderResources.DefaultSpriteShader;
 
+        BuiltInRenderResources.DefaultSpriteMaterial.ApplyRenderState();
         shader.Use();
         shader.SetTextureUnit("MainTexture", 0);
 
         gl.BindVertexArray(_vao);
 
-        foreach (var (texture, batch) in _batches)
+        foreach (var batch in _batches)
         {
-            int count = batch.Count;
-            if (count == 0) continue;
+            int count = batch.Instances.Count;
+            if (count == 0)
+                continue;
 
-            texture.Bind();
+            BuiltInRenderResources.DefaultSpriteMaterial.ApplyRenderState(batch.BlendMode);
+            batch.Texture.Bind();
             gl.BindBuffer(GLEnum.ArrayBuffer, _instanceBuffer);
 
-            ReadOnlySpan<SpriteInstance> span = CollectionsMarshal.AsSpan(batch);
+            ReadOnlySpan<SpriteInstance> span = CollectionsMarshal.AsSpan(batch.Instances);
             uint requiredSize = (uint)(count * Marshal.SizeOf<SpriteInstance>());
 
             fixed (SpriteInstance* ptr = span)
@@ -116,9 +132,7 @@ internal sealed class SpriteBatcher : IDisposable
                     gl.BufferData(GLEnum.ArrayBuffer, _allocatedBufferSize, ptr, GLEnum.StreamDraw);
                 }
                 else
-                {
                     gl.BufferSubData(GLEnum.ArrayBuffer, 0, requiredSize, ptr);
-                }
             }
 
             gl.DrawElementsInstanced(
@@ -126,10 +140,9 @@ internal sealed class SpriteBatcher : IDisposable
                 BuiltInRenderResources.DefaultQuadMesh.IndexCount,
                 DrawElementsType.UnsignedInt,
                 null,
-                (uint)count
-            );
+                (uint)count);
 
-            batch.Clear();
+            batch.Instances.Clear();
         }
 
         gl.BindVertexArray(0);
@@ -144,7 +157,7 @@ internal sealed class SpriteBatcher : IDisposable
         var gl = RenderSystem.Instance.GetGL();
         gl.DeleteVertexArray(_vao);
         gl.DeleteBuffer(_instanceBuffer);
-        
+
         _vao = 0;
         _instanceBuffer = 0;
         _initialized = false;

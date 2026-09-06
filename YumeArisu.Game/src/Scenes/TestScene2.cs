@@ -107,6 +107,19 @@ public class TestScene2 : Scene
         renderer4.Enabled = true;
         renderer4.Color = Color.Yellow;
         renderer4.FlipY = true;
+
+
+        GameObject yugo5 = CreateGameObject();
+        yugo5.Transform.LocalPosition =  new(0,0,-5.5f);
+
+        var renderer5 = yugo5.AddComponent<SpriteRenderer>();
+        renderer5.Sprite = yuukaSpr;
+        renderer5.Enabled = true;
+        renderer5.Color = Color.White;
+        renderer5.Color = new(renderer5.Color.R, renderer5.Color.G, renderer5.Color.B, 0.5f);
+        renderer5.FlipX = true;
+
+        ApplicationControl.TargetFrameRate = 30;
     }
 
     protected override void OnUnload()

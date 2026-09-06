@@ -24,6 +24,7 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
     private SpriteBatcher _spriteBatcher;
     private bool _needCamDepthSort;
     private bool _needRenderOrderSort;
+    private long _nextRendererRegistrationOrder;
 
     internal override void OnStartUp(GL gl)
     {
@@ -78,7 +79,7 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
 
         if (_needRenderOrderSort)
         {
-            _spriteRenderers.Sort((a,b) => a.RenderOrder.CompareTo(b.RenderOrder));
+            _spriteRenderers.Sort(CompareRenderers);
             _needRenderOrderSort = false;
         }
     }
@@ -106,7 +107,12 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
                 foreach (var renderer in _spriteRenderers)
                 {
                     if (renderer.Enabled && renderer.GameObject.ActiveInHierarchy)
+                    {
+                        if (renderer.UsesImmediateDraw)
+                            _spriteBatcher.Flush();
+
                         renderer.Draw();
+                    }
                 }
 
                 _spriteBatcher.Flush();
@@ -132,15 +138,44 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
     internal void RegisterSpriteRenderer(SpriteRenderer renderer)
     {
         renderer.Batcher = _spriteBatcher;
+        renderer.RegistrationOrder = _nextRendererRegistrationOrder++;
+        renderer.IsRegistered = true;
         _spriteRenderers.Add(renderer);
         _needRenderOrderSort = true;
     } 
 
-    internal void UnregisterSpriteRenderer(SpriteRenderer renderer) => _spriteRenderers.Remove(renderer);
+    internal void UnregisterSpriteRenderer(SpriteRenderer renderer)
+    {
+        renderer.IsRegistered = false;
+        _spriteRenderers.Remove(renderer);
+    }
+
+    internal void MarkRenderOrderDirty() => _needRenderOrderSort = true;
 
     internal void UnregisterCamera(Camera camera) => _cameras.Remove(camera);
 
     internal ShaderBackend GetShaderBackend() => _shaderBackend;
+
+    private static int CompareRenderers(SpriteRenderer left, SpriteRenderer right)
+    {
+        int result = GetRenderQueue(left).CompareTo(GetRenderQueue(right));
+        if (result != 0)
+            return result;
+
+        result = left.RenderOrder.CompareTo(right.RenderOrder);
+        if (result != 0)
+            return result;
+
+        return left.RegistrationOrder.CompareTo(right.RegistrationOrder);
+    }
+
+    private static int GetRenderQueue(SpriteRenderer renderer)
+    {
+        if (renderer.RenderBlendMode == BlendMode.Opaque)
+            return Rendering.RenderQueue.Geometry;
+
+        return renderer.Material.RenderQueue;
+    }
 
     private static ShaderBackend DetectShaderBackend(GL gl)
     {
