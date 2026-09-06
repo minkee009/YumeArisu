@@ -3,9 +3,10 @@ using System.Runtime.InteropServices;
 using Silk.NET.OpenGL;
 using YumeArisu.Core.Rendering;
 using YumeArisu.Core.Systems;
-using SpriteTexture = YumeArisu.Core.Rendering.Texture;
 
 namespace YumeArisu.Core.Internal.RenderPipeline;
+
+using SpriteTexture = Rendering.Texture;
 
 internal sealed class SpriteBatcher : IDisposable
 {

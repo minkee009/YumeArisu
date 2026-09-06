@@ -4,10 +4,11 @@ using YumeArisu.Core.Utility;
 using YumeArisu.Core.Internal.ResourceHandling;
 using YumeArisu.Core.Internal.RenderPipeline;
 using System.Numerics;
-using EnableCap = Silk.NET.OpenGL.EnableCap;
-using BlendingFactor = Silk.NET.OpenGL.BlendingFactor;
 
 namespace YumeArisu.Core.Rendering;
+
+using EnableCap = Silk.NET.OpenGL.EnableCap;
+using BlendingFactor = Silk.NET.OpenGL.BlendingFactor;
 
 public class Material : Resource
 {

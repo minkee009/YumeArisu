@@ -66,6 +66,9 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
 
     public void BeginFrame()
     {
+        _gl.Enable(EnableCap.DepthTest);
+        _gl.Disable(EnableCap.Blend);
+        _gl.DepthMask(true);
         _gl.ClearColor(0,0,0,1.0f);
         _gl.Clear((uint)(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
         _gl.Viewport(FramebufferSize);
