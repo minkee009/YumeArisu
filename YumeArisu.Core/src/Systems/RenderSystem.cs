@@ -23,7 +23,6 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
     private List<SpriteRenderer> _spriteRenderers;
     private SpriteBatcher _spriteBatcher;
     private bool _needCamDepthSort;
-    private bool _needRenderOrderSort;
     private long _nextRendererRegistrationOrder;
 
     internal override void OnStartUp(GL gl)
@@ -80,11 +79,6 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
             _needCamDepthSort = false;
         }
 
-        if (_needRenderOrderSort)
-        {
-            _spriteRenderers.Sort(CompareRenderers);
-            _needRenderOrderSort = false;
-        }
     }
 
     public void Render()
@@ -106,6 +100,7 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
             // 'Draw Sprite' 스테이지
             {
                 GlobalUniform.UpdateCamera(cam.ViewMatrix, cam.ProjectionMatrix, cam.Transform.WorldPosition);
+                SortRenderersForCamera(cam);
 
                 foreach (var renderer in _spriteRenderers)
                 {
@@ -144,7 +139,6 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
         renderer.RegistrationOrder = _nextRendererRegistrationOrder++;
         renderer.IsRegistered = true;
         _spriteRenderers.Add(renderer);
-        _needRenderOrderSort = true;
     } 
 
     internal void UnregisterSpriteRenderer(SpriteRenderer renderer)
@@ -152,8 +146,6 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
         renderer.IsRegistered = false;
         _spriteRenderers.Remove(renderer);
     }
-
-    internal void MarkRenderOrderDirty() => _needRenderOrderSort = true;
 
     internal void UnregisterCamera(Camera camera) => _cameras.Remove(camera);
 
@@ -169,7 +161,32 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
         if (result != 0)
             return result;
 
+        if (left.RenderBlendMode != BlendMode.Opaque
+            && right.RenderBlendMode != BlendMode.Opaque)
+        {
+            result = left.CameraDepth.CompareTo(right.CameraDepth);
+            if (result != 0)
+                return result;
+        }
+
         return left.RegistrationOrder.CompareTo(right.RegistrationOrder);
+    }
+
+    private void SortRenderersForCamera(Camera camera)
+    {
+        Matrix4x4 viewMatrix = camera.ViewMatrix;
+
+        foreach (var renderer in _spriteRenderers)
+        {
+            if (renderer.RenderBlendMode == BlendMode.Opaque)
+                continue;
+
+            renderer.CameraDepth = Vector3.Transform(
+                renderer.Transform.WorldPosition,
+                viewMatrix).Z;
+        }
+
+        _spriteRenderers.Sort(CompareRenderers);
     }
 
     private static int GetRenderQueue(SpriteRenderer renderer)

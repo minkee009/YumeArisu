@@ -1,7 +1,6 @@
 using YumeArisu.Core.Hierarchy;
 using YumeArisu.Core.Rendering;
 using YumeArisu.Core.Common;
-using YumeArisu.Core.Systems;
 
 namespace YumeArisu.Core.Internal.RenderPipeline;
 
@@ -18,8 +17,6 @@ public abstract class Renderer : Component
                 return;
 
             _renderOrder = value;
-            if (_isRegistered)
-                RenderSystem.Instance.MarkRenderOrderDirty();
         }
     }
 
@@ -28,6 +25,7 @@ public abstract class Renderer : Component
     public BoundingBox Bounds { get; }
 
     internal long RegistrationOrder { get; set; }
+    internal float CameraDepth { get; set; }
     internal bool IsRegistered { get => _isRegistered; set => _isRegistered = value; }
 
     private int _renderOrder;

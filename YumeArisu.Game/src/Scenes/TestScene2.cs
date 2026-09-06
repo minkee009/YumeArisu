@@ -119,7 +119,7 @@ public class TestScene2 : Scene
         renderer5.Color = new(renderer5.Color.R, renderer5.Color.G, renderer5.Color.B, 0.5f);
         renderer5.FlipX = true;
 
-        ApplicationControl.TargetFrameRate = 30;
+        //ApplicationControl.TargetFrameRate = 48;
     }
 
     protected override void OnUnload()
