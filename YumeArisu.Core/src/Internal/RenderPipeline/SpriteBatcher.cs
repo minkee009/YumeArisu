@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Silk.NET.OpenGL;
 using YumeArisu.Core.Rendering;
@@ -60,7 +61,7 @@ internal sealed class SpriteBatcher : IDisposable
             gl.VertexAttribPointer(1, 2, GLEnum.Float, false, 20, (void*)12);
 
             gl.BindBuffer(GLEnum.ArrayBuffer, _instanceBuffer);
-            uint stride = (uint)Marshal.SizeOf<SpriteInstance>();
+            uint stride = (uint)Unsafe.SizeOf<SpriteInstance>();
 
             ConfigureMatrixAttribute(2, stride, 0);
             ConfigureMatrixAttribute(3, stride, 16);
@@ -128,7 +129,7 @@ internal sealed class SpriteBatcher : IDisposable
             gl.BindBuffer(GLEnum.ArrayBuffer, _instanceBuffer);
 
             ReadOnlySpan<SpriteInstance> span = CollectionsMarshal.AsSpan(batch.Instances);
-            uint requiredSize = (uint)(count * Marshal.SizeOf<SpriteInstance>());
+            uint requiredSize = (uint)(count * Unsafe.SizeOf<SpriteInstance>());
 
             fixed (SpriteInstance* ptr = span)
             {

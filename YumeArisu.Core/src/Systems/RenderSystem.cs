@@ -114,7 +114,7 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
                     {
                         if (spriteRenderer.UsesImmediateDraw)
                             _spriteBatcher.Flush();
-
+                
                         spriteRenderer.Draw();
                     }
                 }
