@@ -24,8 +24,10 @@ public abstract class Renderer : Component
 
     public BoundingBox Bounds { get; }
 
+    public BlendMode BlendMode => Material.BlendMode;
+
     internal long RegistrationOrder { get; set; }
-    internal float CameraDepth { get; set; }
+    internal float ViewSpaceDepth { get; set; }
     internal bool IsRegistered { get => _isRegistered; set => _isRegistered = value; }
 
     private int _renderOrder;

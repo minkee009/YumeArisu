@@ -19,8 +19,13 @@
       "description": "머티리얼의 색상 블렌딩 모드입니다."
     },
     "RenderQueue": {
-      "type": "integer",
-      "description": "머티리얼의 렌더링 순서입니다. 값이 작을수록 먼저 렌더링됩니다."
+      "type": "string",
+      "enum": [
+        "Geometry",
+        "Transparent",
+        "UI"
+      ],
+      "description": "머티리얼의 렌더링 단계입니다. 앞 단계부터 먼저 렌더링됩니다."
     },
     "TexturePaths": {
       "type": "object",

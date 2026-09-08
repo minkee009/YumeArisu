@@ -2,7 +2,7 @@
   "$schema": "https://yume-arisu.dev/schema/material.schema.json",
   "ShaderPath": "...",
   "BlendMode": "Opaque",
-  "RenderQueue": 2000,
+  "RenderQueue": "Geometry",
   "TexturePaths": {},
   "Uniforms": {}
 }

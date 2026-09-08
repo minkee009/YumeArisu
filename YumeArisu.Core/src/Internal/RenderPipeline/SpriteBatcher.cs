@@ -18,6 +18,7 @@ internal sealed class SpriteBatcher : IDisposable
         public Vector2 Pivot;
         public Vector4 UVRect;
         public Vector4 Color;
+        public float Depth;
     }
 
     private sealed class SpriteBatch
@@ -77,7 +78,7 @@ internal sealed class SpriteBatcher : IDisposable
     }
 
     internal void Submit(SpriteTexture texture, Matrix4x4 model, Vector2 size, Vector2 pivot,
-        Vector4 uvRect, Vector4 color, BlendMode blendMode)
+        Vector4 uvRect, Vector4 color, BlendMode blendMode, float depth)
     {
         SpriteBatch batch;
         if (_batches.Count == 0 || _batches[^1].Texture != texture || _batches[^1].BlendMode != blendMode)
@@ -94,7 +95,8 @@ internal sealed class SpriteBatcher : IDisposable
             Size = size,
             Pivot = pivot,
             UVRect = uvRect,
-            Color = color
+            Color = color,
+            Depth = depth
         });
     }
 
@@ -117,6 +119,9 @@ internal sealed class SpriteBatcher : IDisposable
             int count = batch.Instances.Count;
             if (count == 0)
                 continue;
+
+            if (batch.BlendMode != BlendMode.Opaque)
+                batch.Instances.Sort(CompareDepth);
 
             BuiltInRenderResources.DefaultSpriteMaterial.ApplyRenderState(batch.BlendMode);
             batch.Texture.Bind();
@@ -148,6 +153,15 @@ internal sealed class SpriteBatcher : IDisposable
 
         gl.BindVertexArray(0);
         _batches.Clear();
+    }
+
+    private static int CompareDepth(SpriteInstance left, SpriteInstance right)
+    {
+        int result = left.Depth.CompareTo(right.Depth);
+        if (result != 0)
+            return result;
+
+        return 0;
     }
 
     public void Dispose()

@@ -1,10 +1,8 @@
 namespace YumeArisu.Core.Rendering;
 
-public static class RenderQueue
+public enum RenderQueue
 {
-    public const int Background = 1000;
-    public const int Geometry = 2000;
-    public const int AlphaTest = 2450;
-    public const int Transparent = 3000;
-    public const int Overlay = 4000;
+    Geometry = 2000,
+    Transparent = 3000,
+    UI = 4000
 }

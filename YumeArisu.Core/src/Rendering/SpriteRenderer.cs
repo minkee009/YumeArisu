@@ -60,7 +60,6 @@ public class SpriteRenderer : Renderer
 
     internal SpriteBatcher Batcher { get; set; }
     internal bool UsesImmediateDraw => Material?.Shader != BuiltInRenderResources.DefaultSpriteShader;
-    internal BlendMode RenderBlendMode => Material.BlendMode;
 
     private readonly MaterialPropertyOverride _materialOverride = new();
     private bool _materialPropertyDirty = true;
@@ -101,7 +100,8 @@ public class SpriteRenderer : Renderer
                 MaterialOverride.GetVector2("SpritePivot"),
                 MaterialOverride.GetVector4("UVRect"),
                 MaterialOverride.GetVector4("Color"),
-                RenderBlendMode);
+                BlendMode,
+                ViewSpaceDepth);
             return;
         }
 
@@ -110,11 +110,6 @@ public class SpriteRenderer : Renderer
 
     private void DrawImmediate()
     {
-        if (Sprite is null)
-            return;
-
-        UpdateMaterialProperties();
-
         Material.ApplyRenderState();
         Material.Apply(_materialOverride);
         Material.Shader.SetMatrix4x4("Model", Transform.WorldMatrix);
