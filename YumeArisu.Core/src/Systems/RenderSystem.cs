@@ -79,7 +79,7 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
 
         if (_needRenderOrderSort)
         {
-            _renderers.Sort(CompareSpriteRenderers);
+            _renderers.Sort(CompareRenderers);
             _needRenderOrderSort = false;
         }
     }
@@ -161,7 +161,7 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
 
     internal ShaderBackend GetShaderBackend() => _shaderBackend;
 
-    private static int CompareSpriteRenderers(Renderer left, Renderer right)
+    private int CompareRenderers(Renderer left, Renderer right)
     {
         int result =  left.Material.RenderQueue.CompareTo(right.Material.RenderQueue);
         if (result != 0)
@@ -189,7 +189,7 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
         }
     }
 
-    private static ShaderBackend DetectShaderBackend(GL gl)
+    private ShaderBackend DetectShaderBackend(GL gl)
     {
         string version = gl.GetStringS(StringName.Version);
         return version.Contains("OpenGL ES") ? ShaderBackend.OpenGLES : ShaderBackend.OpenGLCore;
