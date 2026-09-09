@@ -30,14 +30,14 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
         _gl.Enable(EnableCap.DepthTest);
         _gl.DepthFunc(GLEnum.Less); // 표준: 더 작은 Z(더 가까운)가 이김
 
-        _cameras = new List<Camera>();
-        _renderers = new List<Renderer>();
+        _cameras = new();
+        _renderers = new();
 
         _shaderBackend = DetectShaderBackend(_gl);
 
         GlobalUniform.Initialize();
         BuiltInRenderResources.Load();
-        _spriteBatcher = new SpriteBatcher();
+        _spriteBatcher = new();
     }
 
     internal override void OnShutDown()
@@ -82,6 +82,20 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
             _renderers.Sort(CompareRenderers);
             _needRenderOrderSort = false;
         }
+
+        // 렌더러 별 업데이트
+        foreach (var renderer in _renderers)
+        {
+            if (!renderer.Enabled || !renderer.GameObject.ActiveInHierarchy)
+                continue;
+
+            switch (renderer)
+            {
+                case ParticleEmitter emitter:
+                    emitter.UpdateParticles();
+                    break;
+            }
+        }
     }
 
     public void Render()
@@ -103,26 +117,27 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
             GlobalUniform.UpdateCamera(cam.ViewMatrix, cam.ProjectionMatrix, cam.Transform.WorldPosition);
             UpdateViewSpaceDepths(cam);
 
-            // 'Draw Sprite' 스테이지
+            // 렌더러 드로잉
+            foreach (var renderer in _renderers)
             {
-                foreach (var renderer in _renderers)
-                {
-                    if (renderer is not SpriteRenderer spriteRenderer)
-                        continue;
+                if (!renderer.Enabled || !renderer.GameObject.ActiveInHierarchy)
+                    continue;
 
-                    else if (spriteRenderer.Enabled && spriteRenderer.GameObject.ActiveInHierarchy)
-                    {
+                switch (renderer)
+                {
+                    case SpriteRenderer spriteRenderer:
                         if (spriteRenderer.UsesImmediateDraw)
                             _spriteBatcher.Flush();
-                
-                        spriteRenderer.Draw();
-                    }
-                }
 
-                _spriteBatcher.Flush();
+                        spriteRenderer.Draw();
+                        break;
+                    case ParticleEmitter emitter:
+                        emitter.Draw();
+                        break;
+                }
             }
 
-            
+            _spriteBatcher.Flush();
         }
     }
 
@@ -148,10 +163,26 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
         _needRenderOrderSort = true;
     } 
 
+    internal void RegisterParticleEmitter(ParticleEmitter emitter)
+    {
+        emitter.Batcher = _spriteBatcher;
+        emitter.RegistrationOrder = _nextRendererRegistrationOrder++;
+        emitter.IsRegistered = true;
+        _renderers.Add(emitter);
+        _needRenderOrderSort = true;
+    }
+
     internal void UnregisterSpriteRenderer(SpriteRenderer renderer)
     {
         renderer.IsRegistered = false;
         _renderers.Remove(renderer);
+        _needRenderOrderSort = true;
+    }
+
+    internal void UnregisterParticleEmitter(ParticleEmitter emitter)
+    {
+        emitter.IsRegistered = false;
+        _renderers.Remove(emitter);
         _needRenderOrderSort = true;
     }
 
