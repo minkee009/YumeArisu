@@ -7,6 +7,8 @@ namespace YumeArisu.Core.Rendering;
 
 public sealed class ParticleEmitter : Renderer
 {
+    private const int DefaultCapacity = 1000;
+
     private struct Particle
     {
         public Vector2 Position;
@@ -19,7 +21,7 @@ public sealed class ParticleEmitter : Renderer
 
     public Sprite Sprite { get; set; }
     public float EmissionRate { get; set; } = 10f;
-    public int MaxParticles { get; set; } = 1000;
+    public int Capacity => DefaultCapacity;
     public float ParticleLifetime { get; set; } = 1f;
     public Vector2 EmissionDirection { get; set; } = Vector2.UnitY;
     public float EmissionSpread { get; set; } = MathF.PI;
@@ -34,12 +36,13 @@ public sealed class ParticleEmitter : Renderer
     public float StartAngularVelocity { get; set; }
     public bool PlayOnAwake { get; set; } = true;
     public bool IsPlaying => _isPlaying;
-    public int ParticleCount => _particles.Count;
+    public int ParticleCount => _particleCount;
 
     internal SpriteBatcher Batcher { get; set; }
 
-    private readonly List<Particle> _particles = new();
+    private readonly Particle[] _particles = new Particle[DefaultCapacity];
     private readonly Random _random = new();
+    private int _particleCount;
     private float _emissionAccumulator;
     private bool _isPlaying;
 
@@ -55,7 +58,7 @@ public sealed class ParticleEmitter : Renderer
 
     public void Clear()
     {
-        _particles.Clear();
+        _particleCount = 0;
         _emissionAccumulator = 0f;
     }
 
@@ -64,9 +67,9 @@ public sealed class ParticleEmitter : Renderer
         if (count <= 0)
             return;
 
-        int remaining = Math.Max(0, MaxParticles - _particles.Count);
-        for (int i = 0; i < Math.Min(count, remaining); i++)
-            _particles.Add(CreateParticle());
+        int emitCount = Math.Min(count, Capacity - _particleCount);
+        for (int i = 0; i < emitCount; i++)
+            _particles[_particleCount++] = CreateParticle();
     }
 
     protected internal override void OnAttach()
@@ -83,13 +86,13 @@ public sealed class ParticleEmitter : Renderer
     {
         float deltaTime = Time.DeltaTime;
 
-        for (int i = _particles.Count - 1; i >= 0; i--)
+        for (int i = _particleCount - 1; i >= 0; i--)
         {
             Particle particle = _particles[i];
             particle.Age += deltaTime;
             if (particle.Age >= particle.Lifetime)
             {
-                _particles.RemoveAt(i);
+            _particles[i] = _particles[--_particleCount];
                 continue;
             }
 
@@ -99,7 +102,7 @@ public sealed class ParticleEmitter : Renderer
             _particles[i] = particle;
         }
 
-        if (!_isPlaying || EmissionRate <= 0f || MaxParticles <= _particles.Count)
+        if (!_isPlaying || EmissionRate <= 0f || Capacity <= _particleCount)
             return;
 
         _emissionAccumulator += EmissionRate * deltaTime;
@@ -121,8 +124,9 @@ public sealed class ParticleEmitter : Renderer
         float vh = Sprite.Rect.Size.Y / Sprite.Texture.Height;
         Vector2 pivot = Sprite.Pivot;
 
-        foreach (Particle particle in _particles)
+        for (int particleIndex = 0; particleIndex < _particleCount; particleIndex++)
         {
+            Particle particle = _particles[particleIndex];
             float normalizedAge = Math.Clamp(particle.Age / particle.Lifetime, 0f, 1f);
             Vector4 color = Vector4.Lerp(StartColor.ToVector4(), EndColor.ToVector4(), normalizedAge);
             float size = StartSize + (EndSize - StartSize) * normalizedAge;

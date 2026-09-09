@@ -24,18 +24,26 @@ internal sealed class SpriteBatcher : IDisposable
 
     private sealed class SpriteBatch
     {
-        internal SpriteTexture Texture { get; }
-        internal BlendMode BlendMode { get; }
+        internal SpriteTexture Texture { get; private set; }
+        internal BlendMode BlendMode { get; private set; }
         internal List<SpriteInstance> Instances { get; } = new();
 
         internal SpriteBatch(SpriteTexture texture, BlendMode blendMode)
         {
+            Reset(texture, blendMode);
+        }
+
+        internal void Reset(SpriteTexture texture, BlendMode blendMode)
+        {
             Texture = texture;
             BlendMode = blendMode;
+            Instances.Clear();
         }
     }
 
     private readonly List<SpriteBatch> _batches = new();
+    private readonly List<SpriteBatch> _batchPool = new();
+    private int _pooledBatchCount;
     private uint _instanceBuffer;
     private uint _vao;
     private uint _allocatedBufferSize;
@@ -85,7 +93,12 @@ internal sealed class SpriteBatcher : IDisposable
         SpriteBatch batch;
         if (_batches.Count == 0 || _batches[^1].Texture != texture || _batches[^1].BlendMode != command.Material.BlendMode)
         {
-            batch = new SpriteBatch(texture, command.Material.BlendMode);
+            if (_pooledBatchCount == _batchPool.Count)
+                _batchPool.Add(new SpriteBatch(texture, command.Material.BlendMode));
+            else
+                _batchPool[_pooledBatchCount].Reset(texture, command.Material.BlendMode);
+
+            batch = _batchPool[_pooledBatchCount++];
             _batches.Add(batch);
         }
         else
@@ -137,10 +150,14 @@ internal sealed class SpriteBatcher : IDisposable
                 if (requiredSize > _allocatedBufferSize)
                 {
                     _allocatedBufferSize = Math.Max(requiredSize, _allocatedBufferSize * 2);
-                    gl.BufferData(GLEnum.ArrayBuffer, _allocatedBufferSize, ptr, GLEnum.StreamDraw);
+                    gl.BufferData(
+                        GLEnum.ArrayBuffer,
+                        (nuint)_allocatedBufferSize,
+                        (void*)0,
+                        GLEnum.StreamDraw);
                 }
-                else
-                    gl.BufferSubData(GLEnum.ArrayBuffer, 0, requiredSize, ptr);
+
+                gl.BufferSubData(GLEnum.ArrayBuffer, 0, requiredSize, ptr);
             }
 
             gl.DrawElementsInstanced(
@@ -155,6 +172,7 @@ internal sealed class SpriteBatcher : IDisposable
 
         gl.BindVertexArray(0);
         _batches.Clear();
+        _pooledBatchCount = 0;
     }
 
     private static int CompareDepth(SpriteInstance left, SpriteInstance right)

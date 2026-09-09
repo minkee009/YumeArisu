@@ -111,22 +111,25 @@ public class Shader : Resource
         switch (value.Type)
         {
             case Internal.RenderPipeline.ShaderPropertyType.Float:
-                SetFloat(name, value.Data[0]);
+                SetFloat(name, value.AsFloat());
                 break;
             case Internal.RenderPipeline.ShaderPropertyType.Vec2:
-                SetVector2(name, value.Data[0], value.Data[1]);
+                var vector2 = value.AsVector2();
+                SetVector2(name, vector2.X, vector2.Y);
                 break;
             case Internal.RenderPipeline.ShaderPropertyType.Vec3:
-                SetVector3(name, value.Data[0], value.Data[1], value.Data[2]);
+                var vector3 = value.AsVector3();
+                SetVector3(name, vector3.X, vector3.Y, vector3.Z);
                 break;
             case Internal.RenderPipeline.ShaderPropertyType.Vec4:
-                SetVector4(name, value.Data[0], value.Data[1], value.Data[2], value.Data[3]);
+                var vector4 = value.AsVector4();
+                SetVector4(name, vector4.X, vector4.Y, vector4.Z, vector4.W);
                 break;
             case Internal.RenderPipeline.ShaderPropertyType.Int:
-                SetInt(name, (int)value.Data[0]);
+                SetInt(name, value.AsInt());
                 break;
             case Internal.RenderPipeline.ShaderPropertyType.Mat4:
-                SetMatrix4x4(name, ToMatrix4x4(value.Data));
+                SetMatrix4x4(name, value.AsMatrix4x4());
                 break;
         }
     }
@@ -238,9 +241,4 @@ public class Shader : Resource
         return location;
     }
 
-    private static Matrix4x4 ToMatrix4x4(float[] d) => new(
-        d[0],  d[1],  d[2],  d[3],
-        d[4],  d[5],  d[6],  d[7],
-        d[8],  d[9],  d[10], d[11],
-        d[12], d[13], d[14], d[15]);
 }
