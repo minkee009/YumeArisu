@@ -77,18 +77,13 @@
         "Type": {
           "const": "Float"
         },
-        "Data": {
-          "type": "array",
-          "items": {
-            "type": "number"
-          },
-          "minItems": 1,
-          "maxItems": 1
+        "Value": {
+          "$ref": "#/$defs/Vector4"
         }
       },
       "required": [
         "Type",
-        "Data"
+         "Value"
       ],
       "additionalProperties": false
     },
@@ -98,18 +93,13 @@
         "Type": {
           "const": "Vec2"
         },
-        "Data": {
-          "type": "array",
-          "items": {
-            "type": "number"
-          },
-          "minItems": 2,
-          "maxItems": 2
+        "Value": {
+          "$ref": "#/$defs/Vector4"
         }
       },
       "required": [
         "Type",
-        "Data"
+         "Value"
       ],
       "additionalProperties": false
     },
@@ -119,18 +109,13 @@
         "Type": {
           "const": "Vec3"
         },
-        "Data": {
-          "type": "array",
-          "items": {
-            "type": "number"
-          },
-          "minItems": 3,
-          "maxItems": 3
+        "Value": {
+          "$ref": "#/$defs/Vector4"
         }
       },
       "required": [
         "Type",
-        "Data"
+         "Value"
       ],
       "additionalProperties": false
     },
@@ -140,18 +125,13 @@
         "Type": {
           "const": "Vec4"
         },
-        "Data": {
-          "type": "array",
-          "items": {
-            "type": "number"
-          },
-          "minItems": 4,
-          "maxItems": 4
+        "Value": {
+          "$ref": "#/$defs/Vector4"
         }
       },
       "required": [
         "Type",
-        "Data"
+         "Value"
       ],
       "additionalProperties": false
     },
@@ -161,18 +141,13 @@
         "Type": {
           "const": "Mat4"
         },
-        "Data": {
-          "type": "array",
-          "items": {
-            "type": "number"
-          },
-          "minItems": 16,
-          "maxItems": 16
+        "Matrix": {
+          "$ref": "#/$defs/Matrix4x4"
         }
       },
       "required": [
         "Type",
-        "Data"
+        "Matrix"
       ],
       "additionalProperties": false
     },
@@ -182,18 +157,42 @@
         "Type": {
           "const": "Int"
         },
-        "Data": {
-          "type": "array",
-          "items": {
-            "type": "number"
-          },
-          "minItems": 1,
-          "maxItems": 1
+        "Value": {
+          "$ref": "#/$defs/Vector4"
         }
       },
       "required": [
         "Type",
-        "Data"
+         "Value"
+      ],
+      "additionalProperties": false
+    },
+    "Vector4": {
+      "type": "object",
+      "properties": {
+        "X": { "type": "number" },
+        "Y": { "type": "number" },
+        "Z": { "type": "number" },
+        "W": { "type": "number" }
+      },
+      "required": ["X", "Y", "Z", "W"],
+      "additionalProperties": false
+    },
+    "Matrix4x4": {
+      "type": "object",
+      "properties": {
+        "M11": { "type": "number" }, "M12": { "type": "number" },
+        "M13": { "type": "number" }, "M14": { "type": "number" },
+        "M21": { "type": "number" }, "M22": { "type": "number" },
+        "M23": { "type": "number" }, "M24": { "type": "number" },
+        "M31": { "type": "number" }, "M32": { "type": "number" },
+        "M33": { "type": "number" }, "M34": { "type": "number" },
+        "M41": { "type": "number" }, "M42": { "type": "number" },
+        "M43": { "type": "number" }, "M44": { "type": "number" }
+      },
+      "required": [
+        "M11", "M12", "M13", "M14", "M21", "M22", "M23", "M24",
+        "M31", "M32", "M33", "M34", "M41", "M42", "M43", "M44"
       ],
       "additionalProperties": false
     }

@@ -5,13 +5,13 @@ namespace YumeArisu.Core.Internal.RenderPipeline;
 internal struct ShaderPropertyValue
 {
     public ShaderPropertyType Type { get; init; }
-    public Vector4 Value { get; set; }
-    public Matrix4x4 Matrix { get; set; }
+    public Vector4 Value { get; init; }
+    public Matrix4x4 Matrix { get; init; }
 
-    internal static ShaderPropertyValue FromInt(int v) => new() { Type = ShaderPropertyType.Int, Value = new(v, 0f, 0f, 0f) };
-    internal static ShaderPropertyValue FromFloat(float v) => new() { Type = ShaderPropertyType.Float, Value = new(v, 0f, 0f, 0f) };
-    internal static ShaderPropertyValue FromVector2(Vector2 v) => new() { Type = ShaderPropertyType.Vec2, Value = new(v, 0f, 0f) };
-    internal static ShaderPropertyValue FromVector3(Vector3 v) => new() { Type = ShaderPropertyType.Vec3, Value = new(v, 0f) };
+    internal static ShaderPropertyValue FromInt(int v) => new() { Type = ShaderPropertyType.Int, Value = new Vector4(v, 0f, 0f, 0f) };
+    internal static ShaderPropertyValue FromFloat(float v) => new() { Type = ShaderPropertyType.Float, Value = new Vector4(v, 0f, 0f, 0f) };
+    internal static ShaderPropertyValue FromVector2(Vector2 v) => new() { Type = ShaderPropertyType.Vec2, Value = new Vector4(v, 0f, 0f) };
+    internal static ShaderPropertyValue FromVector3(Vector3 v) => new() { Type = ShaderPropertyType.Vec3, Value = new Vector4(v, 0f) };
     internal static ShaderPropertyValue FromVector4(Vector4 v) => new() { Type = ShaderPropertyType.Vec4, Value = v };
     internal static ShaderPropertyValue FromMatrix4x4(Matrix4x4 m) => new() { Type = ShaderPropertyType.Mat4, Matrix = m };
 

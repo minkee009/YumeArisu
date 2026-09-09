@@ -248,12 +248,4 @@ public class Material : Resource
             properties.SetShaderProperty(name, value);
         return properties;
     }
-
-    private static ShaderPropertyBlock CreateShaderProperties(Dictionary<string, ShaderPropertyMeta> values)
-    {
-        var properties = new ShaderPropertyBlock();
-        foreach (var (name, value) in values)
-            properties.SetShaderProperty(name, value.ToValue());
-        return properties;
-    }
 }
