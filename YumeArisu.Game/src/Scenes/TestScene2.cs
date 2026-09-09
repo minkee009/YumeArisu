@@ -100,9 +100,10 @@ public class TestScene2 : Scene
         var yugo3sub1 = CreateGameObject();
         yugo3sub1.Transform.SetParent(yugo3.Transform);
 
-        yugo3sub1.Transform.LocalPosition = new Vector3(0, 0, 2.5f);
+        yugo3sub1.Transform.LocalPosition = new Vector3(17.6f, 0, 2.5f);
+        yugo3sub1.Transform.LocalScale = new Vector3(0.4f, 0.4f, 0.4f);
 
-        var emitter = yugo3.AddComponent<ParticleEmitter>();
+        var emitter = yugo3sub1.AddComponent<ParticleEmitter>();
         emitter.Sprite = yuukaSpr;
         emitter.EmissionRate = 30f;
         emitter.StartSpeed = 2f;
