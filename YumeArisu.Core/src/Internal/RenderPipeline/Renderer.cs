@@ -1,6 +1,7 @@
 using YumeArisu.Core.Hierarchy;
 using YumeArisu.Core.Rendering;
 using YumeArisu.Core.Common;
+using YumeArisu.Core.Systems;
 
 namespace YumeArisu.Core.Internal.RenderPipeline;
 
@@ -17,10 +18,26 @@ public abstract class Renderer : Component
                 return;
 
             _renderOrder = value;
+
+            if (IsRegistered)
+                RenderSystem.Instance.MarkRenderOrderDirty();
         }
     }
 
-    public Material Material { get; set; }
+    public Material Material
+    {
+        get => _material;
+        set
+        {
+            if (ReferenceEquals(_material, value))
+                return;
+
+            _material = value;
+
+            if (IsRegistered)
+                RenderSystem.Instance.MarkRenderOrderDirty();
+        }
+    }
 
     public BoundingBox Bounds { get; }
 
@@ -30,6 +47,8 @@ public abstract class Renderer : Component
 
     private int _renderOrder;
     private bool _isRegistered;
+
+    private Material _material;
 
     internal abstract void Draw(RenderContext context);
 }
