@@ -44,7 +44,7 @@ public class Sprite : Resource
 
         Texture = Resources.Get<Texture>(meta.TexturePath);
 
-        Pivot = meta.Pivot; 
+        Pivot = meta.Pivot.ToNumerics(); 
         Rect = meta.Rect;
         PPU = meta.PPU;
 
