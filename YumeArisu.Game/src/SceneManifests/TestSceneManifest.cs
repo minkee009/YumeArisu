@@ -6,6 +6,6 @@ namespace YumeArisu.Game.SceneManifests;
 
 public class TestSceneManifest : ISceneManifest
 {
-    public Scene[] DynamicScenes =>  [new TestScene1(), new TestScene2(), new EmptyScene()];
+    public Scene[] DynamicScenes =>  [new TestScene1(), new TestScene2(), new TestScene3()];
     public Scene StaticScene => new StaticScene();
 }

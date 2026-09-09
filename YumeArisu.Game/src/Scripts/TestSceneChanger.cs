@@ -11,7 +11,7 @@ public class TestSceneChanger : ScriptBehaviour
     {
         if (Input.GetKeyUp(DefaultKey))
         {
-            SceneControl.ChangeScene("EmptyScene");
+            SceneControl.ChangeScene("TestScene3");
         }
     }
 }

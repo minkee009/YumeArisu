@@ -5,7 +5,7 @@ using YumeArisu.Core.Systems;
 
 namespace YumeArisu.Game.Scenes;
 
-public class EmptyScene : Scene
+public class TestScene3 : Scene
 {
     private Sprite _stressSprite;
 
