@@ -14,7 +14,7 @@ public class Material : Resource
 {
     public Shader Shader { get; private set; }
     public BlendMode BlendMode { get; set; } = BlendMode.Opaque;
-    public RenderQueue RenderQueue { get; set; } = Rendering.RenderQueue.Geometry;
+    public RenderQueue RenderQueue { get; set; } = RenderQueue.Geometry;
     private Dictionary<string, Texture> _textures = new();
     private Dictionary<string, UniformValue> _uniforms = new();
 
@@ -22,7 +22,7 @@ public class Material : Resource
         Dictionary<string, Texture> textures, 
         Dictionary<string, UniformValue> uniforms,
         BlendMode blendMode = BlendMode.Opaque,
-        RenderQueue renderQueue = Rendering.RenderQueue.Geometry)
+        RenderQueue renderQueue = RenderQueue.Geometry)
     {
         if (IsLoaded)
             return false;
