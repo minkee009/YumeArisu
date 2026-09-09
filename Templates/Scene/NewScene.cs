@@ -3,7 +3,7 @@ using YumeArisu.Game.Scripts;
 
 namespace YumeArisu.Game.Scenes;
 
-public class EmptyScene : Scene
+public class NewScene : Scene
 {
     protected override void OnLoad()
     {

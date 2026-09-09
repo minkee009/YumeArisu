@@ -5,7 +5,7 @@
   "identity": "YumeArisu.Scene",
   "name": "YumeArisu Scene",
   "shortName": "yascene",
-  "sourceName": "EmptyScene",
+  "sourceName": "NewScene",
   "preferNameDirectory": false,
   "tags": {
     "language": "C#",
