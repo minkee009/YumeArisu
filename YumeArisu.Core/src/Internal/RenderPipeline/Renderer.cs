@@ -24,9 +24,6 @@ public abstract class Renderer : Component
 
     public BoundingBox Bounds { get; }
 
-    internal ShaderPropertyBlock MaterialOverride { get; } = new();
-    internal ShaderPropertyBlock ObjectProperties { get; } = new();
-
     internal long RegistrationOrder { get; set; }
     internal float ViewSpaceDepth { get; set; }
     internal bool IsRegistered { get => _isRegistered; set => _isRegistered = value; }

@@ -1,3 +1,4 @@
+using System.Numerics;
 using YumeArisu.Core.Internal.RenderPipeline;
 using YumeArisu.Core.Systems;
 using YumeArisu.Core.Common;
@@ -58,6 +59,8 @@ public class SpriteRenderer : Renderer
     internal SpriteBatcher Batcher { get; set; }
     internal bool UsesImmediateDraw => Material?.Shader != BuiltInRenderResources.DefaultSpriteShader;
 
+    private readonly ShaderPropertyBlock _materialOverride = new();
+    private readonly ShaderPropertyBlock _objectProperties = new();
     private bool _objectPropertiesDirty = true;
     private Sprite _sprite;
     private Color _color;
@@ -85,37 +88,51 @@ public class SpriteRenderer : Renderer
         if (Sprite is null) 
             return;
 
-        UpdateObjectProperties();
+        UpdateSpriteData(
+            out var model,
+            out var size,
+            out var pivot,
+            out var uvRect,
+            out var color);
+
+        if (Material.Shader == BuiltInRenderResources.DefaultSpriteShader)
+        {
+            Batcher.Submit(
+                Sprite.Texture,
+                model,
+                size,
+                pivot,
+                uvRect,
+                color,
+                Material.BlendMode,
+                ViewSpaceDepth);
+            return;
+        }
+
+        UpdateCustomObjectProperties(model, size, pivot, uvRect, color);
 
         var command = new RenderCommand
         {
             Mesh = BuiltInRenderResources.DefaultQuadMesh,
             Material = Material,
-            MaterialOverride = MaterialOverride,
-            ObjectProperties = ObjectProperties,
+            MaterialOverride = _materialOverride,
+            ObjectProperties = _objectProperties,
             Depth = ViewSpaceDepth
         };
-
-        if (Material.Shader == BuiltInRenderResources.DefaultSpriteShader)
-        {
-            Batcher.Submit(command);
-            return;
-        }
 
         context.Submit(command);
     }
 
-    private void UpdateObjectProperties()
+    private void UpdateSpriteData(
+        out Matrix4x4 model,
+        out Vector2 size,
+        out Vector2 pivot,
+        out Vector4 uvRect,
+        out Vector4 color)
     {
-        if (!_objectPropertiesDirty)
-        {
-            ObjectProperties.SetMatrix4x4("Model", Transform.WorldMatrix);
-            return;
-        }
-
         var texture = Sprite.Texture;
         var rect = Sprite.Rect;
-        var pivot = Sprite.Pivot;
+        pivot = Sprite.Pivot;
 
         float u0 = rect.Origin.X / texture.Width;
         float v0 = rect.Origin.Y / texture.Height;
@@ -133,16 +150,31 @@ public class SpriteRenderer : Renderer
             vh = -vh;
         }
 
-        float sizeX = rect.Size.X / Sprite.PPU;
-        float sizeY = rect.Size.Y / Sprite.PPU;
+        size = new(rect.Size.X / Sprite.PPU, rect.Size.Y / Sprite.PPU);
+        uvRect = new(u0, v0, uw, vh);
+        color = _color.ToVector4();
+        model = Transform.WorldMatrix;
+    }
 
-        ObjectProperties.SetMatrix4x4("Model", Transform.WorldMatrix);
-        ObjectProperties.SetVector2("SpriteSize", new(sizeX, sizeY));
-        ObjectProperties.SetVector2("SpritePivot", new(pivot.X, pivot.Y));
-        ObjectProperties.SetVector4("UVRect", new(u0, v0, uw, vh));
-        ObjectProperties.SetVector4("Color", _color.ToVector4());
-        ObjectProperties.SetTexture("MainTexture", texture);
+    private void UpdateCustomObjectProperties(
+        Matrix4x4 model,
+        Vector2 size,
+        Vector2 pivot,
+        Vector4 uvRect,
+        Vector4 color)
+    {
+        if (!_objectPropertiesDirty)
+        {
+            _objectProperties.SetMatrix4x4("Model", model);
+            return;
+        }
 
+        _objectProperties.SetMatrix4x4("Model", model);
+        _objectProperties.SetVector2("SpriteSize", size);
+        _objectProperties.SetVector2("SpritePivot", pivot);
+        _objectProperties.SetVector4("UVRect", uvRect);
+        _objectProperties.SetVector4("Color", color);
+        _objectProperties.SetTexture("MainTexture", Sprite.Texture);
         _objectPropertiesDirty = false;
     }
 }

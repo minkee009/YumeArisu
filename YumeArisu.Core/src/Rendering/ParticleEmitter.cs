@@ -135,21 +135,15 @@ public sealed class ParticleEmitter : Renderer
                 * Matrix4x4.CreateTranslation(new Vector3(particle.Position, 0f))
                 * Transform.WorldMatrix;
 
-            ObjectProperties.SetMatrix4x4("Model", model);
-            ObjectProperties.SetVector2("SpriteSize", new Vector2(sizeX * size, sizeY * size));
-            ObjectProperties.SetVector2("SpritePivot", pivot);
-            ObjectProperties.SetVector4("UVRect", new Vector4(u0, v0, uw, vh));
-            ObjectProperties.SetVector4("Color", color);
-            ObjectProperties.SetTexture("MainTexture", Sprite.Texture);
-
-            Batcher.Submit(new RenderCommand
-            {
-                Mesh = BuiltInRenderResources.DefaultQuadMesh,
-                Material = Material,
-                MaterialOverride = MaterialOverride,
-                ObjectProperties = ObjectProperties,
-                Depth = ViewSpaceDepth
-            });
+            Batcher.Submit(
+                Sprite.Texture,
+                model,
+                new Vector2(sizeX * size, sizeY * size),
+                pivot,
+                new Vector4(u0, v0, uw, vh),
+                color,
+                Material.BlendMode,
+                ViewSpaceDepth);
         }
     }
 

@@ -86,17 +86,23 @@ internal sealed class SpriteBatcher : IDisposable
         _initialized = true;
     }
 
-    internal void Submit(in RenderCommand command)
+    internal void Submit(
+        SpriteTexture texture,
+        Matrix4x4 model,
+        Vector2 size,
+        Vector2 pivot,
+        Vector4 uvRect,
+        Vector4 color,
+        BlendMode blendMode,
+        float depth)
     {
-        var properties = command.ObjectProperties;
-        SpriteTexture texture = properties.GetTexture("MainTexture");
         SpriteBatch batch;
-        if (_batches.Count == 0 || _batches[^1].Texture != texture || _batches[^1].BlendMode != command.Material.BlendMode)
+        if (_batches.Count == 0 || _batches[^1].Texture != texture || _batches[^1].BlendMode != blendMode)
         {
             if (_pooledBatchCount == _batchPool.Count)
-                _batchPool.Add(new SpriteBatch(texture, command.Material.BlendMode));
+                _batchPool.Add(new SpriteBatch(texture, blendMode));
             else
-                _batchPool[_pooledBatchCount].Reset(texture, command.Material.BlendMode);
+                _batchPool[_pooledBatchCount].Reset(texture, blendMode);
 
             batch = _batchPool[_pooledBatchCount++];
             _batches.Add(batch);
@@ -106,12 +112,12 @@ internal sealed class SpriteBatcher : IDisposable
 
         batch.Instances.Add(new SpriteInstance
         {
-            Model = properties.GetMatrix4x4("Model"),
-            Size = properties.GetVector2("SpriteSize"),
-            Pivot = properties.GetVector2("SpritePivot"),
-            UVRect = properties.GetVector4("UVRect"),
-            Color = properties.GetVector4("Color"),
-            Depth = command.Depth
+            Model = model,
+            Size = size,
+            Pivot = pivot,
+            UVRect = uvRect,
+            Color = color,
+            Depth = depth
         });
     }
 
