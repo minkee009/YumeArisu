@@ -1,5 +1,6 @@
 using System.Numerics;
 using YumeArisu.Core.Hierarchy;
+using YumeArisu.Core.Internal.RenderPipeline;
 using YumeArisu.Core.Rendering;
 using YumeArisu.Core.Systems;
 using YumeArisu.Game.Scripts;
@@ -95,6 +96,22 @@ public class TestScene2 : Scene
         yugo3.Transform.SetParent(yugo2.Transform, false);
         yugo3.Transform.LocalPosition += new Vector3(8.0f,0f,0f);
         yugo3.Transform.LocalScale = new Vector3(0.25f, 0.25f, 0.25f);
+
+        var yugo3sub1 = CreateGameObject();
+        yugo3sub1.Transform.SetParent(yugo3.Transform);
+
+        yugo3sub1.Transform.LocalPosition = new Vector3(0, 0, 2.5f);
+
+        var emitter = yugo3.AddComponent<ParticleEmitter>();
+        emitter.Sprite = yuukaSpr;
+        emitter.EmissionRate = 30f;
+        emitter.StartSpeed = 2f;
+        emitter.Gravity = new Vector2(0f, -450f);
+        emitter.StartColor = Color.White;
+        emitter.EndColor = new Color(1f, 1f, 1f, 0f);
+        emitter.Enabled = true;
+
+        emitter.Play();
 
 
         GameObject yugo4 = CreateGameObject();

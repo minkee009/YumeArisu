@@ -24,7 +24,8 @@ public abstract class Renderer : Component
 
     public BoundingBox Bounds { get; }
 
-    public BlendMode BlendMode => Material.BlendMode;
+    internal ShaderPropertyBlock MaterialOverride { get; } = new();
+    internal ShaderPropertyBlock ObjectProperties { get; } = new();
 
     internal long RegistrationOrder { get; set; }
     internal float ViewSpaceDepth { get; set; }
@@ -33,5 +34,5 @@ public abstract class Renderer : Component
     private int _renderOrder;
     private bool _isRegistered;
 
-    internal abstract void Draw();
+    internal abstract void Draw(RenderContext context);
 }

@@ -1,4 +1,3 @@
-using Silk.NET.OpenGL;
 using YumeArisu.Core.Internal.RenderPipeline;
 using YumeArisu.Core.Systems;
 using YumeArisu.Core.Common;
@@ -16,7 +15,7 @@ public class SpriteRenderer : Renderer
                 return;
 
             _sprite = value;
-            _materialPropertyDirty = true;
+            _objectPropertiesDirty = true;
         } 
     }
 
@@ -26,7 +25,7 @@ public class SpriteRenderer : Renderer
         set
         {
             _color = value;
-            _materialPropertyDirty = true;
+            _objectPropertiesDirty = true;
         } 
     }
 
@@ -39,7 +38,7 @@ public class SpriteRenderer : Renderer
                 return;
 
             _flipX = value;
-            _materialPropertyDirty = true;
+            _objectPropertiesDirty = true;
         } 
     }
 
@@ -52,17 +51,14 @@ public class SpriteRenderer : Renderer
                 return;
 
             _flipY = value;
-            _materialPropertyDirty = true;
+            _objectPropertiesDirty = true;
         } 
     }
-
-    public MaterialPropertyOverride MaterialOverride => _materialOverride;
 
     internal SpriteBatcher Batcher { get; set; }
     internal bool UsesImmediateDraw => Material?.Shader != BuiltInRenderResources.DefaultSpriteShader;
 
-    private readonly MaterialPropertyOverride _materialOverride = new();
-    private bool _materialPropertyDirty = true;
+    private bool _objectPropertiesDirty = true;
     private Sprite _sprite;
     private Color _color;
     private bool _flipX;
@@ -84,59 +80,38 @@ public class SpriteRenderer : Renderer
         RenderSystem.Instance.UnregisterSpriteRenderer(this);
     }
 
-    internal override void Draw()
+    internal override void Draw(RenderContext context)
     {
         if (Sprite is null) 
             return;
 
-        UpdateMaterialProperties();
+        UpdateObjectProperties();
+
+        var command = new RenderCommand
+        {
+            Mesh = BuiltInRenderResources.DefaultQuadMesh,
+            Material = Material,
+            MaterialOverride = MaterialOverride,
+            ObjectProperties = ObjectProperties,
+            Depth = ViewSpaceDepth
+        };
 
         if (Material.Shader == BuiltInRenderResources.DefaultSpriteShader)
         {
-            Batcher.Submit(
-                Sprite.Texture,
-                Transform.WorldMatrix,
-                MaterialOverride.GetVector2("SpriteSize"),
-                MaterialOverride.GetVector2("SpritePivot"),
-                MaterialOverride.GetVector4("UVRect"),
-                MaterialOverride.GetVector4("Color"),
-                BlendMode,
-                ViewSpaceDepth);
+            Batcher.Submit(command);
             return;
         }
 
-        DrawImmediate();
+        context.Submit(command);
     }
 
-    private void DrawImmediate()
+    private void UpdateObjectProperties()
     {
-        Material.ApplyRenderState();
-        Material.Apply(_materialOverride);
-        Material.Shader.SetMatrix4x4("Model", Transform.WorldMatrix);
-
-        var gl = RenderSystem.Instance.GetGL();
-
-        var quad = BuiltInRenderResources.DefaultQuadMesh;
-
-        gl.BindVertexArray(quad.VAOHandle);
-        
-        unsafe
+        if (!_objectPropertiesDirty)
         {
-            gl.DrawElements(GLEnum.Triangles, quad.IndexCount, DrawElementsType.UnsignedInt, null);
-
-#if DEBUG
-            var err = gl.GetError();
-            if (err != GLEnum.NoError)
-                Console.WriteLine($"GL Error: {err}");
-#endif
+            ObjectProperties.SetMatrix4x4("Model", Transform.WorldMatrix);
+            return;
         }
-
-        gl.BindVertexArray(0);
-    }
-
-    private void UpdateMaterialProperties()
-    {
-        if (!_materialPropertyDirty) return;
 
         var texture = Sprite.Texture;
         var rect = Sprite.Rect;
@@ -161,14 +136,13 @@ public class SpriteRenderer : Renderer
         float sizeX = rect.Size.X / Sprite.PPU;
         float sizeY = rect.Size.Y / Sprite.PPU;
 
-        MaterialOverride.SetVector2("SpriteSize", new(sizeX, sizeY));
-        MaterialOverride.SetVector2("SpritePivot", new(pivot.X, pivot.Y));
-        MaterialOverride.SetVector4("UVRect", new(u0, v0, uw, vh));
-        MaterialOverride.SetTexture("MainTexture", texture);
-        MaterialOverride.SetFloat("FlipX", FlipX ? 1 : 0);
-        MaterialOverride.SetFloat("FlipY", FlipY ? 1 : 0);
-        MaterialOverride.SetVector4("Color", _color.ToVector4());
+        ObjectProperties.SetMatrix4x4("Model", Transform.WorldMatrix);
+        ObjectProperties.SetVector2("SpriteSize", new(sizeX, sizeY));
+        ObjectProperties.SetVector2("SpritePivot", new(pivot.X, pivot.Y));
+        ObjectProperties.SetVector4("UVRect", new(u0, v0, uw, vh));
+        ObjectProperties.SetVector4("Color", _color.ToVector4());
+        ObjectProperties.SetTexture("MainTexture", texture);
 
-        _materialPropertyDirty = false;
+        _objectPropertiesDirty = false;
     }
 }

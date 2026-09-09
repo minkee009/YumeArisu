@@ -29,27 +29,27 @@
     },
     "TexturePaths": {
       "type": "object",
-      "description": "Sampler Uniform에서 참조하는 Texture 리소스의 경로입니다.",
+      "description": "Sampler ShaderProperty에서 참조하는 Texture 리소스의 경로입니다.",
       "additionalProperties": {
         "type": "string"
       }
     },
-    "Uniforms": {
+    "ShaderProperties": {
       "type": "object",
-      "description": "이 머티리얼에 설정할 Uniform 값입니다.",
+      "description": "이 머티리얼에 설정할 ShaderProperty 값입니다.",
       "additionalProperties": {
-        "$ref": "#/$defs/UniformValue"
+        "$ref": "#/$defs/ShaderPropertyValue"
       }
     }
   },
   "required": [
     "ShaderPath",
     "TexturePaths",
-    "Uniforms"
+    "ShaderProperties"
   ],
   "additionalProperties": false,
   "$defs": {
-    "UniformValue": {
+    "ShaderPropertyValue": {
       "oneOf": [
         {
           "$ref": "#/$defs/Float"

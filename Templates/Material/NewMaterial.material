@@ -4,5 +4,5 @@
   "BlendMode": "Opaque",
   "RenderQueue": "Geometry",
   "TexturePaths": {},
-  "Uniforms": {}
+  "ShaderProperties": {}
 }

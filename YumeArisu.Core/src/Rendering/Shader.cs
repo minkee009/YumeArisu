@@ -14,7 +14,7 @@ public class Shader : Resource
     internal ulong VertexLayoutID { get; private set; }
     internal uint Handle { get; private set; }
 
-    private readonly Dictionary<string, int> _uniformLocations = new();
+    private readonly Dictionary<string, int> _shaderPropertyLocations = new();
 
     internal bool ImmediateLoadFromReference(VertexLayout layout, string vertBody, string fragBody)
     {
@@ -67,31 +67,31 @@ public class Shader : Resource
     internal void SetInt(string name, int value)
     {
         var gl = RenderSystem.Instance.GetGL();
-        gl.Uniform1(GetUniformLocation(name), value);
+        gl.Uniform1(GetShaderPropertyLocation(name), value);
     }
 
     internal void SetFloat(string name, float value)
     {
         var gl = RenderSystem.Instance.GetGL();
-        gl.Uniform1(GetUniformLocation(name), value);
+        gl.Uniform1(GetShaderPropertyLocation(name), value);
     }
 
     internal void SetVector2(string name, float x, float y)
     {
         var gl = RenderSystem.Instance.GetGL();
-        gl.Uniform2(GetUniformLocation(name), x, y);
+        gl.Uniform2(GetShaderPropertyLocation(name), x, y);
     }
 
     internal void SetVector3(string name, float x, float y, float z)
     {
         var gl = RenderSystem.Instance.GetGL();
-        gl.Uniform3(GetUniformLocation(name), x, y, z);
+        gl.Uniform3(GetShaderPropertyLocation(name), x, y, z);
     }
 
     internal void SetVector4(string name, float x, float y, float z, float w)
     {
         var gl = RenderSystem.Instance.GetGL();
-        gl.Uniform4(GetUniformLocation(name), x, y, z, w);
+        gl.Uniform4(GetShaderPropertyLocation(name), x, y, z, w);
     }
 
     internal unsafe void SetMatrix4x4(string name, in Matrix4x4 value)
@@ -99,33 +99,33 @@ public class Shader : Resource
         var gl = RenderSystem.Instance.GetGL();
         fixed (float* ptr = &value.M11)
         {
-            gl.UniformMatrix4(GetUniformLocation(name), 1, false, ptr);
+            gl.UniformMatrix4(GetShaderPropertyLocation(name), 1, false, ptr);
         }
     }
 
     /// <summary>
-    /// UniformValue(Material에서 넘어오는 범용 값)를 타입에 맞춰 실제 glUniform 호출로 분기시킵니다.
+    /// ShaderPropertyValue를 타입에 맞춰 실제 OpenGL uniform 호출로 분기시킵니다.
     /// </summary>
-    internal void SetUniform(string name, UniformValue value)
+    internal void SetShaderProperty(string name, ShaderPropertyValue value)
     {
         switch (value.Type)
         {
-            case Internal.RenderPipeline.UniformType.Float:
+            case Internal.RenderPipeline.ShaderPropertyType.Float:
                 SetFloat(name, value.Data[0]);
                 break;
-            case Internal.RenderPipeline.UniformType.Vec2:
+            case Internal.RenderPipeline.ShaderPropertyType.Vec2:
                 SetVector2(name, value.Data[0], value.Data[1]);
                 break;
-            case Internal.RenderPipeline.UniformType.Vec3:
+            case Internal.RenderPipeline.ShaderPropertyType.Vec3:
                 SetVector3(name, value.Data[0], value.Data[1], value.Data[2]);
                 break;
-            case Internal.RenderPipeline.UniformType.Vec4:
+            case Internal.RenderPipeline.ShaderPropertyType.Vec4:
                 SetVector4(name, value.Data[0], value.Data[1], value.Data[2], value.Data[3]);
                 break;
-            case Internal.RenderPipeline.UniformType.Int:
+            case Internal.RenderPipeline.ShaderPropertyType.Int:
                 SetInt(name, (int)value.Data[0]);
                 break;
-            case Internal.RenderPipeline.UniformType.Mat4:
+            case Internal.RenderPipeline.ShaderPropertyType.Mat4:
                 SetMatrix4x4(name, ToMatrix4x4(value.Data));
                 break;
         }
@@ -194,12 +194,12 @@ public class Shader : Resource
 
         string global = type switch
         {
-            GLEnum.VertexShader => GlobalUniform.VertexSource,
-            GLEnum.FragmentShader => GlobalUniform.FragmentSource,
+            GLEnum.VertexShader => GlobalShaderProperties.VertexSource,
+            GLEnum.FragmentShader => GlobalShaderProperties.FragmentSource,
             _ => string.Empty
         };
 
-        return version + define + precision + global + GlobalUniform.CameraBlockSource + src;
+        return version + define + precision + global + GlobalShaderProperties.CameraBlockSource + src;
     }
 
     internal static uint CompileShader(GLEnum type, in string source)
@@ -221,16 +221,16 @@ public class Shader : Resource
         return shader;
     }
 
-    private int GetUniformLocation(string name)
+    private int GetShaderPropertyLocation(string name)
     {
-        if (_uniformLocations.TryGetValue(name, out int cached))
+        if (_shaderPropertyLocations.TryGetValue(name, out int cached))
             return cached;
 
         var gl = RenderSystem.Instance.GetGL();
         int location = gl.GetUniformLocation(Handle, name);
 
         // -1이어도 캐싱함 (셰이더에 존재하지 않는 이름 -> 매번 재조회하는 낭비 방지)
-        _uniformLocations[name] = location;
+        _shaderPropertyLocations[name] = location;
 
         if (location == -1)
             ConsoleExtensions.WriteLineColored($"'{name}' uniform이 셰이더에 존재하지 않습니다.", ConsoleColor.Yellow);

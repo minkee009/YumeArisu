@@ -6,7 +6,7 @@ using YumeArisu.Core.Systems;
 
 namespace YumeArisu.Core.Internal.RenderPipeline;
 
-internal static class GlobalUniform
+internal static class GlobalShaderProperties
 {
     internal static uint Handle { get; private set; }
     internal const string View = "uView";

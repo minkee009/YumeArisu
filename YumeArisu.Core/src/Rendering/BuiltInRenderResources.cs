@@ -1,10 +1,9 @@
-using YumeArisu.Core.Rendering;
+using YumeArisu.Core.Internal.RenderPipeline;
 
-namespace YumeArisu.Core.Internal.RenderPipeline;
+namespace YumeArisu.Core.Rendering;
 
 public static class BuiltInRenderResources
 {
-    #region  ShaderSource
     public const string SpriteVertex = $$"""
         layout(location = 0) in vec3 position;
         layout(location = 1) in vec2 uv;
@@ -25,7 +24,7 @@ public static class BuiltInRenderResources
             fragUV = UVRect.xy + uv * UVRect.zw;
             fragColor = Color;
 
-            gl_Position = {{GlobalUniform.Projection}} * {{GlobalUniform.View}} * Model * vec4(local, position.z, 1.0);
+            gl_Position = {{GlobalShaderProperties.Projection}} * {{GlobalShaderProperties.View}} * Model * vec4(local, position.z, 1.0);
         }
         """;
 
@@ -42,7 +41,6 @@ public static class BuiltInRenderResources
             FragColor = texture(MainTexture, fragUV) * fragColor;
         }
         """;
-    #endregion
 
     public static Shader DefaultSpriteShader;
     public static Texture DefaultWhiteTexture;
