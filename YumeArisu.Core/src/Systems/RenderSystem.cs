@@ -19,7 +19,6 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
     private List<Camera> _cameras;
     private List<Renderer> _renderers;
     private SpriteBatcher _spriteBatcher;
-    private RenderContext _renderContext;
     private bool _needCamDepthSort;
     private bool _needRenderOrderSort;
     private long _nextRendererRegistrationOrder;
@@ -39,7 +38,6 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
         GlobalShaderProperties.Initialize();
         BuiltInRenderResources.Load();
         _spriteBatcher = new();
-        _renderContext = new(_gl);
     }
 
     internal override void OnShutDown()
@@ -48,7 +46,6 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
         GlobalShaderProperties.Release();
 
         _spriteBatcher?.Dispose();
-        _renderContext = null;
 
         _cameras.Clear();
         _renderers.Clear();
@@ -117,7 +114,7 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
             _gl.Viewport(viewportX, viewportY, viewportWidth, viewportHeight);
             _gl.Clear((uint)ClearBufferMask.DepthBufferBit);
 
-            _renderContext.UpdateCameraContext(cam);
+            GlobalShaderProperties.UpdateCamera(cam.ViewMatrix, cam.ProjectionMatrix, cam.Transform.WorldPosition);
             UpdateViewSpaceDepths(cam);
 
             // 렌더러 드로잉
@@ -132,10 +129,10 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
                         if (spriteRenderer.UsesImmediateDraw)
                             _spriteBatcher.Flush();
 
-                        spriteRenderer.Draw(_renderContext);
+                        spriteRenderer.Draw();
                         break;
                     case ParticleEmitter emitter:
-                        emitter.Draw(_renderContext);
+                        emitter.Draw();
                         break;
                 }
             }

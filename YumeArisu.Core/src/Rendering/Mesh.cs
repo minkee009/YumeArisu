@@ -16,6 +16,14 @@ public class Mesh : Resource
     internal uint IndexCount { get; private set; }
     public BoundingBox Bounds { get; private set; }
 
+    internal unsafe void DrawElements()
+    {
+        var gl = RenderSystem.Instance.GetGL();
+        gl.BindVertexArray(VAOHandle);
+        gl.DrawElements(GLEnum.Triangles, IndexCount, DrawElementsType.UnsignedInt, null);
+        gl.BindVertexArray(0);
+    }
+
     internal bool ImmediatLoadFromReference(VertexLayout layout, float[] vertices, uint[] indices)
     {
         if (IsLoaded)

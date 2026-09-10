@@ -16,7 +16,7 @@ public class Material : Resource
     public BlendMode BlendMode { get; set; } = BlendMode.Opaque;
     public RenderQueue RenderQueue { get; set; } = RenderQueue.Geometry;
     private Dictionary<string, Texture> _textures = new();
-    private ShaderPropertyBlock _shaderProperties = new();
+    private MaterialOverride _shaderProperties = new();
 
     internal bool ImmediateLoadFromReference(Shader shader, 
         Dictionary<string, Texture> textures, 
@@ -202,7 +202,13 @@ public class Material : Resource
         }
     }
 
-    public void Apply(ShaderPropertyBlock overrides = null)
+    /// <summary>
+    /// Material 자체 프로퍼티와 MaterialOverride(per-material override)만 병합해서 셰이더에 올립니다.
+    /// per-object 데이터는 이 메서드가 전혀 알지 못하며, 여기서 실제로 소비한 텍스쳐 유닛 개수를
+    /// 반환값으로 돌려주어 호출자(예: per-object Apply)가 그 다음 유닛부터 안전하게 이어 쓸 수 있게 합니다.
+    /// </summary>
+    /// <returns>이 호출에서 실제로 사용한 텍스쳐 유닛 개수(다음 여유 유닛 인덱스)</returns>
+    public int Apply(MaterialOverride overrides = null)
     {
         Shader.Use();
 
@@ -225,7 +231,7 @@ public class Material : Resource
         }
 
         if (overrides is null)
-            return;
+            return unit;
 
         // base Material에 없던 새로운 ShaderProperty/텍스쳐 이름만 추가로 처리
         foreach (var (name, value) in overrides.Properties)
@@ -239,11 +245,13 @@ public class Material : Resource
             if (!_textures.ContainsKey(name))
                 Shader.SetTexture(name, tex, unit++);
         }
+
+        return unit;
     }
 
-    private static ShaderPropertyBlock CreateShaderProperties(Dictionary<string, ShaderPropertyValue> values)
+    private static MaterialOverride CreateShaderProperties(Dictionary<string, ShaderPropertyValue> values)
     {
-        var properties = new ShaderPropertyBlock();
+        var properties = new MaterialOverride();
         foreach (var (name, value) in values)
             properties.SetShaderProperty(name, value);
         return properties;

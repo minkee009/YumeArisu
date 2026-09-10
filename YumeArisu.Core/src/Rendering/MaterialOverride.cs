@@ -3,7 +3,7 @@ using YumeArisu.Core.Internal.RenderPipeline;
 
 namespace YumeArisu.Core.Rendering;
 
-public class ShaderPropertyBlock
+public class MaterialOverride
 {
     private readonly Dictionary<string, ShaderPropertyValue> _properties = new();
     private readonly Dictionary<string, Texture> _textures = new();

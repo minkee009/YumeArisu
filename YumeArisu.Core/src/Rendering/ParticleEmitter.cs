@@ -111,7 +111,7 @@ public sealed class ParticleEmitter : Renderer
         Emit(emitCount);
     }
 
-    internal override void Draw(RenderContext context)
+    internal override void Draw()
     {
         if (Sprite is null || Sprite.Texture is null)
             return;

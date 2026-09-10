@@ -50,5 +50,5 @@ public abstract class Renderer : Component
 
     private Material _material;
 
-    internal abstract void Draw(RenderContext context);
+    internal abstract void Draw();
 }

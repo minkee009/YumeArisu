@@ -56,13 +56,13 @@ public class SpriteRenderer : Renderer
         } 
     }
 
-    public ShaderPropertyBlock MaterialOverride => _materialOverride;
+    public MaterialOverride MaterialOverride => _materialOverride;
 
     internal SpriteBatcher Batcher { get; set; }
     internal bool UsesImmediateDraw => Material?.Shader != BuiltInRenderResources.DefaultSpriteShader;
 
-    private readonly ShaderPropertyBlock _materialOverride = new();
-    private readonly ShaderPropertyBlock _objectProperties = new();
+    private readonly MaterialOverride _materialOverride = new();
+    private SpriteObjectData _objectData;
     private bool _objectPropertiesDirty = true;
     private Sprite _sprite;
     private Color _color;
@@ -85,7 +85,7 @@ public class SpriteRenderer : Renderer
         RenderSystem.Instance.UnregisterSpriteRenderer(this);
     }
 
-    internal override void Draw(RenderContext context)
+    internal override void Draw()
     {
         if (Sprite is null) 
             return;
@@ -111,18 +111,16 @@ public class SpriteRenderer : Renderer
             return;
         }
 
-        UpdateObjectProperties(model, size, pivot, uvRect, color);
+        UpdateObjectData(model, size, pivot, uvRect, color);
 
-        var command = new RenderCommand
-        {
-            Mesh = BuiltInRenderResources.DefaultQuadMesh,
-            Material = Material,
-            MaterialOverride = _materialOverride,
-            ObjectProperties = _objectProperties,
-            Depth = ViewSpaceDepth
-        };
+        // per-material(Material 자체 + MaterialOverride) 적용 -> 다음 여유 텍스쳐 유닛을 돌려받음
+        Material.ApplyRenderState();
+        int nextTextureUnit = Material.Apply(_materialOverride);
 
-        context.Submit(command);
+        // per-object 적용은 완전히 별도 경로 - 이름 dictionary 병합이 아니라 고정 필드 업로드
+        _objectData.Apply(Material.Shader, nextTextureUnit);
+
+        BuiltInRenderResources.DefaultQuadMesh.DrawElements();
     }
 
     private void UpdateSpriteData(
@@ -158,25 +156,23 @@ public class SpriteRenderer : Renderer
         model = Transform.WorldMatrix;
     }
 
-    private void UpdateObjectProperties(
+    private void UpdateObjectData(
         Matrix4x4 model,
         Vector2 size,
         Vector2 pivot,
         Vector4 uvRect,
         Vector4 color)
     {
-        if (!_objectPropertiesDirty)
-        {
-            _objectProperties.SetMatrix4x4("Model", model);
-            return;
-        }
+        _objectData.Model = model;
 
-        _objectProperties.SetMatrix4x4("Model", model);
-        _objectProperties.SetVector2("SpriteSize", size);
-        _objectProperties.SetVector2("SpritePivot", pivot);
-        _objectProperties.SetVector4("UVRect", uvRect);
-        _objectProperties.SetVector4("Color", color);
-        _objectProperties.SetTexture("MainTexture", Sprite.Texture);
+        if (!_objectPropertiesDirty)
+            return;
+
+        _objectData.SpriteSize = size;
+        _objectData.SpritePivot = pivot;
+        _objectData.UVRect = uvRect;
+        _objectData.Color = color;
+        _objectData.MainTexture = Sprite.Texture;
         _objectPropertiesDirty = false;
     }
 }
