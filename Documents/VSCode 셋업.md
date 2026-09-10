@@ -1,5 +1,10 @@
 # VS Code 개발 환경 셋업
 
+> 버전 : 0.1  
+> 베이스 : .NET 9.0+  
+> 마지막 업데이트 : 2026-09-10  
+> 작성자 : minkee009
+
 이 프로젝트를 처음 클론했다면 아래 순서대로 셋업하세요.
 
 ## 1. dotnet 템플릿 설치 (최초 1회, 또는 `Templates/` 폴더 수정 시마다)
@@ -30,7 +35,11 @@ dotnet new install ./Templates --force
 
 마찬가지로 `{입력한 이름}.cs` 파일이 지정 폴더에 생성되고, 클래스명도 자동으로 반영됩니다.
 
-## 4. 템플릿 수정 시 주의사항
+## 5. 그외에 리소스 템플릿으로 새 리소스파일(json) 생성하기
+
+위 방법들과 마찬가지로 템플릿 작업을 통해 Sprite,Material,Mesh,Shader,... 등 다양한 리소스파일을 생성할 수 있습니다.
+
+## 6. 템플릿 수정 시 주의사항
 
 `Templates/ScriptBehaviour/NewBehaviour.cs`를 수정한 뒤에는, 반드시 `Setup: Install Templates`를 다시 실행해서 변경사항을 반영해야 합니다. `dotnet new`는 설치 시점의 스냅샷을 사용하기 때문에, 파일만 고치고 재설치를 안 하면 이전 버전이 계속 생성됩니다. 그럼에도 반영이 되지 않는다면 `Setup: Reinit Templates` 작업을 실행해 캐시를 완전히 제거한 뒤 다시 시도해보세요
 
