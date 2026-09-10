@@ -56,6 +56,8 @@ public class SpriteRenderer : Renderer
         } 
     }
 
+    public ShaderPropertyBlock MaterialOverride => _materialOverride;
+
     internal SpriteBatcher Batcher { get; set; }
     internal bool UsesImmediateDraw => Material?.Shader != BuiltInRenderResources.DefaultSpriteShader;
 
@@ -95,7 +97,7 @@ public class SpriteRenderer : Renderer
             out var uvRect,
             out var color);
 
-        if (Material.Shader == BuiltInRenderResources.DefaultSpriteShader)
+        if (!UsesImmediateDraw)
         {
             Batcher.Submit(
                 Sprite.Texture,
@@ -109,7 +111,7 @@ public class SpriteRenderer : Renderer
             return;
         }
 
-        UpdateCustomObjectProperties(model, size, pivot, uvRect, color);
+        UpdateObjectProperties(model, size, pivot, uvRect, color);
 
         var command = new RenderCommand
         {
@@ -156,7 +158,7 @@ public class SpriteRenderer : Renderer
         model = Transform.WorldMatrix;
     }
 
-    private void UpdateCustomObjectProperties(
+    private void UpdateObjectProperties(
         Matrix4x4 model,
         Vector2 size,
         Vector2 pivot,
