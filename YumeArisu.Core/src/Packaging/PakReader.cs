@@ -16,6 +16,15 @@ public static class PakReader
         public int OriginalLength { get; init; }
     }
 
+    public readonly struct ExtractMetaProgress
+    {
+        public int ChunkOrder { get; init; }
+        public int EntryIndex { get; init; }
+        public int TotalEntries { get; init; }
+        public ulong PathId { get; init; }
+        public PakMeta MetaData { get; init; }
+    }
+
     /// <summary>
     /// 팩 청크스트림을 모두 읽고 경로해쉬로 정리된 메타데이터 테이블을 추출합니다.
     /// </summary>
@@ -23,7 +32,7 @@ public static class PakReader
     /// <param name="pakMetaTable">팩 메타데이터 테이블</param>
     /// <exception cref="InvalidDataException"></exception>
     /// <exception cref="Exception"></exception>
-    public static void ExtractPakMetaTable(ReadOnlyListView<Stream> pakChunkStreams, out Dictionary<ulong, PakMeta> pakMetaTable)
+    public static void ExtractPakMetaTable(ReadOnlyListView<Stream> pakChunkStreams, out Dictionary<ulong, PakMeta> pakMetaTable, Action<ExtractMetaProgress> progressAction = null)
     {
         pakMetaTable = new();
 
@@ -84,6 +93,14 @@ public static class PakReader
                     };
 
                     pakMetaTable.Add(pathId, metaData);
+                    progressAction?.Invoke(new ExtractMetaProgress
+                    {
+                        ChunkOrder = i,
+                        EntryIndex = j,
+                        TotalEntries = footer.IndexEntryCount,
+                        PathId = pathId,
+                        MetaData = metaData
+                    });
                 }
             }
         }

@@ -1,4 +1,5 @@
 ﻿using YumeArisu.Core.Packaging;
+using YumeArisu.Core.Utility;
 
 namespace YumeArisu.Packer;
 
@@ -34,6 +35,11 @@ internal class Program
         // 2번째 인자(validArgs[2])가 들어왔다면 출력 이름으로 전달, 없으면 null 전달
         string? outputName = validArgs.Length >= 3 ? validArgs[2] : null;
 
-        PakWriter.Pack(rootFolderPath, outputFolderPath, outputName);
+        PakWriter.Pack(rootFolderPath, outputFolderPath, outputName, PrintProgress);
+    }
+
+    private static void PrintProgress(PakWriter.WriteProgress writeProgress)
+    {
+        ConsoleExtensions.PrintProgress(writeProgress.ProcessCount, writeProgress.TotalCount, writeProgress.FileName);
     }
 }
