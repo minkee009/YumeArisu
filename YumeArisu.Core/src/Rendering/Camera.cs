@@ -125,11 +125,11 @@ public class Camera : Behaviour
                     case ProjectionMode.Orthogonal:
                         float height = _size * 2.0f;
                         float width = height * aspect;
-                        _cachedProjMatrix = Matrix4x4.CreateOrthographic(width, height, _near, _far);
+                        _cachedProjMatrix = ToGLDepthRange(Matrix4x4.CreateOrthographic(width, height, _near, _far));
                         break;
                     case ProjectionMode.Perspective:
                         float fovRadians = _fov * (MathF.PI / 180.0f);
-                        _cachedProjMatrix = Matrix4x4.CreatePerspectiveFieldOfView(fovRadians, aspect, _near, _far);
+                        _cachedProjMatrix = ToGLDepthRange(Matrix4x4.CreatePerspectiveFieldOfView(fovRadians, aspect, _near, _far));
                         break;
                 }
                 _projMatrixDirty = false;
@@ -169,6 +169,15 @@ public class Camera : Behaviour
     internal void MarkViewMatrixDirty() => _viewMatrixDirty = true;
 
     internal void MarkProjectionMatrixDirty() => _projMatrixDirty = true;
+
+    private static Matrix4x4 ToGLDepthRange(Matrix4x4 m)
+    {
+        m.M13 = 2f * m.M13 - m.M14;
+        m.M23 = 2f * m.M23 - m.M24;
+        m.M33 = 2f * m.M33 - m.M34;
+        m.M43 = 2f * m.M43 - m.M44;
+        return m;
+    }
 
     /// <summary>
     /// 월드 좌표를 화면(픽셀) 좌표로 변환합니다. 카메라 뒤쪽(화면에 표시 불가)이면 null을 반환합니다.
