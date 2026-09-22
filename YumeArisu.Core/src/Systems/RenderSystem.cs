@@ -9,7 +9,7 @@ namespace YumeArisu.Core.Systems;
 public class RenderSystem : SystemBase<RenderSystem, GL>
 {
     public Vector2D<int> FramebufferSize { get; private set; }
-    public float FramebufferAspect => FramebufferSize.X / FramebufferSize.Y;
+    public float FramebufferAspect => (float)FramebufferSize.X / FramebufferSize.Y;
     
     // GL Context
     private GL _gl;
@@ -194,7 +194,7 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
 
     private int CompareRenderers(Renderer left, Renderer right)
     {
-        int result =  left.Material.RenderQueue.CompareTo(right.Material.RenderQueue);
+        int result = left.Material.RenderQueue.CompareTo(right.Material.RenderQueue);
         if (result != 0)
             return result;
 
