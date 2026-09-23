@@ -4,9 +4,12 @@ public readonly struct ReadOnlyListView<T>
 {
     private readonly List<T> _list;
 
-    public ReadOnlyListView(List<T> list) => _list = list;
+    public ReadOnlyListView(List<T> list)
+    {
+        _list = list ?? throw new ArgumentNullException(nameof(list));
+    }
 
-    public int Count => _list?.Count ?? 0;
+    public int Count => _list.Count;
     public T this[int index] => _list[index];
 
     // List<T>.Enumerator는 struct라서 foreach가 이걸 그대로 쓰면 boxing 없음
