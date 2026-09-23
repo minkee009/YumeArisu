@@ -10,6 +10,8 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
 {
     public Vector2D<int> FramebufferSize { get; private set; }
     public float FramebufferAspect => (float)FramebufferSize.X / FramebufferSize.Y;
+
+    internal Camera CurrentCamera { get; private set; }
     
     // GL Context
     private GL _gl;
@@ -106,6 +108,8 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
             if (!cam.IsActiveAndEnabled)
                 continue;
 
+            CurrentCamera = cam;
+
             var viewportX = (int)(FramebufferSize.X * cam.ViewRect.Origin.X);
             var viewportY = (int)(FramebufferSize.Y * cam.ViewRect.Origin.Y);
             var viewportWidth = (uint)(FramebufferSize.X * cam.ViewRect.Size.X);
@@ -134,11 +138,15 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
                     case ParticleEmitter emitter:
                         emitter.Draw();
                         break;
+                    case TilemapRenderer tilemap:
+                        tilemap.Draw();
+                        break;
                 }
             }
 
             _spriteBatcher.Flush();
         }
+        CurrentCamera = null;
     }
 
     public void EndFrame()
@@ -163,6 +171,15 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
         _needRenderOrderSort = true;
     } 
 
+    internal void RegisterTilemapRenderer(TilemapRenderer renderer)
+    {
+        renderer.Batcher = _spriteBatcher;
+        renderer.RegistrationOrder = _nextRendererRegistrationOrder++;
+        renderer.IsRegistered = true;
+        _renderers.Add(renderer);
+        _needRenderOrderSort = true;
+    }
+
     internal void RegisterParticleEmitter(ParticleEmitter emitter)
     {
         emitter.Batcher = _spriteBatcher;
@@ -173,6 +190,13 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
     }
 
     internal void UnregisterSpriteRenderer(SpriteRenderer renderer)
+    {
+        renderer.IsRegistered = false;
+        _renderers.Remove(renderer);
+        _needRenderOrderSort = true;
+    }
+
+    internal void UnregisterTilemapRenderer(TilemapRenderer renderer)
     {
         renderer.IsRegistered = false;
         _renderers.Remove(renderer);

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/template.json",
+  "author": "YumeArisu",
+  "classifications": [
+    "YumeArisu",
+    "Tileset"
+  ],
+  "identity": "YumeArisu.Tileset",
+  "name": "YumeArisu Tileset",
+  "shortName": "yatileset",
+  "sourceName": "NewTileset",
+  "preferNameDirectory": false,
+  "tags": {
+    "language": "JSON",
+    "type": "item"
+  }
+}

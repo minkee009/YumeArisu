@@ -1,0 +1,6 @@
+{
+  "$schema": "https://yume-arisu.dev/schema/tileset.schema.json",
+  "TexturePath": "...",
+  "TileWidth": 16,
+  "TileHeight": 16
+}

@@ -48,6 +48,12 @@
       "problemMatcher": []
     },
     {
+      "label": "New Tileset",
+      "type": "shell",
+      "command": "dotnet new yatileset -n ${input:tilesetName} -o ${input:tilesetOutputDir}",
+      "problemMatcher": []
+    },
+    {
       "label": "build",
       "command": "dotnet",
       "type": "process",
@@ -98,6 +104,12 @@
       "default": "NewSprite"
     },
     {
+      "id": "tilesetName",
+      "type": "promptString",
+      "description": "생성할 Tileset 이름",
+      "default": "NewTileset"
+    },
+    {
       "id": "sciprtOutputDir",
       "type": "promptString",
       "description": "출력 폴더 경로",
@@ -132,6 +144,12 @@
       "type": "promptString",
       "description": "Sprite 출력 폴더 경로",
       "default": "Assets/Sprite"
+    },
+    {
+      "id": "tilesetOutputDir",
+      "type": "promptString",
+      "description": "Tileset 출력 폴더 경로",
+      "default": "Assets/Tileset"
     }
   ]
 }
