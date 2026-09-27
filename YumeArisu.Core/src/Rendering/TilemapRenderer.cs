@@ -47,6 +47,37 @@ public class TilemapRenderer : Renderer
         if (y > _maxY) _maxY = y;
     }
 
+    /// <summary>
+    /// TilemapLayout의 타일 배치를 이 렌더러의 그리드에 스탬프(복사)합니다.
+    /// 대입 이후로는 이 렌더러의 그리드가 스냅샷이며, 원본 TilemapLayout과 독립적으로
+    /// SetTile을 통해 자유롭게 부분 편집할 수 있습니다.
+    /// </summary>
+    public void SetTileFromLayout(TilemapLayout layout, bool clearExisting = true)
+    {
+        if (clearExisting)
+        {
+            _tiles.Clear();
+            _minX = int.MaxValue; _minY = int.MaxValue;
+            _maxX = int.MinValue; _maxY = int.MinValue;
+        }
+
+        if (layout is null)
+            return;
+
+        if (layout.Tileset is not null)
+            Tileset = layout.Tileset;
+
+        for (int row = 0; row < layout.Height; row++)
+        {
+            for (int col = 0; col < layout.Width; col++)
+            {
+                int tileId = layout.Tiles[row * layout.Width + col];
+                if (tileId != 0)
+                    SetTile(layout.OriginX + col, layout.OriginY + row, tileId);
+            }
+        }
+    }
+
     public int GetTile(int x, int y) => _tiles.TryGetValue(Key(x, y), out int id) ? id : 0;
     public void ClearTile(int x, int y) => SetTile(x, y, 0);
 

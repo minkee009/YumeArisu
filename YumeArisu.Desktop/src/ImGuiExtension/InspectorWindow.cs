@@ -54,7 +54,7 @@ internal class InspectorWindow : IImGuiWindow
     private void DrawGeneralInfo(GameObject go)
     {
         ImGui.Text($"이름 : {go.Name}");
-        ImGui.Text($"ID : {go.ID}");
+        ImGui.Text($"ID : {go.Id}");
 
         string tag = go.Tag ?? "";
         if (ImGui.InputText("Tag", ref tag, 64))

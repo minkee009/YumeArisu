@@ -5,7 +5,7 @@ namespace YumeArisu.Core.Hierarchy;
 public sealed class GameObject
 {
     public Scene Scene { get; private set; }
-    public uint ID { get; private set; }
+    public uint Id { get; private set; }
     public uint Layer { get; set; }
     public string Tag { get; set; }
     public string Name { get; set; }
@@ -28,10 +28,10 @@ public sealed class GameObject
         Layer = uint.MaxValue;
         Tag = "";
         Scene = owner;
-        ID = _nextID++;
+        Id = _nextID++;
 
         if (string.IsNullOrEmpty(name))
-            name = $"GameObject[{ID}]";
+            name = $"GameObject[{Id}]";
             
         Name = name;
         _activeSelf = false;
@@ -69,9 +69,9 @@ public sealed class GameObject
         }
     }
 
-    public override int GetHashCode() => ID.GetHashCode();
+    public override int GetHashCode() => Id.GetHashCode();
     
-    public override bool Equals(object obj) => obj is GameObject other && ID == other.ID;
+    public override bool Equals(object obj) => obj is GameObject other && Id == other.Id;
 
     /// <summary>
     /// 게임오브젝트에 컴포넌트를 추가합니다.

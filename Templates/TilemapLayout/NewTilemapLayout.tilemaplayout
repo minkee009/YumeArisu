@@ -1,0 +1,14 @@
+{
+  "$schema": "https://yume-arisu.dev/schema/tilemaplayout.schema.json",
+  "TilesetPath": "...",
+  "OriginX": 0,
+  "OriginY": 0,
+  "Width": 4,
+  "Height": 4,
+  "Tiles": [
+    0, 0, 0, 0,
+    0, 1, 1, 0,
+    0, 1, 1, 0,
+    0, 0, 0, 0
+  ]
+}

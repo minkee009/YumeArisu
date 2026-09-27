@@ -54,6 +54,12 @@
       "problemMatcher": []
     },
     {
+      "label": "New TilemapLayout",
+      "type": "shell",
+      "command": "dotnet new yatilemaplayout -n ${input:tilemapLayoutName} -o ${input:tilemapLayoutOutputDir}",
+      "problemMatcher": []
+    },
+    {
       "label": "build",
       "command": "dotnet",
       "type": "process",
@@ -110,6 +116,12 @@
       "default": "NewTileset"
     },
     {
+      "id": "tilemapLayoutName",
+      "type": "promptString",
+      "description": "생성할 TilemapLayout 이름",
+      "default": "NewTilemapLayout"
+    },
+    {
       "id": "sciprtOutputDir",
       "type": "promptString",
       "description": "출력 폴더 경로",
@@ -150,6 +162,12 @@
       "type": "promptString",
       "description": "Tileset 출력 폴더 경로",
       "default": "Assets/Tileset"
+    },
+    {
+      "id": "tilemapLayoutOutputDir",
+      "type": "promptString",
+      "description": "TilemapLayout 출력 폴더 경로",
+      "default": "Assets/TilemapLayout"
     }
   ]
 }

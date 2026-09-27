@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/template.json",
+  "author": "YumeArisu",
+  "classifications": [
+    "YumeArisu",
+    "TilemapLayout"
+  ],
+  "identity": "YumeArisu.TilemapLayout",
+  "name": "YumeArisu TilemapLayout",
+  "shortName": "yatilemaplayout",
+  "sourceName": "NewTilemapLayout",
+  "preferNameDirectory": false,
+  "tags": {
+    "language": "JSON",
+    "type": "item"
+  }
+}

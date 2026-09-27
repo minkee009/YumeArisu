@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yume-arisu.dev/schema/tilemaplayout.schema.json",
+  "title": "YumeArisu TilemapLayout",
+  "description": "YumeArisu에서 사용하는 타일맵 배치 데이터 파일입니다.",
+  "type": "object",
+  "properties": {
+    "TilesetPath": {
+      "type": "string",
+      "description": "이 맵이 참조하는 Tileset 리소스 경로입니다. 비워두면 TilemapRenderer.Tileset을 코드에서 직접 대입해야 합니다."
+    },
+    "OriginX": {
+      "type": "integer",
+      "description": "Tiles 배열의 (0,0)이 배치될 타일 좌표 X입니다."
+    },
+    "OriginY": {
+      "type": "integer",
+      "description": "Tiles 배열의 (0,0)이 배치될 타일 좌표 Y입니다."
+    },
+    "Width": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "맵의 가로 타일 수입니다."
+    },
+    "Height": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "맵의 세로 타일 수입니다."
+    },
+    "Tiles": {
+      "type": "array",
+      "items": { "type": "integer", "minimum": 0 },
+      "description": "row-major 타일 id 배열입니다. 길이는 Width * Height와 같아야 하며, 0은 빈 칸입니다."
+    }
+  },
+  "required": ["Width", "Height", "Tiles"],
+  "additionalProperties": false
+}

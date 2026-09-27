@@ -63,7 +63,7 @@ internal class HierarchyWindow : IImGuiWindow
         if (!go.ActiveInHierarchy)
             ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(0.5f, 0.5f, 0.5f, 1f));
 
-        bool opened = ImGui.TreeNodeEx($"{go.Name}###GO_{go.ID}", flags);
+        bool opened = ImGui.TreeNodeEx($"{go.Name}###GO_{go.Id}", flags);
 
         if (!go.ActiveInHierarchy)
             ImGui.PopStyleColor();
