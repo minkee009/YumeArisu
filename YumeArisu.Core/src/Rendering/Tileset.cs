@@ -82,7 +82,7 @@ public class Tileset : Resource
 
     protected override void OnUnload()
     {
-        if (Texture.IsLoadedBySystem)
+        if (IsLoadedBySystem)
             Resources.Release(Texture);
 
         Texture = null;

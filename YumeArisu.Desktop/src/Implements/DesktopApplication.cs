@@ -106,7 +106,7 @@ public sealed class DesktopApplication : IApplicationControl
     {
         _window.ApplyDisplayMode();
 
-        if(_requestClose)
+        if (_requestClose)
         {
             _window.View.Close();
             _requestClose = false;

@@ -41,8 +41,11 @@ public class TilemapLayout : Resource
 
     protected override void OnUnload()
     {
-        if (Tileset is not null && Tileset.IsLoadedBySystem)
-            Resources.Release(Tileset);
+        if (IsLoadedBySystem)
+        {
+            if (Tileset is not null)
+                Resources.Release(Tileset);
+        }
 
         Tileset = null;
         Tiles = null;

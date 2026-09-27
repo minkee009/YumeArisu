@@ -28,7 +28,7 @@ public class Material : Resource
             return false;
 
         Shader = shader;
-        _textures = textures;
+        _textures = new(textures);
         _shaderProperties = CreateShaderProperties(shaderProperties);
         BlendMode = blendMode;
         RenderQueue = renderQueue;
@@ -61,15 +61,14 @@ public class Material : Resource
 
     protected override void OnUnload()
     {
-        if (Shader.IsLoadedBySystem)
-            Resources.Release(Shader);
-
-        foreach (var tex in _textures.Values)
+        if (IsLoadedBySystem)
         {
-            if (tex.IsLoadedBySystem)
+            Resources.Release(Shader);
+            
+            foreach (var tex in _textures.Values)
                 Resources.Release(tex);
         }
-            
+        
         _textures.Clear();
         _shaderProperties = null;
         Shader = null;

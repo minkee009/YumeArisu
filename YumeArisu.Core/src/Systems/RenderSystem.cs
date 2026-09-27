@@ -253,9 +253,9 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
     public List<Camera> GetActiveCameras()
     {
         List<Camera> activeCameras = new();
-        foreach(var cam in _cameras)
+        foreach (var cam in _cameras)
         {
-            if(cam.IsActiveAndEnabled)
+            if (cam.IsActiveAndEnabled)
                 activeCameras.Add(cam);
         }
 

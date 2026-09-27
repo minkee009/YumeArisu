@@ -71,7 +71,7 @@ public sealed class AndroidApplication : IApplicationControl
 
     public void OnUpdate(double deltaTime)
     {
-        if(_requestQuit)
+        if (_requestQuit)
         {
             _window.View.Close();
             _requestQuit = false;

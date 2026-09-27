@@ -43,7 +43,7 @@ public class CamMover : ScriptBehaviour
         _yaw = float.Lerp(_yaw,_targetYaw,12.0f * Time.DeltaTime);
 
         _targetVelocity = new Vector3(xInput, yInput, zInput);
-        if(_targetVelocity.LengthSquared() > float.Epsilon) _targetVelocity = Vector3.Normalize(_targetVelocity);
+        if (_targetVelocity.LengthSquared() > float.Epsilon) _targetVelocity = Vector3.Normalize(_targetVelocity);
         _targetVelocity = Vector3.Transform(_targetVelocity,Transform.LocalRotation) *  _movespeed;
         
         if (Input.GetKey(Key.ShiftLeft)) _targetVelocity *= 3.0f;

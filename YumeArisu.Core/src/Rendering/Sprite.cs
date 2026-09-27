@@ -21,9 +21,6 @@ public class Sprite : Resource
             return false;
 
         Texture = texture;
-        if (texture.IsLoadedBySystem)
-            Resources.Get<Texture>(texture.Path); // 캐시 카운트 증가
-
         Pivot = pivot;
         Rect = rect;
         PPU = ppu;
@@ -53,7 +50,7 @@ public class Sprite : Resource
 
     protected override void OnUnload()
     {
-        if (Texture.IsLoadedBySystem)
+        if (IsLoadedBySystem)
             Resources.Release(Texture);
         
         Texture = null;

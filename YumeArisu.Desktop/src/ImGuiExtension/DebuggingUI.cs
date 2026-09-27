@@ -81,7 +81,7 @@ public class DebuggingUI
 
     public void Render()
     {
-        if(_showMenuBar)
+        if (_showMenuBar)
             DrawMainMenuBar();
 
         foreach (var window in _windows)
@@ -233,7 +233,7 @@ public class DebuggingUI
             ImGui.TextDisabled($"Current : {SceneControl.CurrentScene?.GetType().Name ?? "None"}");
             ImGui.Separator();
 
-            foreach(var scene in dynamicSceneNames)
+            foreach (var scene in dynamicSceneNames)
             {
                 if (ImGui.MenuItem(scene)) SceneControl.ChangeScene(scene);
             }

@@ -34,7 +34,7 @@ public sealed class DesktopWindow : IWindowControl
     
         _window = Window.Create(options);
 
-        if(OperatingSystem.IsLinux())
+        if (OperatingSystem.IsLinux())
         {
             _window.Load += 
                 () =>
@@ -74,7 +74,7 @@ public sealed class DesktopWindow : IWindowControl
 
     public void ApplyDisplayMode()
     {
-        if(_displayMode == _trueDisplayMode)
+        if (_displayMode == _trueDisplayMode)
             return;
 
         var isFullScreenMode = _displayMode == DisplayMode.Fullscreen || _displayMode == DisplayMode.BorderlessFullscreen;
@@ -83,7 +83,7 @@ public sealed class DesktopWindow : IWindowControl
         int cachedMonitorIndex = -1;
 
         // GLFW 안정성을 위해 최대화인 경우 경계없는 창으로 변환 후 전체화면으로
-        if(isFullScreenMode && wasWindowedMode)
+        if (isFullScreenMode && wasWindowedMode)
         {
             cachedMonitorIndex = _window.Monitor.Index;
   
@@ -106,7 +106,7 @@ public sealed class DesktopWindow : IWindowControl
                 _window.WindowState = WindowState.Fullscreen;
                 _window.WindowBorder = WindowBorder.Hidden;
 
-                if(cachedMonitorIndex != -1)
+                if (cachedMonitorIndex != -1)
                 {
                     var targetMonitor = WindowingMonitor.GetMonitors(_window)
                     .FirstOrDefault(m => m.Index == cachedMonitorIndex)
@@ -153,7 +153,7 @@ public sealed class DesktopWindow : IWindowControl
     {
         _window.GLContext.SwapBuffers();
         
-        if(_isWindowsOS && _window.VSync && _window.WindowState != WindowState.Fullscreen)
+        if (_isWindowsOS && _window.VSync && _window.WindowState != WindowState.Fullscreen)
             DwmFlush();  
     }
 

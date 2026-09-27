@@ -24,13 +24,13 @@ public class InputSystem : SystemBase<InputSystem, IInputSource>
 
     public void BeginFrame()
     {
-        if(!_input.UpdateMustEndOfFrame)
+        if (!_input.UpdateMustEndOfFrame)
             _input.Update();
     }
 
     public void EndFrame()
     {
-        if(_input.UpdateMustEndOfFrame)
+        if (_input.UpdateMustEndOfFrame)
             _input.Update();
     }
 
