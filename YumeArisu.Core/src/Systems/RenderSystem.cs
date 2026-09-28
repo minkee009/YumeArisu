@@ -109,7 +109,7 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
             if (!cam.IsActiveAndEnabled)
                 continue;
 
-            var frustum = Frustum.FromViewProjection(cam.ViewProjectionMatrix);
+            // var frustum = Frustum.FromViewProjection(cam.ViewProjectionMatrix);
             CurrentCamera = cam;
 
             var viewportX = (int)(FramebufferSize.X * cam.ViewRect.Origin.X);
@@ -129,8 +129,8 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
                 if (!renderer.Enabled || !renderer.GameObject.ActiveInHierarchy)
                     continue;
 
-                if (renderer.CanCull && !frustum.Intersects(renderer.WorldBounds))
-                    continue;
+                // if (renderer.CanCull && !frustum.Intersects(renderer.WorldBounds))
+                //     continue;
 
                 switch (renderer)
                 {
