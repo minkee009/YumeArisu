@@ -108,7 +108,7 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
         {
             if (!cam.IsActiveAndEnabled)
                 continue;
-
+            // TODO : 실제 배포 테스트에서 성능 문제가 발생 시 BVH2 + Loose Octree로 컬링 구성, 현재는 비활성화.
             // var frustum = Frustum.FromViewProjection(cam.ViewProjectionMatrix);
             CurrentCamera = cam;
 
@@ -129,6 +129,7 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
                 if (!renderer.Enabled || !renderer.GameObject.ActiveInHierarchy)
                     continue;
 
+                // TODO : 실제 배포 테스트에서 성능 문제가 발생 시 BVH2 + Loose Octree로 컬링 구성, 현재는 비활성화.
                 // if (renderer.CanCull && !frustum.Intersects(renderer.WorldBounds))
                 //     continue;
 
