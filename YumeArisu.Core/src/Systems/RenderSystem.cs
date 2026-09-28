@@ -1,6 +1,7 @@
 using System.Numerics;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
+using YumeArisu.Core.Common;
 using YumeArisu.Core.Internal.RenderPipeline;
 using YumeArisu.Core.Rendering;
 
@@ -108,6 +109,7 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
             if (!cam.IsActiveAndEnabled)
                 continue;
 
+            var frustum = Frustum.FromViewProjection(cam.ViewProjectionMatrix);
             CurrentCamera = cam;
 
             var viewportX = (int)(FramebufferSize.X * cam.ViewRect.Origin.X);
@@ -125,6 +127,9 @@ public class RenderSystem : SystemBase<RenderSystem, GL>
             foreach (var renderer in _renderers)
             {
                 if (!renderer.Enabled || !renderer.GameObject.ActiveInHierarchy)
+                    continue;
+
+                if (renderer.CanCull && !frustum.Intersects(renderer.WorldBounds))
                     continue;
 
                 switch (renderer)

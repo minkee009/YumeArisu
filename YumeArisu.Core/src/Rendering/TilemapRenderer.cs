@@ -1,6 +1,8 @@
 using System.Numerics;
-using YumeArisu.Core.Internal.RenderPipeline;
 using YumeArisu.Core.Systems;
+using YumeArisu.Core.Common;
+using YumeArisu.Core.Hierarchy;
+using YumeArisu.Core.Internal.RenderPipeline;
 
 namespace YumeArisu.Core.Rendering;
 
@@ -14,14 +16,40 @@ public class TilemapRenderer : Renderer
     private const int MaxVisibleTiles = 8192; // 폭주 방지 상한
 
     public Tileset Tileset { get; set; }
-    public Vector2 CellSize { get; set; } = Vector2.One;
+    public Vector2 CellSize
+    {
+        get => _cellSize;
+        set
+        {
+            _cellSize = value;
+            _boundsDirty = true;
+        }
+    }
     public Color Color { get; set; } = Color.White;
+
+    public override bool CanCull => _tiles.Count > 0;
+
+    public override BoundingBox WorldBounds
+    {
+        get
+        {
+            if (_boundsDirty)
+            {
+                _cachedBounds = ComputeWorldBounds();
+                _boundsDirty = false;
+            }
+            return _cachedBounds;
+        }
+    }
 
     internal SpriteBatcher Batcher { get; set; }
 
     private readonly Dictionary<long, int> _tiles = new();
     private int _minX = int.MaxValue, _minY = int.MaxValue;
     private int _maxX = int.MinValue, _maxY = int.MinValue;
+    private Vector2 _cellSize = Vector2.One;
+    private BoundingBox _cachedBounds;
+    private bool _boundsDirty = true;
 
     public TilemapRenderer()
     {
@@ -81,8 +109,19 @@ public class TilemapRenderer : Renderer
     public int GetTile(int x, int y) => _tiles.TryGetValue(Key(x, y), out int id) ? id : 0;
     public void ClearTile(int x, int y) => SetTile(x, y, 0);
 
-    protected internal override void OnAttach() => RenderSystem.Instance.RegisterTilemapRenderer(this);
-    protected internal override void OnDetach() => RenderSystem.Instance.UnregisterTilemapRenderer(this);
+    protected internal override void OnAttach()
+    {
+        Transform.WorldMatrixDirtyChange += HandleTransformChange;
+        RenderSystem.Instance.RegisterTilemapRenderer(this);
+    }
+
+    protected internal override void OnDetach()
+    {
+        Transform.WorldMatrixDirtyChange -= HandleTransformChange;
+        RenderSystem.Instance.UnregisterTilemapRenderer(this);
+    }
+
+    private void HandleTransformChange(Transform _) => _boundsDirty = true;
 
     internal override void Draw()
     {
@@ -200,6 +239,18 @@ public class TilemapRenderer : Renderer
         }
 
         return true;
+    }
+
+    private BoundingBox ComputeWorldBounds()
+    {
+        if (_tiles.Count == 0)
+            return default;
+
+        // 타일 (x, y)는 좌하단 피벗으로 [x, x+1) * CellSize 를 차지하므로 max는 +1
+        var min = new Vector3(_minX * CellSize.X, _minY * CellSize.Y, 0f);
+        var max = new Vector3((_maxX + 1) * CellSize.X, (_maxY + 1) * CellSize.Y, 0f);
+
+        return new BoundingBox(min, max).Transform(Transform.WorldMatrix);
     }
 
     private static long Key(int x, int y) => ((long)x << 32) | (uint)y;

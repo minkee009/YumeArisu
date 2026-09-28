@@ -39,7 +39,8 @@ public abstract class Renderer : Component
         }
     }
 
-    public BoundingBox Bounds { get; }
+    public virtual bool CanCull => false;
+    public virtual BoundingBox WorldBounds => default;
 
     internal long RegistrationOrder { get; set; }
     internal float ViewSpaceDepth { get; set; }

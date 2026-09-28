@@ -2,11 +2,27 @@ using System.Numerics;
 using YumeArisu.Core.Internal.RenderPipeline;
 using YumeArisu.Core.Systems;
 using YumeArisu.Core.Common;
+using YumeArisu.Core.Hierarchy;
 
 namespace YumeArisu.Core.Rendering;
 
 public class SpriteRenderer : Renderer
 {
+    public override bool CanCull => true;
+
+    public override BoundingBox WorldBounds
+    {
+        get
+        {
+            if (_boundsDirty)
+            {
+                _cachedBounds = ComputeWorldBounds();
+                _boundsDirty = false;
+            }
+            return _cachedBounds;
+        }
+    }
+
     public Sprite Sprite 
     { 
         get => _sprite; 
@@ -17,6 +33,7 @@ public class SpriteRenderer : Renderer
 
             _sprite = value;
             _objectPropertiesDirty = true;
+            _boundsDirty = true;
         } 
     }
 
@@ -61,6 +78,8 @@ public class SpriteRenderer : Renderer
     internal SpriteBatcher Batcher { get; set; }
     internal bool UsesImmediateDraw => Material?.Shader != BuiltInRenderResources.DefaultSpriteShader;
 
+    private BoundingBox _cachedBounds;
+    private bool _boundsDirty = true;
     private readonly MaterialOverride _materialOverride = new();
     private SpriteObjectData _objectData;
     private bool _objectPropertiesDirty = true;
@@ -77,13 +96,17 @@ public class SpriteRenderer : Renderer
 
     protected internal override void OnAttach()
     {
+        Transform.WorldMatrixDirtyChange += HandleTransformChange;
         RenderSystem.Instance.RegisterSpriteRenderer(this);
     }
 
     protected internal override void OnDetach()
     {
+        Transform.WorldMatrixDirtyChange -= HandleTransformChange;
         RenderSystem.Instance.UnregisterSpriteRenderer(this);
     }
+
+    private void HandleTransformChange(Transform _) => _boundsDirty = true;
 
     internal override void Draw()
     {
@@ -174,5 +197,20 @@ public class SpriteRenderer : Renderer
         _objectData.Color = color;
         _objectData.MainTexture = Sprite.Texture;
         _objectPropertiesDirty = false;
+    }
+
+    private BoundingBox ComputeWorldBounds()
+    {
+        if (Sprite is null)
+            return default;
+
+        var size = new Vector2(Sprite.Rect.Size.X, Sprite.Rect.Size.Y) / Sprite.PPU;
+        var pivot = Sprite.Pivot;
+
+        // 셰이더의 (position - pivot) * size 와 동일 (position은 0~1 쿼드)
+        var min = new Vector3(-pivot.X * size.X, -pivot.Y * size.Y, 0f);
+        var max = new Vector3((1f - pivot.X) * size.X, (1f - pivot.Y) * size.Y, 0f);
+
+        return new BoundingBox(min, max).Transform(Transform.WorldMatrix);
     }
 }
