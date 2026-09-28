@@ -2,10 +2,6 @@ using System.Numerics;
 
 namespace YumeArisu.Core.Common;
 
-/// <summary>
-/// 뷰-프로젝션 행렬에서 추출한 6개 평면의 프러스텀입니다.
-/// 모든 평면 법선은 안쪽을 향하며, 정규화되어 있습니다.
-/// </summary>
 public readonly struct Frustum
 {
     public Plane Left { get; }
