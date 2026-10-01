@@ -60,7 +60,7 @@
 
 ### 4. 공식 배포처 및 파일 검증
 
-- 이 프로젝트의 공식 배포처는 다음 **[\[Github Releases\]](https://github.com/minkee009/YumeArisu/releases)**입니다.
+- 이 프로젝트의 공식 배포처는 다음 **[\[Github Releases\]](https://github.com/minkee009/YumeArisu/releases)입니다.**
 
 - 비공식 경로를 통해 배포된 파일에는 악성 코드나 임의로 수정된 내용이 포함될 가능성이 있으므로, 다운로드 시 공식 배포처와 파일의 **SHA-256 체크섬**을 확인하는 것을 권장합니다.
 
