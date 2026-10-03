@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/template.json",
+  "author": "YumeArisu",
+  "classifications": [
+    "YumeArisu",
+    "SpriteAnimationClip"
+  ],
+  "identity": "YumeArisu.SpriteAnimationClip",
+  "name": "YumeArisu SpriteAnimationClip",
+  "shortName": "yaspriteanimclip",
+  "sourceName": "NewSpriteAnimationClip",
+  "preferNameDirectory": false,
+  "tags": {
+    "language": "JSON",
+    "type": "item"
+  }
+}

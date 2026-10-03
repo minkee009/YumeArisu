@@ -1,8 +1,11 @@
 using System.Numerics;
+using YumeArisu.Core.Animations;
 using YumeArisu.Core.Hierarchy;
 using YumeArisu.Core.Internal.RenderPipeline;
+using YumeArisu.Core.Internal.ResourceHandling;
 using YumeArisu.Core.Rendering;
 using YumeArisu.Core.Systems;
+using YumeArisu.Core.Utility;
 using YumeArisu.Game.Scripts;
 
 namespace YumeArisu.Game.Scenes;
@@ -10,6 +13,8 @@ namespace YumeArisu.Game.Scenes;
 public class TestScene2 : Scene
 {
     Sprite yuukaSpr;
+    SpriteAnimationClip runclip;
+    Texture runTex;
     protected override void OnLoad()
     {
         Console.WriteLine("ㅎㅎ ㅋㅋ ㅈㅅ");
@@ -138,11 +143,26 @@ public class TestScene2 : Scene
         renderer5.FlipX = true;
 
         //ApplicationControl.TargetFrameRate = 48;
+
+        runTex = Resources.Get<Texture>("Texture/_Run.png");
+        runTex.TextureRenderMode = TextureRenderMode.Point;
+
+        runclip = Resources.Get<SpriteAnimationClip>("Animation/Run.spriteanim");
+
+        var go6 = CreateGameObject("Runner");
+        var renderer7 = go6.AddComponent<SpriteRenderer>();
+        renderer7.Enabled = true;
+
+        var animator = go6.AddComponent<SpriteAnimator>();
+        animator.Clip = runclip;
+        animator.Play();
     }
 
     protected override void OnUnload()
     {
         base.OnUnload();
         Resources.Release(yuukaSpr);
+        Resources.Release(runclip);
+        Resources.Release(runTex);
     }
 }

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://yume-arisu.dev/schema/spriteanimation.schema.json",
+  "FrameRate": 12,
+  "Mode": "Loop",
+  "Frames": [
+    {
+      "Sprite": "..."
+    },
+    {
+      "Sprite": "...",
+      "Duration": 1,
+      "Event": ""
+    }
+  ]
+}

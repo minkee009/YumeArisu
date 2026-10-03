@@ -6,7 +6,7 @@ namespace YumeArisu.Core.Routines;
 
 public abstract class Behaviour : Component
 {
-    public virtual int ExecutionOrder => 0;
+    public virtual int ExecutionOrder => ReservedExecutionOrder.Default;
     
     public bool Enabled
     {

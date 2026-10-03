@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yume-arisu.dev/schema/spriteanimation.schema.json",
+  "title": "YumeArisu SpriteAnimation",
+  "description": "YumeArisu에서 사용하는 스프라이트 애니메이션 클립 파일입니다.",
+  "type": "object",
+  "properties": {
+    "FrameRate": { "type": "number", "exclusiveMinimum": 0, "description": "초당 프레임 수입니다." },
+    "Mode": { "enum": ["Once", "Loop", "PingPong"], "description": "생략하면 Loop입니다." },
+    "Frames": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "Sprite": { "type": "string", "description": ".sprite 리소스 경로입니다." },
+          "Duration": { "type": "number", "exclusiveMinimum": 0, "description": "프레임 단위 유지 시간입니다. 기본값은 1입니다." },
+          "Event": { "type": "string", "description": "이 프레임에 진입할 때 발생하는 이벤트 이름입니다." }
+        },
+        "required": ["Sprite"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["FrameRate", "Frames"],
+  "additionalProperties": false
+}
